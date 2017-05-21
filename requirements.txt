@@ -11,3 +11,5 @@ googlemaps == 2.4.6
 requests == 2.11.1
 
 whitenoise == 3.3.0
+
+psycopg2 == 2.7.1
