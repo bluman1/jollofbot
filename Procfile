@@ -1,0 +1,1 @@
+web: gunicorn jollofbot.wsgi --log-file -

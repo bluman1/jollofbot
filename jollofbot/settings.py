@@ -11,11 +11,18 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+AUTH_USER_MODEL = 'jollof.User'
 
+APPEND_SLASHES = True
+
+LOGIN_URL = '/login/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -25,7 +32,7 @@ SECRET_KEY = '%%pumqcsr*kv+=gsd*!)d%$&#x5$qq6t^#-m-8kgb7cn%g0bau'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['jollofbot.herokuapp.com']
 
 
 # Application definition
@@ -37,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'jollof',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -73,11 +82,18 @@ WSGI_APPLICATION = 'jollofbot.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+ENV_TYPE = os.environ.get('ENV_TYPE')
+DB_DETAILS = None
+if ENV_TYPE == 'HEROKU':
+    DB_DETAILS = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+else:
+    DB_DETAILS = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+
+DATABASES = {
+    'default': DB_DETAILS
 }
 
 
@@ -105,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Lagos'
 
 USE_I18N = True
 
@@ -118,3 +134,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
