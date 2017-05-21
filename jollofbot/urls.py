@@ -15,7 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from jollof.views import *
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^messenger/buyer/?$', buyer_webhook),
+    url(r'^messenger/seller/?$', seller_webhook),
+
+    url(r'^messenger/buyer/subscribe/$', buyer_subscribe),
+    url(r'^messenger/seller/subscribe/$', seller_subscribe),
+
+    url(r'^messenger/buyer/prep/$', buyer_prep),
+    url(r'^messenger/seller/prep/$', seller_prep),
+
+    url(r'^$', show_landing),  # crop2cash.com/
 ]
