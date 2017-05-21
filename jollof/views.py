@@ -18,8 +18,8 @@ from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
-from jolllof.buy import * as buy
-from jolllof.sell import * as sell
+from jolllof.buy import *
+from jolllof.sell import *
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
@@ -44,7 +44,7 @@ def buyer_subscribe(request):
 
 @csrf_exempt
 def buyer_prep(request):
-    buy.get_started_button()
+    buy_get_started_button()
     # c2c_persistent_menu()
     return HttpResponse()
 
@@ -76,7 +76,7 @@ def seller_subscribe(request):
 
 @csrf_exempt
 def seller_prep(request):
-    sell.get_started_button()
+    sell_get_started_button()
     # c2c_persistent_menu()
     return HttpResponse()
 

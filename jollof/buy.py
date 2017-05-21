@@ -5,7 +5,7 @@ from pprint import pprint
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 
-def get_started_button():
+def buy_get_started_button():
     headers = {
         'Content-Type': 'application/json',
     }
