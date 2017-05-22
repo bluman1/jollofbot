@@ -5,37 +5,7 @@ from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-
-
-class UserManager(BaseUserManager):
-
-    def _create_user(self, username, email, password,
-                     is_superuser, **extra_fields):
-        """
-        Creates and saves a User with the given email and password.
-        """
-        now = timezone.now()
-        if not username:
-            raise ValueError('The given user name must be set')
-        if not email:
-            raise ValueError('The given email must be set')
-        username = username.strip()
-        email = self.normalize_email(email)
-        user = self.model(username=username,
-                          email=email, is_active=True,
-                          is_superuser=is_superuser, last_login=now,
-                          created=now,  **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_user(self, username, password=None, **extra_fields):
-        return self._create_user(username, email, password, False,
-                                 **extra_fields)
-
-    def create_superuser(self, username, email, password, **extra_fields):
-        return self._create_user(username, email, password, True,
-                                 **extra_fields)
+**extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -56,3 +26,42 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_('Designates whether this user should be treated as '
                                                 'active. Deselect this instead of deleting accounts.'))
+
+class Buyer(models.Model):
+    fbid = models.CharField(max_length=128, unique=True)
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    gender = models.IntegerField(default=1) # 1 male 2 female
+    phone_number = models.CharField(max_length=128)
+    longitude = models.FloatField(default=0.0)
+    latitude = models.FloatField(default=0.0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def get_gender(self):
+        if self.gender == 2:
+            return "Female"
+        return "Male"
+
+
+class Seller(models.Model):
+    fbid = models.CharField(max_length=128, unique=True)
+    company = models.CharField(max_length=128)
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    gender = models.IntegerField(default=1) # 1 male 2 female
+    phone_number = models.CharField(max_length=128)
+    longitude = models.FloatField(default=0.0)
+    latitude = models.FloatField(default=0.0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+class Order(models.Model):
+    code = models.CharField(max_length=128)
+    jollof_buyer = models.ForeignKey(Buyer)
+    jollof_seller = models.ForeignKey(Seller)
+    status = models.IntegerField(default=0)
+
+
+    
