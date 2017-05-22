@@ -7,25 +7,6 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 
-class XUser(AbstractBaseUser, PermissionsMixin):
-    """
-    A fully featured User model with admin-compliant permissions that uses
-    a full-length email field as the username.
-
-    Company name, Email and password are required. Other fields are optional.
-    """
-    username = models.CharField(
-        _('user name'), max_length=128, unique=True) # company username
-    email = models.EmailField(_('email address'), max_length=254, unique=True) # company email
-    first_name = models.CharField(_('first name'), max_length=30, blank=True) # 
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    state = models.CharField(
-        _('state'), max_length=100, blank=True)
-    bank_name = models.TextField(blank=True, null=True)
-    is_active = models.BooleanField(_('active'), default=True,
-                                    help_text=_('Designates whether this user should be treated as '
-                                                'active. Deselect this instead of deleting accounts.'))
-
 class Buyer(models.Model):
     fbid = models.CharField(max_length=128, unique=True)
     first_name = models.CharField(max_length=128)
