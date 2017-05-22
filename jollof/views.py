@@ -18,8 +18,8 @@ from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
-from jolllof.buy import *
-from jolllof.sell import *
+from jollof.buy import *
+from jollof.sell import *
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
