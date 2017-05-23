@@ -107,12 +107,15 @@ def buyer_webhook(request):
                         buyer = Buyer.objects.get(fbid=fbid)
                         current_state = buyer.current_state
                         if current_state == 'DEFAULT':
+                            print('Buyer in default state')
                             received_text = message['message']['text'].lower()
                             if received_text in random_greeting:
+                                print('Random greeting State: ' + current_state)
                                 msg = 'Hi {{user_first_name}}! Nothing is better than #NigerianJollof  🔥 🔥 🔥'
                                 text_message(fbid, msg)         
                                 return HttpResponse()
                             else:
+                                print('Not a random greeting. State: ' + current_state)
                                 if message['message']['text'].lower() == 'jollof':
                                     greet_buyer(fbid)
                                     return HttpResponse()
@@ -135,7 +138,13 @@ def buyer_webhook(request):
                                 alert_me(fbid, 'jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
+                            print('Not default  State: ' + current_state)
                             talk_to_jollof(fbid, received_text)
+                        else:
+                            alert_me(fbid, 'jollof buyer is sending a text we don\'t understand yet from an empty state. Text: ' + str(received_text) + '.')
+                            text_message(fbid, 'I am but the greatest jollof in the world.')
+                            buyer.current_state = 'DEFAULT'
+                            buyer.save()
                         return HttpResponse()
                     elif 'attachments' in message['message']:
                         print('Attachment Recieved')
