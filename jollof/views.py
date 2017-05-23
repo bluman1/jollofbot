@@ -111,8 +111,8 @@ def buyer_webhook(request):
                             print('Buyer in default state')
                             if received_text in random_greeting:
                                 print('Random greeting State: ' + current_state)
-                                msg = 'Hi {{user_first_name}}! Nothing is better than #NigerianJollof  🔥 🔥 🔥'
-                                msg = str(msg.encode('utf-8'))
+                                msg = 'Hi {{user_first_name}}! Nothing is better than #NigerianJollof !!!'
+                                # msg = str(msg.encode('utf-8'))
                                 text_message(fbid, msg)         
                                 return HttpResponse()
                             else:
@@ -132,8 +132,8 @@ def buyer_webhook(request):
                                 elif message['message']['text'].lower() == 'what can you do?':
                                     greet_buyer(fbid)
                                     return HttpResponse()
-                                msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life 😎'
-                                msg = str(msg.encode('utf-8'))
+                                msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
+                                # msg = str(msg.encode('utf-8'))
                                 text_message(fbid, msg)
                                 farmer.current_state = 'DEFAULT'
                                 farmer.save()
