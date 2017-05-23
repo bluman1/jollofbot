@@ -3,6 +3,8 @@ import requests
 import json
 from pprint import pprint
 
+from jollof.models import *
+
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 BLUMAN_ID = '1613123562073529'
 
