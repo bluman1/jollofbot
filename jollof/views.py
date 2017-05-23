@@ -139,20 +139,21 @@ def buyer_webhook(request):
                         return HttpResponse()
                     elif 'attachments' in message['message']:
                         print('Attachment Recieved')
-                        if attachment['type'] == 'location':
-                            print('Location Received')
-                            buyer = Buyer.objects.get(fbid=fbid)
-                            current_state = buyer.current_state
-                            print('loc, current_state: ' + current_state)
-                            location_title = attachment['title']
-                            location_url = attachment['url']
-                            location_lat = attachment['payload']['coordinates']['lat'] # This is a float, not a str
-                            location_long = attachment['payload']['coordinates']['long'] # This is a float, not a str
-                            try:
-                                buyer_payloads[current_state](fbid, current_state, location_title, location_url, location_lat, location_long)
-                            except Exception as e:
-                                print('Exception\n' + str(e))
-                                alert_me(fbid, 'Failed to get location.')
+                        for attachment in message['message']['attachments']:
+                            if attachment['type'] == 'location':
+                                print('Location Received')
+                                buyer = Buyer.objects.get(fbid=fbid)
+                                current_state = buyer.current_state
+                                print('loc, current_state: ' + current_state)
+                                location_title = attachment['title']
+                                location_url = attachment['url']
+                                location_lat = attachment['payload']['coordinates']['lat'] # This is a float, not a str
+                                location_long = attachment['payload']['coordinates']['long'] # This is a float, not a str
+                                try:
+                                    buyer_payloads[current_state](fbid, current_state, location_title, location_url, location_lat, location_long)
+                                except Exception as e:
+                                    print('Exception\n' + str(e))
+                                    alert_me(fbid, 'Failed to get location.')
                         return HttpResponse()
                 elif 'postback' in message:
                     payload = message['postback']['payload']
