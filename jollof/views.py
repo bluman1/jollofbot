@@ -106,9 +106,9 @@ def buyer_webhook(request):
                         random_greeting = ['hello', 'hi', 'hey', 'what\'s up?', 'what\'s up', 'wasap']
                         buyer = Buyer.objects.get(fbid=fbid)
                         current_state = buyer.current_state
+                        received_text = message['message']['text'].lower()
                         if current_state == 'DEFAULT':
                             print('Buyer in default state')
-                            received_text = message['message']['text'].lower()
                             if received_text in random_greeting:
                                 print('Random greeting State: ' + current_state)
                                 msg = 'Hi {{user_first_name}}! Nothing is better than #NigerianJollof  🔥 🔥 🔥'
