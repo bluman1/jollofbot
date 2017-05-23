@@ -17,6 +17,7 @@ class Buyer(models.Model):
     latitude = models.FloatField(default=0.0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    current_state = models.CharField(max_length=128, default='DEFAULT')
 
     def get_gender(self):
         if self.gender == 2:
@@ -35,6 +36,7 @@ class Seller(models.Model):
     latitude = models.FloatField(default=0.0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    current_state = models.CharField(max_length=128, default='DEFAULT')
 
 
 class Order(models.Model):
