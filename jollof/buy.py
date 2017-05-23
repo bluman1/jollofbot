@@ -4,7 +4,7 @@ import json
 from pprint import pprint
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
-BLUMAN_ID = ''
+BLUMAN_ID = '1613123562073529'
 
 def buy_get_started_button():
     headers = {
