@@ -50,7 +50,7 @@ def buyer_prep(request):
     return HttpResponse()
 
 buyer_payloads = {
-    'CANCELLED': cancel-action,
+    'CANCELLED': cancel_action,
     'GET_LOCATION': get_buyer_location,
     'TALK_TO_JOLLOF': talk_to_jollof,
 
@@ -101,7 +101,7 @@ def buyer_webhook(request):
                             buyer.save()
                             alert_me(fbid, 'Couldn\'t find the next state for the current_state. QR received.')
                         return HttpResponse()
-                    elif 'text': in message['message']:
+                    elif 'text' in message['message']:
                         print('Text Message Recieved')
                         random_greeting = ['hello', 'hi', 'hey', 'what\'s up?', 'what\'s up', 'wasap']
                         buyer = Buyer.objects.get(fbid=fbid)
