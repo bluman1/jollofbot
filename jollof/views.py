@@ -185,6 +185,17 @@ def buyer_webhook(request):
                                 alert_me(fbid, 'Postback recieved from default state but no next state.')
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()
+                        else:
+                            if payload in ['GET_LOCATION', 'TALK_TO_JOLLOF']:
+                                try:
+                                    buyer_payloads[payload](fbid, payload)
+                                except Exception as e:
+                                    print(str(e))
+                                    alert_me(fbid, 'Postback recieved from ' + current_state + ' tried to do basic function.')
+                                    buyer.current_state = 'DEFAULT'
+                                    buyer.save()
+                            else:
+                                pass
                         return HttpResponse()
 
 
