@@ -165,6 +165,8 @@ def buyer_webhook(request):
                                 except Exception as e:
                                     print('Exception\n' + str(e))
                                     alert_me(fbid, 'Failed to get location.')
+                                    buyer.current_state = 'DEFAULT'
+                                    buyer.save()
                         return HttpResponse()
                 elif 'postback' in message:
                     payload = message['postback']['payload']
@@ -181,6 +183,8 @@ def buyer_webhook(request):
                             except Exception as e:
                                 print(str(e))
                                 alert_me(fbid, 'Postback recieved from default state but no next state.')
+                                buyer.current_state = 'DEFAULT'
+                                buyer.save()
                         return HttpResponse()
 
 

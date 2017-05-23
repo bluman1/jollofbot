@@ -156,7 +156,6 @@ def get_buyer_location(fbid, payload, location_title=None, location_url=None, lo
         buyer.longitude = float(location_long)
         buyer.latitude = float(location_lat)
         print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
-        print('Lat: ' + str(float(farmer.pickup_latitude)) + ' Long: ' + str(float(farmer.pickup_longitude)))
         buyer.current_state = 'DEFAULT'
         buyer.save()       
         text_message(fbid, 'you are at ' + str(location_title) + '.')
