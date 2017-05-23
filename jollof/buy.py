@@ -154,7 +154,7 @@ def get_buyer_location(fbid, payload, location_title=None, location_url=None, lo
         # save location_lat and location_long
         buyer = Buyer.objects.get(fbid=fbid)
         buyer.longitude = float(location_long)
-        buyyer.latitude = float(location_lat)
+        buyer.latitude = float(location_lat)
         print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
         print('Lat: ' + str(float(farmer.pickup_latitude)) + ' Long: ' + str(float(farmer.pickup_longitude)))
         buyer.current_state = 'DEFAULT'
