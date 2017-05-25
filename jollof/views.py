@@ -51,9 +51,9 @@ def buyer_prep(request):
     return HttpResponse()
 
 buyer_payloads = {
-    'CANCELLED': buy.cancel_action,
-    'GET_LOCATION': buy.get_buyer_location,
-    'TALK_TO_JOLLOF': buy.talk_to_jollof,
+    'CANCELLED': Buy.cancel_action,
+    'GET_LOCATION': Buy.get_buyer_location,
+    'TALK_TO_JOLLOF': Buy.talk_to_jollof,
 
 }
 
