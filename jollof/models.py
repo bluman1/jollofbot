@@ -27,7 +27,7 @@ class Buyer(models.Model):
 
 class Seller(models.Model):
     fbid = models.CharField(max_length=128, unique=True)
-    company = models.CharField(max_length=128)
+    restaurant = models.CharField(max_length=128, default='')
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     gender = models.IntegerField(default=1) # 1 male 2 female
@@ -39,10 +39,19 @@ class Seller(models.Model):
     current_state = models.CharField(max_length=128, default='DEFAULT')
 
 
+class Jollof(models.Model):
+    seller = models.ForeignKey(Seller)
+    price = models.FloatField(default=0.0)
+    description = models.CharField(max_length=80)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
 class Order(models.Model):
     code = models.CharField(max_length=128)
     jollof_buyer = models.ForeignKey(Buyer)
     jollof_seller = models.ForeignKey(Seller)
+    jollof = models.ForeignKey(Jollof, default=1)
     status = models.IntegerField(default=0)
 
 
