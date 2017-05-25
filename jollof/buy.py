@@ -6,7 +6,7 @@ from pprint import pprint
 from jollof.models import *
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
-BLUMAN_ID = '1613123562073529'
+BLUMAN_ID = os.environ.get('BLUMAN_ID')
 
 def buy_get_started_button():
     headers = {
