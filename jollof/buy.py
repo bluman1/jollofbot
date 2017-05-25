@@ -8,11 +8,11 @@ from jollof.models import *
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 BLUMAN_ID = os.environ.get('BLUMAN_ID')
-
+NEAREST_KM = 1
 
 def get_distance(coords1, coords2):
-    # coords_1 = (52.2296756, 21.0122287)
-    # coords_2 = (52.406374, 16.9251681)
+    # coords_1 = (52.2296756, 21.0122287) lat,long
+    # coords_2 = (52.406374, 16.9251681) lat,long
     return geopy.distance.vincenty(coords1, coords2).km
 
 
@@ -166,10 +166,24 @@ def get_buyer_location(fbid, payload, location_title=None, location_url=None, lo
         print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
         buyer.current_state = 'DEFAULT'
         buyer.save()       
-        text_message(fbid, 'you are at ' + str(location_title) + '.')
+        text_message(fbid, 'You are at ' + str(location_title) + '.')
         text_message(fbid, 'Searching for nearby Jollof!')
         # Pass lat and long to function that will retrieve nearest sellers
-        text_message(fbid, 'I do not know how to search yet. My creator is currently teaching me.')
+        sellers = Seller.objects.all()
+        if sellers.count() < 1:
+            text_message(fbid, 'I am working very hard to find the best places for you to find Jollof. I will let you know when you can find them, thank you.')
+        else:
+            places_found = False
+            for seller in sellers:
+                if seller.longitude != 0.0 and seller.latitude != 0.0:
+                    distance = get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
+                    if distance <= NEAREST_KM:
+                        places_found = True
+                        # gather restaurant location here and build generic template.
+            if places_found:
+                text_message(fbid, 'I can smell jollof near you! But I can not show them now :(')
+            else:
+                text_message(fbid, 'I cannot smell jollof near you :(') # Ask to increase search radius
         return
     request_location(fbid)
     buyer = Buyer.objects.get(fbid=fbid)
