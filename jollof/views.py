@@ -50,10 +50,11 @@ def buyer_prep(request):
     buy.get_started_button()
     return HttpResponse()
 
+buy_payload = Buy()
 buyer_payloads = {
-    'CANCELLED': Buy.cancel_action,
-    'GET_LOCATION': Buy.get_buyer_location,
-    'TALK_TO_JOLLOF': Buy.talk_to_jollof,
+    'CANCELLED': buy_payload.cancel_action,
+    'GET_LOCATION': buy_payload.get_buyer_location,
+    'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
 
 }
 
