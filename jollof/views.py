@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from jollof.models import *
-from jollof.buy import *
+from jollof.buy import Buy
 from jollof.buy_states import *
 from jollof.sell import *
 
@@ -46,13 +46,14 @@ def buyer_subscribe(request):
 
 @csrf_exempt
 def buyer_prep(request):
-    buy_get_started_button()
+    buy = Buy()
+    buy.get_started_button()
     return HttpResponse()
 
 buyer_payloads = {
-    'CANCELLED': cancel_action,
-    'GET_LOCATION': get_buyer_location,
-    'TALK_TO_JOLLOF': talk_to_jollof,
+    'CANCELLED': buy.cancel_action,
+    'GET_LOCATION': buy.get_buyer_location,
+    'TALK_TO_JOLLOF': buy.talk_to_jollof,
 
 }
 
@@ -64,6 +65,7 @@ def buyer_webhook(request):
         else:
             return HttpResponse('Error, invalid token')
     elif request.method == 'POST':
+        buy = Buy()
         # Converts the text payload into a python dictionary
         incoming_message = json.loads(request.body.decode('utf-8'))
         # Facebook recommends going through every entry since they might send
@@ -93,13 +95,13 @@ def buyer_webhook(request):
                                 buyer_payloads[current_state](fbid, qr_payload)
                             except Exception as e:
                                 print(str(e))
-                                alert_me(fbid, 'Lost state for QR. Current status: ' + current_state + '. QR: ' + qr_payload)
+                                buy.alert_me(fbid, 'Lost state for QR. Current status: ' + current_state + '. QR: ' + qr_payload)
                         else:
                             msg = 'I didn\'t quite get that, {{user_first_name}}. Say Jollof!'
-                            text_message(fbid, msg)
+                            buy.text_message(fbid, msg)
                             buyer.current_state = 'DEFAULT'
                             buyer.save()
-                            alert_me(fbid, 'Couldn\'t find the next state for the current_state. QR received.')
+                            buy.alert_me(fbid, 'Couldn\'t find the next state for the current_state. QR received.')
                         return HttpResponse()
                     elif 'text' in message['message']:
                         print('Text Message Recieved')
@@ -113,38 +115,38 @@ def buyer_webhook(request):
                                 print('Random greeting State: ' + current_state)
                                 msg = 'Hi {{user_first_name}}! Nothing is better than #NigerianJollof !!!'
                                 # msg = str(msg.encode('utf-8'))
-                                text_message(fbid, msg)         
+                                buy.text_message(fbid, msg)         
                                 return HttpResponse()
                             else:
                                 print('Not a random greeting. State: ' + current_state)
                                 if message['message']['text'].lower() == 'jollof':
-                                    greet_buyer(fbid)
+                                    buy.greet_buyer(fbid)
                                     return HttpResponse()
                                 elif  message['message']['text'].lower() == 'jollof!':
-                                    greet_buyer(fbid)
+                                    buy.greet_buyer(fbid)
                                     return HttpResponse()
                                 elif message['message']['text'].lower() == 'help':
-                                    greet_buyer(fbid)
+                                    buy.greet_buyer(fbid)
                                     return HttpResponse()
                                 elif message['message']['text'].lower() == 'what can you do':
-                                    greet_buyer(fbid)
+                                    buy.greet_buyer(fbid)
                                     return HttpResponse()
                                 elif message['message']['text'].lower() == 'what can you do?':
-                                    greet_buyer(fbid)
+                                    buy.greet_buyer(fbid)
                                     return HttpResponse()
                                 msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
                                 # msg = str(msg.encode('utf-8'))
-                                text_message(fbid, msg)
-                                farmer.current_state = 'DEFAULT'
-                                farmer.save()
-                                alert_me(fbid, 'jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
+                                buy.text_message(fbid, msg)
+                                buyer.current_state = 'DEFAULT'
+                                buyer.save()
+                                buy.alert_me(fbid, 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
                             print('Not default  State: ' + current_state)
-                            talk_to_jollof(fbid, received_text)
+                            buy.talk_to_jollof(fbid, received_text)
                         else:
-                            alert_me(fbid, 'jollof buyer is sending a text we don\'t understand yet from an empty state. Text: ' + str(received_text) + '.')
-                            text_message(fbid, 'I am but the greatest jollof in the world.')
+                            buy.alert_me(fbid, 'jollof buyer is sending a text we don\'t understand yet from an empty state. Text: ' + str(received_text) + '.')
+                            buy.text_message(fbid, 'I am but the greatest jollof in the world.')
                             buyer.current_state = 'DEFAULT'
                             buyer.save()
                         return HttpResponse()
@@ -164,7 +166,7 @@ def buyer_webhook(request):
                                     buyer_payloads[current_state](fbid, current_state, location_title, location_url, location_lat, location_long)
                                 except Exception as e:
                                     print('Exception\n' + str(e))
-                                    alert_me(fbid, 'Failed to get location.')
+                                    buy.alert_me(fbid, 'Failed to get location.')
                                     buyer.current_state = 'DEFAULT'
                                     buyer.save()
                         return HttpResponse()
@@ -173,7 +175,7 @@ def buyer_webhook(request):
                     if payload == 'GET_STARTED':
                         buyer.current_state = 'DEFAULT'
                         buyer.save()
-                        greet_buyer(fbid)
+                        buy.greet_buyer(fbid)
                         return HttpResponse()
                     else:
                         current_state = buyer.current_state
@@ -182,7 +184,7 @@ def buyer_webhook(request):
                                 buyer_payloads[payload](fbid, payload)
                             except Exception as e:
                                 print(str(e))
-                                alert_me(fbid, 'Postback recieved from default state but no next state.')
+                                buy.alert_me(fbid, 'Postback recieved from default state but no next state.')
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()
                         else:
@@ -191,7 +193,7 @@ def buyer_webhook(request):
                                     buyer_payloads[payload](fbid, payload)
                                 except Exception as e:
                                     print(str(e))
-                                    alert_me(fbid, 'Postback recieved from ' + current_state + ' tried to do basic function.')
+                                    buy.alert_me(fbid, 'Postback recieved from ' + current_state + ' tried to do basic function.')
                                     buyer.current_state = 'DEFAULT'
                                     buyer.save()
                             else:
