@@ -1,12 +1,20 @@
 import os
 import requests
 import json
+import geopy.distance
 from pprint import pprint
 
 from jollof.models import *
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 BLUMAN_ID = os.environ.get('BLUMAN_ID')
+
+
+def get_distance(coords1, coords2):
+    # coords_1 = (52.2296756, 21.0122287)
+    # coords_2 = (52.406374, 16.9251681)
+    return geopy.distance.vincenty(coords1, coords2).km
+
 
 def buy_get_started_button():
     headers = {
