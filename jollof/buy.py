@@ -89,7 +89,7 @@ class Buy():
 
     def greet_buyer(self, fbid):
         msg = 'Hi {{user_first_name}}, I am JollofBot. I can help you find the nearest place where you can buy #NigerianJollof. You can either have it delivered to you right where you are or get directions to the best Jollof you\'ll ever have!'
-        text_message(fbid, msg)
+        self.text_message(fbid, msg)
         headers = {
             'Content-Type': 'application/json',
         }

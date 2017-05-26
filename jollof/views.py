@@ -182,8 +182,6 @@ def buyer_webhook(request):
                         current_state = buyer.current_state
                         if current_state == 'DEFAULT':
                             try:
-                                print(str(buyer_payloads[payload]))
-                                print(type(buyer_payloads[payload]))
                                 buyer_payloads[payload](fbid, payload)
                             except Exception as e:
                                 print(str(e))
