@@ -21,7 +21,7 @@ from rest_framework import status
 from jollof.models import *
 from jollof.buy import Buy
 from jollof.buy_states import *
-from jollof.sell import *
+from jollof.sell import Sell
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
@@ -217,8 +217,9 @@ def seller_subscribe(request):
 
 @csrf_exempt
 def seller_prep(request):
-    sell_get_started_button()
-    # c2c_persistent_menu()
+    sell = Sell()
+    sell.get_started_button()
+    sell.persistent_menu()
     return HttpResponse()
 
 
@@ -230,5 +231,7 @@ def seller_webhook(request):
         else:
             return HttpResponse('Error, invalid token')
     elif request.method == 'POST':
+        sell = Sell()
         # Converts the text payload into a python dictionary
         incoming_message = json.loads(request.body.decode('utf-8'))
+        return HttpResponse()
