@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 from django.utils import timezone
@@ -53,6 +55,8 @@ class Order(models.Model):
     jollof_seller = models.ForeignKey(Seller)
     jollof = models.ForeignKey(Jollof, default=1)
     status = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 class JollofCode(models.Model):
