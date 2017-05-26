@@ -55,4 +55,9 @@ class Order(models.Model):
     status = models.IntegerField(default=0)
 
 
-    
+class JollofCode(models.Model):
+    code = models.CharField(max_length=6)
+    seller = models.ForeignKey(Seller)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
