@@ -81,7 +81,7 @@ def buyer_webhook(request):
                 try:
                     buyer = Buyer.objects.get(fbid=fbid)
                 except:
-                    user_details = get_user_details(fbid)
+                    user_details = buyer.get_user_details(fbid)
                     buyer = Buyer(fbid=fbid, first_name=user_details['first_name'], last_name=user_details['last_name'])
                     buyer.save()
                 if 'message' in message:
