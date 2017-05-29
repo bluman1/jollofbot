@@ -39,6 +39,10 @@ class Seller(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     current_state = models.CharField(max_length=128, default='DEFAULT')
+    opening_hour = models.IntegerField(default=0)
+    closing_hour = models.IntegerField(default=1)
+    start_day = models.IntegerField(default=1) # Monday
+    end_day = models.IntegerField(default=7) # Sunday
 
 
 class Jollof(models.Model):
@@ -49,7 +53,7 @@ class Jollof(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
-class Order(models.Model):
+class JollofOrder(models.Model):
     code = models.CharField(max_length=128)
     jollof_buyer = models.ForeignKey(Buyer)
     jollof_seller = models.ForeignKey(Seller)
@@ -65,3 +69,21 @@ class JollofCode(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+
+class Delicacy(models.Model):
+    seller = models.ForeignKey(Seller)
+    price = models.FloatField(default=0.0)
+    description = models.CharField(max_length=80)
+    available = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+class DelicacyOrder(models.Model):
+    code = models.CharField(max_length=128)
+    delicacy_buyer = models.ForeignKey(Buyer)
+    delicacy_seller = models.ForeignKey(Seller)
+    delicacy = models.ForeignKey(Delicacy)
+    status = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
