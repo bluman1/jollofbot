@@ -53,7 +53,8 @@ def buyer_prep(request):
 buy_payload = Buy()
 buyer_payloads = {
     'CANCELLED': buy_payload.cancel_action,
-    'GET_LOCATION': buy_payload.get_buyer_location,
+    'GET_LOCATION_JOLLOF': buy_payload.get_jollof_location,
+    'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
 
 }
@@ -189,7 +190,7 @@ def buyer_webhook(request):
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()
                         else:
-                            if payload in ['GET_LOCATION', 'TALK_TO_JOLLOF']:
+                            if payload in ['GET_LOCATION_JOLLOF', 'GET_LOCATION_DELICACY', 'TALK_TO_JOLLOF']:
                                 try:
                                     buyer_payloads[payload](fbid, payload)
                                 except Exception as e:

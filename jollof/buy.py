@@ -112,13 +112,13 @@ class Buy():
                 "buttons":[
                 {
                     "type":"postback",
-                    "title":"Find me Jollof!",
-                    "payload":"GET_LOCATION"
+                    "title":"I want Jollof!",
+                    "payload":"GET_LOCATION_JOLLOF"
                 },
                 {
                     "type":"postback",
-                    "title":"Find me more Jollof!!",
-                    "payload":"GET_LOCATION"
+                    "title":"Find me other delicacies!",
+                    "payload":"GET_LOCATION_DELICACY"
                 },
                 {
                     "type":"postback",
@@ -161,7 +161,7 @@ class Buy():
         print(response.json())
 
 
-    def get_buyer_location(self, fbid, payload, location_title=None, location_url=None, location_lat=None, location_long=None):
+    def get_jollof_location(self, fbid, payload, location_title=None, location_url=None, location_lat=None, location_long=None):
         if payload == 'CANCELLED':
             self.cancel_action(fbid, payload)
             return
@@ -194,7 +194,44 @@ class Buy():
             return
         self.request_location(fbid)
         buyer = Buyer.objects.get(fbid=fbid)
-        buyer.current_state = 'GET_LOCATION'
+        buyer.current_state = 'GET_LOCATION_JOLLOF'
+        buyer.save()
+
+
+    def get_delicacy_location(self, fbid, payload, location_title=None, location_url=None, location_lat=None, location_long=None):
+        if payload == 'CANCELLED':
+            self.cancel_action(fbid, payload)
+            return
+        elif location_lat:
+            # save location_lat and location_long
+            buyer = Buyer.objects.get(fbid=fbid)
+            buyer.longitude = float(location_long)
+            buyer.latitude = float(location_lat)
+            print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
+            buyer.current_state = 'DEFAULT'
+            buyer.save()       
+            self.text_message(fbid, 'You are at ' + str(location_title) + '.')
+            self.text_message(fbid, 'Searching for nearby delicacies!')
+            # Pass lat and long to function that will retrieve nearest sellers
+            sellers = Seller.objects.all()
+            if sellers.count() < 1:
+                self.text_message(fbid, 'I am working very hard to find the best places for you to find awesome delicacies. I will let you know when you can find them, thank you.')
+            else:
+                places_found = False
+                for seller in sellers:
+                    if seller.longitude != 0.0 and seller.latitude != 0.0:
+                        distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
+                        if distance <= self.NEAREST_KM:
+                            places_found = True
+                            # gather restaurant location here and build generic template.
+                if places_found:
+                    self.text_message(fbid, 'I can smell some nice delicacies near you, but I can\'t show them now :(')
+                else:
+                    self.text_message(fbid, 'I cannot smell delicacies near you :(') # Ask to increase search radius
+            return
+        self.request_location(fbid)
+        buyer = Buyer.objects.get(fbid=fbid)
+        buyer.current_state = 'GET_LOCATION_DELICACY'
         buyer.save()
 
 
