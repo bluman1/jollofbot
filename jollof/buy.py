@@ -108,7 +108,7 @@ class Buy():
             "type":"template",
             "payload":{
                 "template_type":"button",
-                "text":"What do you want to do, FIRST_NAME?",
+                "text":"What would you like, FIRST_NAME?",
                 "buttons":[
                 {
                     "type":"postback",
