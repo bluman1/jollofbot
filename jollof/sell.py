@@ -6,11 +6,12 @@ from pprint import pprint
 
 from jollof.models import *
 
-SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
-BLUMAN_ID = os.environ.get('BLUMAN_ID')
-NEAREST_KM = 1
 
 class Sell():
+
+    SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
+    BLUMAN_ID = os.environ.get('BLUMAN_ID')
+    NEAREST_KM = 1
 
     def __init__(self):
         pass
@@ -21,7 +22,7 @@ class Sell():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', SELLER_ACCESS_TOKEN),
+            ('access_token', self.SELLER_ACCESS_TOKEN),
         )
         data = '{"get_started":{"payload":"GET_STARTED"}}'
         response = requests.post('https://graph.facebook.com/v2.6/me/messenger_profile',
@@ -34,7 +35,7 @@ class Sell():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', SELLER_ACCESS_TOKEN),
+            ('access_token', self.SELLER_ACCESS_TOKEN),
         )
         data = """{
             "persistent_menu":[
@@ -117,7 +118,7 @@ class Sell():
 
     def get_user_details(self, fbid):
         user_details_url = "https://graph.facebook.com/v2.6/%s"%fbid
-        user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':SELLER_ACCESS_TOKEN}
+        user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':self.SELLER_ACCESS_TOKEN}
         user_details = requests.get(user_details_url, user_details_params).json()
         return user_details
     
@@ -131,7 +132,7 @@ class Sell():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', SELLER_ACCESS_TOKEN),
+            ('access_token', self.SELLER_ACCESS_TOKEN),
         )
         data = '{"recipient": {"id": "'+str(fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
         pprint(str(data))

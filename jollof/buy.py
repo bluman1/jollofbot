@@ -6,10 +6,13 @@ from pprint import pprint
 
 from jollof.models import *
 
-BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
-BLUMAN_ID = os.environ.get('BLUMAN_ID')
-NEAREST_KM = 1
+
 class Buy():
+
+    BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
+    BLUMAN_ID = os.environ.get('BLUMAN_ID')
+    NEAREST_KM = 1
+    
     def __init__(self):
         pass
 
@@ -25,7 +28,7 @@ class Buy():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', BUYER_ACCESS_TOKEN),
+            ('access_token', self.BUYER_ACCESS_TOKEN),
         )
         data = '{"get_started":{"payload":"GET_STARTED"}}'
         response = requests.post('https://graph.facebook.com/v2.6/me/messenger_profile',
@@ -35,13 +38,13 @@ class Buy():
 
     def get_user_details(self, fbid):
         user_details_url = "https://graph.facebook.com/v2.6/%s"%fbid
-        user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':BUYER_ACCESS_TOKEN}
+        user_details_params = {'fields':'first_name,last_name,profile_pic', 'access_token':self.BUYER_ACCESS_TOKEN}
         user_details = requests.get(user_details_url, user_details_params).json()
         return user_details
 
 
     def alert_me(self, fbid, alert_type):
-        my_fbid = BLUMAN_ID
+        my_fbid = self.BLUMAN_ID
         if alert_type == 1:
             buyer = Buyer.objects.get(fbid=fbid)
 
@@ -50,7 +53,7 @@ class Buy():
                 'Content-Type': 'application/json',
             }
             params = (
-                ('access_token', BUYER_ACCESS_TOKEN),
+                ('access_token', self.BUYER_ACCESS_TOKEN),
             )
             data = '{"recipient": {"id": "'+str(my_fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
             pprint(str(data))
@@ -62,7 +65,7 @@ class Buy():
                 'Content-Type': 'application/json',
             }
             params = (
-                ('access_token', BUYER_ACCESS_TOKEN),
+                ('access_token', self.BUYER_ACCESS_TOKEN),
             )
             data = '{"recipient": {"id": "'+str(my_fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
             pprint(str(data))
@@ -79,7 +82,7 @@ class Buy():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', BUYER_ACCESS_TOKEN),
+            ('access_token', self.BUYER_ACCESS_TOKEN),
         )
         data = '{"recipient": {"id": "'+str(fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
         pprint(str(data))
@@ -94,7 +97,7 @@ class Buy():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', BUYER_ACCESS_TOKEN),
+            ('access_token', self.BUYER_ACCESS_TOKEN),
         )
         data = '''{
         "recipient":{
@@ -150,7 +153,7 @@ class Buy():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', BUYER_ACCESS_TOKEN),
+            ('access_token', self.BUYER_ACCESS_TOKEN),
         )
         data = '{"recipient":{"id":"' + str(fbid) + '"},"message":{"text":"Please share your location with me.","quick_replies":[{"content_type":"location"},{"content_type":"text","title":"Cancel","payload":"CANCELLED"}]}}'
         pprint(data)
@@ -181,7 +184,7 @@ class Buy():
                 for seller in sellers:
                     if seller.longitude != 0.0 and seller.latitude != 0.0:
                         distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
-                        if distance <= NEAREST_KM:
+                        if distance <= self.NEAREST_KM:
                             places_found = True
                             # gather restaurant location here and build generic template.
                 if places_found:
