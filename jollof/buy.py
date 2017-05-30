@@ -117,7 +117,7 @@ class Buy():
                 },
                 {
                     "type":"postback",
-                    "title":"Find me other delicacies!",
+                    "title":"Nigerian delicacies!",
                     "payload":"GET_LOCATION_DELICACY"
                 },
                 {
