@@ -56,6 +56,7 @@ buyer_payloads = {
     'GET_LOCATION_JOLLOF': buy_payload.get_jollof_location,
     'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
+    'ORDER_JOLLOF': buy_payload.order_jollof,
 
 }
 
@@ -115,7 +116,7 @@ def buyer_webhook(request):
                             print('Buyer in default state')
                             if received_text in random_greeting:
                                 print('Random greeting State: ' + current_state)
-                                msg = 'Hi {{user_first_name}}! Nothing is better than #NigerianJollof !!!'
+                                msg = 'Hi {{user_first_name}}! Nothing is better than Nigerian Jollof! Say Jollof! anytime to know what I can do :D'
                                 # msg = str(msg.encode('utf-8'))
                                 buy.text_message(fbid, msg)         
                                 return HttpResponse()
@@ -199,8 +200,46 @@ def buyer_webhook(request):
                                     buyer.current_state = 'DEFAULT'
                                     buyer.save()
                             else:
-                                pass
-                        return HttpResponse()
+                                temp_payload = payload
+                                generic_payloads = ['ORDER_JOLLOF']
+                                for generic in generic_payloads:
+                                    if generic in payload:
+                                        payload = generic
+                                        next_state_status = is_buyer_next_state(current_state, payload)
+                                        if next_state_status:
+                                            try:
+                                                buyer_payloads[current_state](fbid, temp_payload)
+                                                return HttpResponse()
+                                            except Exception as e:
+                                                buyer.current_state = 'DEFAULT'
+                                                buyer.save()
+                                                print('Exception\n' + str(e))
+                                                alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
+                                            return HttpResponse()
+                                        else:
+                                            msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
+                                            text_message(fbid, msg)
+                                            buyer.current_state = 'DEFAULT'
+                                            buyer.save()
+                                            alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                            return HttpResponse()
+                                next_state_status = is_buyer_next_state(current_state, payload)
+                                if next_state_status:
+                                    # perform function for next state == payload
+                                    try:
+                                        buyer_payloads[payload](fbid, payload) # this function is in charge of setting the new state.
+                                    except Exception as e:
+                                        print('Exception\n' + str(e))
+                                        alert_me(fbid, 'Can not find the current_state in other payload: ' + current_state + '. payload: ' + payload)
+                                    return HttpResponse()
+                                else:
+                                    msg = 'Sorry, {{user_first_name}}. Please try saying jollof!'
+                                    text_message(fbid, msg)
+                                    buyer.current_state = 'DEFAULT'
+                                    buyer.save()
+                                    alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
+                                    return HttpResponse()
+                            return HttpResponse()
 
 
 

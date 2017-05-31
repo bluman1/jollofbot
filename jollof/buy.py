@@ -1,6 +1,8 @@
 import os
 import requests
 import json
+import random
+import string
 import geopy.distance
 from pprint import pprint
 
@@ -21,6 +23,14 @@ class Buy():
         # coords_1 = (52.2296756, 21.0122287) lat,long
         # coords_2 = (52.406374, 16.9251681) lat,long
         return geopy.distance.vincenty(coords1, coords2).km
+
+    
+    def generate_order_code(self):
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(6))
+    
+
+    def generate_jollof_code(self):
+        return 'JOLLOF-' ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
 
 
     def get_started_button(self):
@@ -180,6 +190,9 @@ class Buy():
             if sellers.count() < 1:
                 self.text_message(fbid, 'I am working very hard to find the best places for you to find Jollof. I will let you know when you can find them, thank you.')
             else:
+                generic_sellers = '{"recipient":{"id":"'+str(fbid)+'"},"message":{"attachment":{"type":"template","payload":{"template_type":"generic","elements":['
+                generic_ending = ']}}}}'
+                generic_elements = ''
                 places_found = False
                 for seller in sellers:
                     if seller.longitude != 0.0 and seller.latitude != 0.0:
@@ -187,8 +200,32 @@ class Buy():
                         if distance <= self.NEAREST_KM:
                             places_found = True
                             # gather restaurant location here and build generic template.
+                            seller_jollof = Jollof.objects.get(seller=seller.pk)
+                            if seller_jollof.count() < 1:
+                                continue
+                            seller_jollof = seller_jollof[0]
+                            imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
+                            print('Random Imgur Link: ' + imgur_link)
+                            generic_title = seller.restaurant + ' jollof at N' + seller_jollof.price
+                            generic_subtitle = seller_jollof.description
+                            generic_payload = 'ORDER_JOLLOF_' + seller_jollof.pk
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"http://jollofbot.tk","title":"Get Directions"}]},'
+                            #TODO: get gmaps link for directions, retrieve restaurants logo from url                       
                 if places_found:
                     self.text_message(fbid, 'I can smell jollof near you! But I can not show them now :(')
+                    #Remove trailing comma
+                    generic_elements = generic_elements[:-1]
+                    if len(generic_elements) > 0:
+                        generic_message = generic_sellers + generic_elements + generic_ending
+                        print('Generic message: ' + generic_message)
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        params = (
+                            ('access_token', self.BUYER_ACCESS_TOKEN),
+                        )
+                        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
+                        print(response.json())
                 else:
                     self.text_message(fbid, 'I cannot smell jollof near you :(') # Ask to increase search radius
             return
@@ -250,3 +287,17 @@ class Buy():
         buyer.current_state = 'DEFAULT'
         buyer.save()
         return
+    
+
+    def order_jollof(self, fbid, payload):
+        if 'ORDER_JOLLOF' in payload:
+            jollof_id = int(payload[13:])
+            jollof = Jollof.objects.get(pk=jollof_id)
+            seller = Seller.objects.get(pk=int(jollof.seller.pk))
+            # Place order for jollof here and notify the seller. 
+            order_code = self.generate_order_code()
+            # Buyer can cancel anytime before the order is accepted.
+            buyer = Buyer.objects.get(fbid=fbid)
+            buyer.current_state = 'DEFAULT'
+            buyer.save()
+            
