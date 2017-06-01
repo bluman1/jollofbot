@@ -294,10 +294,21 @@ class Buy():
             jollof_id = int(payload[13:])
             jollof = Jollof.objects.get(pk=jollof_id)
             seller = Seller.objects.get(pk=int(jollof.seller.pk))
-            # Place order for jollof here and notify the seller. 
+            buyer = Buyer.objects.get(fbid=fbid)
+            # Place order for jollof here  
             order_code = self.generate_order_code()
+            jollof_order = JollofOrder(code=order_code, jollof_buyer=buyer, jollof_seller=seller, jollof=jollof)
+            jollof_order.save()
+            # and notify the seller.
+
             # Buyer can cancel anytime before the order is accepted.
+            msg = 'Great {{user_first_name}}, I have ordered the irrestible N'+str(jollof.price)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+            self.text_message(fbid, msg)
+            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order. You can also send status to track your meal\'s status.'
+            self.text_message(fbid, msg)
+            #Alert me of the order made here.
             buyer = Buyer.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
+            buyer.has_order = True
             buyer.save()
             

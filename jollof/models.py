@@ -20,6 +20,7 @@ class Buyer(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     current_state = models.CharField(max_length=128, default='DEFAULT')
+    has_order = models.BooleanField(default=False)
 
     def get_gender(self):
         if self.gender == 2:
@@ -58,7 +59,7 @@ class JollofOrder(models.Model):
     jollof_buyer = models.ForeignKey(Buyer)
     jollof_seller = models.ForeignKey(Seller)
     jollof = models.ForeignKey(Jollof, default=1)
-    status = models.IntegerField(default=0)
+    status = models.IntegerField(default=0) #0=pending, 1=accepted, 2=rejected, 3=cancelled, 4=delivered
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
