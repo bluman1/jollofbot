@@ -210,7 +210,7 @@ class Buy():
                             generic_subtitle = seller_jollof.description
                             generic_payload = 'ORDER_JOLLOF_' + seller_jollof.pk
                             generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"http://jollofbot.tk","title":"Get Directions"}]},'
-                            #TODO: get gmaps link for directions, retrieve restaurants logo from url                       
+                            #TODO: get gmaps link for directions, retrieve restaurants logo from url                 
                 if places_found:
                     self.text_message(fbid, 'I can smell jollof near you! But I can not show them now :(')
                     #Remove trailing comma
@@ -254,6 +254,9 @@ class Buy():
             if sellers.count() < 1:
                 self.text_message(fbid, 'I am working very hard to find the best places for you to find awesome delicacies. I will let you know when you can find them, thank you.')
             else:
+                generic_sellers = '{"recipient":{"id":"'+str(fbid)+'"},"message":{"attachment":{"type":"template","payload":{"template_type":"generic","elements":['
+                generic_ending = ']}}}}'
+                generic_elements = ''
                 places_found = False
                 for seller in sellers:
                     if seller.longitude != 0.0 and seller.latitude != 0.0:
@@ -261,6 +264,16 @@ class Buy():
                         if distance <= self.NEAREST_KM:
                             places_found = True
                             # gather restaurant location here and build generic template.
+                            seller_delicacy = Delicacy.objects.get(seller=seller.pk)
+                            if seller_delicacy.count() < 1:
+                                continue
+                            imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
+                            print('Random Imgur Link: ' + imgur_link)
+                            generic_title = seller.restaurant
+                            generic_subtitle = seller.phone_number
+                            generic_payload = 'VIEW_DELICACY_SELLERS_' + seller.pk
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Delicacies Available","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"http://jollofbot.tk","title":"Get Directions"}]},'
+                            #TODO: get gmaps link for directions, retrieve restaurants logo from url    
                 if places_found:
                     self.text_message(fbid, 'I can smell some nice delicacies near you, but I can\'t show them now :(')
                 else:
@@ -291,6 +304,7 @@ class Buy():
 
     def order_jollof(self, fbid, payload):
         if 'ORDER_JOLLOF' in payload:
+            # reconfirm the distance between the buyer and the seller here first.
             jollof_id = int(payload[13:])
             jollof = Jollof.objects.get(pk=jollof_id)
             seller = Seller.objects.get(pk=int(jollof.seller.pk))
@@ -302,7 +316,7 @@ class Buy():
             # and notify the seller.
 
             # Buyer can cancel anytime before the order is accepted.
-            msg = 'Great {{user_first_name}}, I have ordered the irrestible N'+str(jollof.price)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+            msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
             self.text_message(fbid, msg)
             msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order. You can also send status to track your meal\'s status.'
             self.text_message(fbid, msg)
@@ -311,4 +325,36 @@ class Buy():
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
+    
+
+    def view_delicacy_sellers(self, fbid, payload):
+        if 'VIEW_DELICACY_SELLERS': in payload:
+            # reconfirm proximity to seller first
+            seller_id = int(payload[22:])
+            seller = Seller.objects.get(pk=seller_id)
+            buyer = Buyer.objects.get(fbid=fbid)
+            distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
+            if distance > self.NEAREST_KM:
+                # buyer no longer in proximity
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant
+                self.text_message(fbid, msg)
+                return
+            # show sellers delicacies
+            delicacies = Delicacy.objects.filter(seller=int(seller.pk))
+            if delicacies.count() < 1:
+                self.text_message(fbid, seller.restaurant + ' does not have delicacies right now :( please try another restaurant nearby.')
+            else:
+                generic_sellers = '{"recipient":{"id":"'+str(fbid)+'"},"message":{"attachment":{"type":"template","payload":{"template_type":"generic","elements":['
+                generic_ending = ']}}}}'
+                generic_elements = ''
+                for delicacy in delicacies:
+                    imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
+                    print('Random Imgur Link: ' + imgur_link)
+                    generic_title = seller.restaurant
+                    generic_subtitle = seller.phone_number
+                    generic_payload = 'VIEW_DELICACY_SELLERS_' + seller.pk
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Delicacies Available","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"http://jollofbot.tk","title":"Get Directions"}]},'
+                    #TODO: get gmaps link for directions, retrieve restaurants logo from url    
+
+            
             

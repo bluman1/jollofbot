@@ -57,6 +57,7 @@ buyer_payloads = {
     'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
     'ORDER_JOLLOF': buy_payload.order_jollof,
+    'VIEW_DELICACY_SELLERS': buy_payload.view_delicacy_sellers,
 
 }
 
@@ -183,6 +184,29 @@ def buyer_webhook(request):
                     else:
                         current_state = buyer.current_state
                         if current_state == 'DEFAULT':
+                            temp_payload = payload
+                            generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS']
+                            for generic in generic_payloads:
+                                if generic in payload:
+                                    payload = generic
+                                    next_state_status = is_buyer_next_state(current_state, payload)
+                                    if next_state_status:
+                                        try:
+                                            buyer_payloads[current_state](fbid, temp_payload)
+                                            return HttpResponse()
+                                        except Exception as e:
+                                            buyer.current_state = 'DEFAULT'
+                                            buyer.save()
+                                            print('Exception\n' + str(e))
+                                            alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
+                                        return HttpResponse()
+                                    else:
+                                        msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
+                                        text_message(fbid, msg)
+                                        buyer.current_state = 'DEFAULT'
+                                        buyer.save()
+                                        alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                        return HttpResponse()
                             try:
                                 buyer_payloads[payload](fbid, payload)
                             except Exception as e:
@@ -201,7 +225,7 @@ def buyer_webhook(request):
                                     buyer.save()
                             else:
                                 temp_payload = payload
-                                generic_payloads = ['ORDER_JOLLOF']
+                                generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS']
                                 for generic in generic_payloads:
                                     if generic in payload:
                                         payload = generic
@@ -214,7 +238,8 @@ def buyer_webhook(request):
                                                 buyer.current_state = 'DEFAULT'
                                                 buyer.save()
                                                 print('Exception\n' + str(e))
-                                                alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
+                                                msg = 'Failed Button payload. current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload
+                                                alert_me(fbid, msg)
                                             return HttpResponse()
                                         else:
                                             msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
