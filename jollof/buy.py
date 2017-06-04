@@ -347,7 +347,7 @@ class Buy():
     
 
     def view_delicacy_sellers(self, fbid, payload):
-        if 'VIEW_DELICACY_SELLERS': in payload:
+        if 'VIEW_DELICACY_SELLERS' in payload:
             # reconfirm proximity to seller first
             seller_id = int(payload[22:])
             seller = Seller.objects.get(pk=seller_id)
