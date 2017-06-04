@@ -57,6 +57,7 @@ buyer_payloads = {
     'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
     'ORDER_JOLLOF': buy_payload.order_jollof,
+    'ORDER_DELICACY': buy_payload.order_delicacy,
     'VIEW_DELICACY_SELLERS': buy_payload.view_delicacy_sellers,
 
 }
@@ -185,14 +186,14 @@ def buyer_webhook(request):
                         current_state = buyer.current_state
                         if current_state == 'DEFAULT':
                             temp_payload = payload
-                            generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS']
+                            generic_payloads = ['ORDER_JOLLOF', 'ORDER_DELICACY', 'VIEW_DELICACY_SELLERS']
                             for generic in generic_payloads:
                                 if generic in payload:
                                     payload = generic
-                                    next_state_status = is_buyer_next_state(current_state, payload)
+                                    next_state_status = is_buyer_next_state(payload, payload)
                                     if next_state_status:
                                         try:
-                                            buyer_payloads[current_state](fbid, temp_payload)
+                                            buyer_payloads[payload](fbid, temp_payload)
                                             return HttpResponse()
                                         except Exception as e:
                                             buyer.current_state = 'DEFAULT'

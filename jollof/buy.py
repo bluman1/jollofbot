@@ -276,6 +276,19 @@ class Buy():
                             #TODO: get gmaps link for directions, retrieve restaurants logo from url    
                 if places_found:
                     self.text_message(fbid, 'I can smell some nice delicacies near you, but I can\'t show them now :(')
+                    #Remove trailing comma
+                    generic_elements = generic_elements[:-1]
+                    if len(generic_elements) > 0:
+                        generic_message = generic_sellers + generic_elements + generic_ending
+                        print('Generic message: ' + generic_message)
+                        headers = {
+                            'Content-Type': 'application/json',
+                        }
+                        params = (
+                            ('access_token', self.BUYER_ACCESS_TOKEN),
+                        )
+                        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
+                        print(response.json())
                 else:
                     self.text_message(fbid, 'I cannot smell delicacies near you :(') # Ask to increase search radius
             return
@@ -309,6 +322,12 @@ class Buy():
             jollof = Jollof.objects.get(pk=jollof_id)
             seller = Seller.objects.get(pk=int(jollof.seller.pk))
             buyer = Buyer.objects.get(fbid=fbid)
+            distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
+            if distance > self.NEAREST_KM:
+                # buyer no longer in proximity
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                self.text_message(fbid, msg)
+                return
             # Place order for jollof here  
             order_code = self.generate_order_code()
             jollof_order = JollofOrder(code=order_code, jollof_buyer=buyer, jollof_seller=seller, jollof=jollof)
@@ -316,7 +335,7 @@ class Buy():
             # and notify the seller.
 
             # Buyer can cancel anytime before the order is accepted.
-            msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+            msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
             self.text_message(fbid, msg)
             msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order. You can also send status to track your meal\'s status.'
             self.text_message(fbid, msg)
@@ -336,11 +355,11 @@ class Buy():
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
-                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
                 self.text_message(fbid, msg)
                 return
             # show sellers delicacies
-            delicacies = Delicacy.objects.filter(seller=int(seller.pk))
+            delicacies = Delicacy.objects.filter(seller=int(seller.pk)).filter(available=True)
             if delicacies.count() < 1:
                 self.text_message(fbid, seller.restaurant + ' does not have delicacies right now :( please try another restaurant nearby.')
             else:
@@ -350,11 +369,53 @@ class Buy():
                 for delicacy in delicacies:
                     imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
                     print('Random Imgur Link: ' + imgur_link)
-                    generic_title = seller.restaurant
-                    generic_subtitle = seller.phone_number
-                    generic_payload = 'VIEW_DELICACY_SELLERS_' + seller.pk
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Delicacies Available","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"http://jollofbot.tk","title":"Get Directions"}]},'
-                    #TODO: get gmaps link for directions, retrieve restaurants logo from url    
+                    generic_title = delicacy.price
+                    generic_subtitle = delicacy.description
+                    generic_payload = 'ORDER_DELICACY_' + delicacy.pk
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"http://jollofbot.tk","title":"Get Directions"}]},'
+                    #TODO: get gmaps link for directions, retrieve restaurants logo from url
+                #Remove trailing comma
+                generic_elements = generic_elements[:-1]
+                generic_message = generic_sellers + generic_elements + generic_ending
+                print('Generic message: ' + generic_message)
+                headers = {
+                    'Content-Type': 'application/json',
+                }
+                params = (
+                    ('access_token', self.BUYER_ACCESS_TOKEN),
+                )
+                response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
+                print(response.json())
 
+
+    def order_delicacy(self, fbid, payload):
+        if 'ORDER_DELICACY' in payload:
+            # reconfirm the distance between the buyer and the seller here first.
+            delicacy_id = int(payload[13:])
+            delicacy = Delicacy.objects.get(pk=delicacy_id)
+            seller = Seller.objects.get(pk=int(delicacy.seller.pk))
+            buyer = Buyer.objects.get(fbid=fbid)
+            distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
+            if distance > self.NEAREST_KM:
+                # buyer no longer in proximity
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                self.text_message(fbid, msg)
+                return
+            # Place order for delicacy here  
+            order_code = self.generate_order_code()
+            delicacy_order = DelicacyOrder(code=order_code, delicacy_buyer=buyer, delicacy_seller=seller, delicacy=delicacy)
+            delicacy_order.save()
+            # and notify the seller.
+
+            # Buyer can cancel anytime before the order is accepted.
+            msg = 'Great {{user_first_name}}, I have ordered the sumptuous N'+str(jollof.price)+' Delicacy by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+            self.text_message(fbid, msg)
+            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order. You can also send status to track your meal\'s status.'
+            self.text_message(fbid, msg)
+            # Alert me of the order made here.
+            buyer = Buyer.objects.get(fbid=fbid)
+            buyer.current_state = 'DEFAULT'
+            buyer.has_order = True
+            buyer.save()
             
             
