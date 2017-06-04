@@ -139,6 +139,12 @@ def buyer_webhook(request):
                                 elif message['message']['text'].lower() == 'what can you do?':
                                     buy.greet_buyer(fbid)
                                     return HttpResponse()
+                                elif message['message']['text'].lower() == 'status':
+                                    buy.order_status(fbid)
+                                    return HttpResponse()
+                                elif message['message']['text'].lower() == 'cancel':
+                                    buy.cancel_order(fbid)
+                                    return HttpResponse()
                                 msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
                                 # msg = str(msg.encode('utf-8'))
                                 buy.text_message(fbid, msg)

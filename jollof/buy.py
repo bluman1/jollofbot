@@ -418,4 +418,8 @@ class Buy():
             buyer.has_order = True
             buyer.save()
             
-            
+
+    def order_status(self, fbid):
+        buyer = Buyer.objects.get(fbid=fbid)
+        if buyer.has_order:
+            pass
