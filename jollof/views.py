@@ -57,6 +57,8 @@ buyer_payloads = {
     'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
     'ORDER_JOLLOF': buy_payload.order_jollof,
+    'JOLLOF_RESERVATION': buy_payload.make_jollof_reservation,
+    'DELICACY_RESERVATION': buy_payload.make_delicacy_reservation,
     'ORDER_DELICACY': buy_payload.order_delicacy,
     'VIEW_DELICACY_SELLERS': buy_payload.view_delicacy_sellers,
 

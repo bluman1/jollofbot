@@ -60,9 +60,10 @@ class JollofOrder(models.Model):
     jollof_buyer = models.ForeignKey(Buyer)
     jollof_seller = models.ForeignKey(Seller)
     jollof = models.ForeignKey(Jollof, default=1)
-    status = models.IntegerField(default=0) #0=pending, 1=accepted, 2=rejected, 3=cancelled, 4=delivered
+    status = models.IntegerField(default=0) #0=pending, 1=accepted, 2=rejected, 3=cancelled, 4=completed
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
 
 
 class JollofCode(models.Model):
@@ -89,3 +90,4 @@ class DelicacyOrder(models.Model):
     status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
