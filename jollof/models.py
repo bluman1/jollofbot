@@ -44,6 +44,7 @@ class Seller(models.Model):
     closing_hour = models.IntegerField(default=1)
     start_day = models.IntegerField(default=1) # Monday
     end_day = models.IntegerField(default=7) # Sunday
+    delivers = models.BooleanField(default=False)
 
 
 class Jollof(models.Model):

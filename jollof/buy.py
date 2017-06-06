@@ -427,5 +427,6 @@ class Buy():
                 for jollof_order in jollof_orders:
                     if jollof_order.status < 4:
                         # we have orders that have not been delivered. prolly cancelled or rejected.
+                        pass
 
 
