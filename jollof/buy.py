@@ -422,4 +422,10 @@ class Buy():
     def order_status(self, fbid):
         buyer = Buyer.objects.get(fbid=fbid)
         if buyer.has_order:
-            pass
+            jollof_orders = JollofOrder.objects.filter(jollof_buyer=buyer)
+            if jollof_orders.count > 0:
+                for jollof_order in jollof_orders:
+                    if jollof_order.status < 4:
+                        # we have orders that have not been delivered. prolly cancelled or rejected.
+
+
