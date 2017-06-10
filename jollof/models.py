@@ -112,13 +112,6 @@ class JollofOrder(models.Model):
     order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
 
 
-class JollofCode(models.Model):
-    code = models.CharField(max_length=6)
-    seller = models.ForeignKey(Seller)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-
 class Delicacy(models.Model):
     seller = models.ForeignKey(Seller)
     price = models.FloatField(default=0.0)
