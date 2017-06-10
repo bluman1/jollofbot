@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
@@ -7,6 +9,37 @@ from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+
+
+class UserManager(BaseUserManager):
+
+    def _create_user(self, username, email, password,
+                     is_superuser, **extra_fields):
+        """
+        Creates and saves a User with the given email and password.
+        """
+        now = timezone.now()
+        if not username:
+            raise ValueError('The given company name must be set')
+        if not email:
+            raise ValueError('The given email must be set')
+        username = username.strip()
+        email = self.normalize_email(email)
+        user = self.model(username=username,
+                          email=email, is_active=True,
+                          is_superuser=is_superuser, last_login=now,
+                          created=now, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, username, email, password=None, **extra_fields):
+        return self._create_user(username, email, password, False,
+                                 **extra_fields)
+
+    def create_superuser(self, username, email, password, **extra_fields):
+        return self._create_user(username, email, password, True,
+                                 **extra_fields)
 
 
 class Buyer(models.Model):
@@ -29,7 +62,10 @@ class Buyer(models.Model):
 
 
 class Seller(models.Model):
+    username = models.CharField(max_length=128, unique=True) # seller username
+    email = models.EmailField(max_length=254, unique=True) # company email
     fbid = models.CharField(max_length=128, unique=True)
+    code = models.CharField(max_length=6, unique=True)
     restaurant = models.CharField(max_length=128, default='')
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
@@ -45,6 +81,15 @@ class Seller(models.Model):
     start_day = models.IntegerField(default=1) # Monday
     end_day = models.IntegerField(default=7) # Sunday
     delivers = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    objects = UserManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
+
+    class Meta:
+        verbose_name = _('seller')
+        verbose_name_plural = _('sellers')
 
 
 class Jollof(models.Model):
@@ -53,6 +98,7 @@ class Jollof(models.Model):
     description = models.CharField(max_length=80)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    available = models.BooleanField(default=True)
 
 
 class JollofOrder(models.Model):

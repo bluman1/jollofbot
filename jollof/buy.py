@@ -215,12 +215,11 @@ class Buy():
                     if seller.longitude != 0.0 and seller.latitude != 0.0:
                         distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
                         if distance <= self.NEAREST_KM:
-                            places_found = True
                             # gather restaurant location here and build generic template.
                             seller_jollof = Jollof.objects.get(seller=seller.pk)
-                            if seller_jollof.count() < 1:
+                            if seller_jollof.available is False:
                                 continue
-                            seller_jollof = seller_jollof[0]
+                            places_found = True
                             imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
                             print('Random Imgur Link: ' + imgur_link)
                             generic_title = seller.restaurant + ' jollof at N' + seller_jollof.price
@@ -377,11 +376,11 @@ class Buy():
                     if seller.longitude != 0.0 and seller.latitude != 0.0:
                         distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
                         if distance <= self.NEAREST_KM:
-                            places_found = True
                             # gather restaurant location here and build generic template.
                             seller_delicacy = Delicacy.objects.get(seller=seller.pk)
-                            if seller_delicacy.count() < 1:
+                            if seller_delicacy.available is False:
                                 continue
+                            places_found = True
                             imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
                             print('Random Imgur Link: ' + imgur_link)
                             generic_title = seller.restaurant
@@ -555,9 +554,14 @@ class Buy():
 
     def order_status(self, fbid):
         buyer = Buyer.objects.get(fbid=fbid)
+        #if there are more than one orders that are not cancelled or delivered, we should show them all and let them choose the order to show status for.
+        #a cancelled order is a complete order.
         if buyer.has_order:
             jollof_orders = JollofOrder.objects.filter(jollof_buyer=buyer)
-            if jollof_orders.count > 0:
+            if jollof_orders.count() == 1:
+                #single order, show status directly
+            elif jollof_orders.count() > 1:
+                #show all jollof orders statuses in a generic horizontal list
                 for jollof_order in jollof_orders:
                     if jollof_order.status < 4:
                         # we have orders that have not been delivered. prolly cancelled or rejected.

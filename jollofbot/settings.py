@@ -18,6 +18,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # AUTH_USER_MODEL = 'jollof.User'
 
+AUTH_USER_MODEL = 'jollof.Seller'
+
 APPEND_SLASHES = True
 
 LOGIN_URL = '/login/'
@@ -32,7 +34,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['jollofbot.herokuapp.com']
+ALLOWED_HOSTS = [os.envion.get('ALLOWED_HOST_1')]
 
 
 # Application definition
