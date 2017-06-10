@@ -560,6 +560,7 @@ class Buy():
             jollof_orders = JollofOrder.objects.filter(jollof_buyer=buyer)
             if jollof_orders.count() == 1:
                 #single order, show status directly
+                pass
             elif jollof_orders.count() > 1:
                 #show all jollof orders statuses in a generic horizontal list
                 for jollof_order in jollof_orders:
