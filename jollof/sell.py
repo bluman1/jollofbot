@@ -44,65 +44,54 @@ class Sell():
                     "composer_input_disabled":false,
                     "call_to_actions":[
                         {
-                        "title":"Vendor Details",
+                        "title":"Jollof Orders",
                         "type":"nested",
                         "call_to_actions":[
                             {
-                                "title":"Vendor Name",
+                                "title":"Pending Deliv. Orders",
                                 "type":"postback",
-                                "payload":"VENDOR_NAME"
+                                "payload":"JOLLOF_PENDING_DELIVERIES"
                             },
                             {
-                                "title":"Vendor Location",
+                                "title":"Pending Reservations",
                                 "type":"postback",
-                                "payload":"VENDOR_LOCATION"
+                                "payload":"JOLLOF_PENDING_RESERVATIONS"
+                            },
+                            {
+                                "title":"Accepted Deliv. Orders",
+                                "type":"postback",
+                                "payload":"JOLLOF_ACCEPTED_DELIVERIES"
+                            },
+                            {
+                                "title":"Accepted Reservations",
+                                "type":"postback",
+                                "payload":"JOLLOF_ACCEPTED_RESERVATIONS"
                             }
                         ]
                         },
                         {
-                        "title":"Jollof Details",
+                        "title":"Delicacy Orders",
                         "type":"nested",
                         "call_to_actions":[
                             {
-                                "title":"Jollof Image",
+                                "title":"Pending Deliv. Orders",
                                 "type":"postback",
-                                "payload":"JOLLOF_IMAGE"
+                                "payload":"DELICACY_PENDING_DELIVERIES"
                             },
                             {
-                                "title":"Jollof Price",
+                                "title":"Pending Reservations",
                                 "type":"postback",
-                                "payload":"JOLLOF_PRICE"
+                                "payload":"DELICACY_PENDING_RESERVATIONS"
                             },
                             {
-                                "title":"Jollof Description",
+                                "title":"Accepted Deliv. Orders",
                                 "type":"postback",
-                                "payload":"JOLLOF_DESCRIPTION"
+                                "payload":"DELICACY_ACCEPTED_DELIVERIES"
                             },
                             {
-                                "title":"Jollof Delivery",
+                                "title":"Accepted Reservations",
                                 "type":"postback",
-                                "payload":"JOLLOF_DELIVERY"
-                            }
-                        ]
-                        },
-                        {
-                        "title":"Analytics",
-                        "type":"nested",
-                        "call_to_actions":[
-                            {
-                                "title":"Times Searched",
-                                "type":"postback",
-                                "payload":"TIMES_SEARCHED"
-                            },
-                            {
-                                "title":"Times Ordered",
-                                "type":"postback",
-                                "payload":"TIMES_ORDERED"
-                            },
-                            {
-                                "title":"Got Directions",
-                                "type":"postback",
-                                "payload":"GOT_DIRECTIONS"
+                                "payload":"DELICACY_ACCEPTED_RESERVATIONS"
                             }
                         ]
                         }
@@ -148,9 +137,46 @@ class Sell():
         self.text_message(fbid, msg)
     
 
-    def request_code(self, fbid, payload):
-        seller = Seller.objects.get(fbid=fbid)
-        seller.current_state = 'REQUEST_CODE'
-        msg = 'Hi {{user_first_name}}, please enter the unique code provided by my creator.'
-        self.text_message(fbid, msg)
-        seller.save()
+    def request_location(self, fbid):
+        headers = {
+            'Content-Type': 'application/json',
+        }
+        params = (
+            ('access_token', self.BUYER_ACCESS_TOKEN),
+        )
+        data = '{"recipient":{"id":"' + str(fbid) + '"},"message":{"text":"Please share your location with me.","quick_replies":[{"content_type":"location"},{"content_type":"text","title":"Cancel","payload":"CANCELLED"}]}}'
+        pprint(data)
+        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+        print(response.json())
+
+
+    def process_code(self, fbid, jollof_code):
+        try:
+            seller = Seller.objects.get(code=jollof_code)
+            seller.fbid = fbid
+            seller.current_state = 'VENDOR_LOCATION'
+            seller.save()
+            msg = 'Nice having you here ' + seller.restaurant + ' :)'
+            self.text_message(fbid, msg)
+            self.request_location(fbid)
+            return
+        except Seller.DoesNotExist:
+            msg = 'Sorry, the Jollof code you entered is incorrect. Please double check and enter again.'
+            self.text_message(fbid, msg)
+            return
+    
+
+    def save_location(self, fbid, payload, location_title=None, location_url=None, location_lat=None, location_long=None):
+        if payload == 'CANCELLED':
+            self.cancel_action(fbid, payload)
+        elif location_lat:
+            # save location_lat and location_long
+            seller = Seller.objects.get(fbid=fbid)
+            seller.longitude = float(location_long)
+            seller.latitude = float(location_lat)
+            print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
+            seller.current_state = 'DEFAULT'
+            seller.save()       
+            self.text_message(fbid, 'Great! Now you can receive order and reservation updates!')
+            self.text_message(fbid, 'Please use the menu option to view pending and accepted orders/reservations.')
+        return

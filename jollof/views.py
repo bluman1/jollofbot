@@ -21,6 +21,7 @@ from rest_framework import status
 from jollof.models import *
 from jollof.buy import Buy
 from jollof.buy_states import *
+from jollof.sell_states import *
 from jollof.sell import Sell
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
@@ -297,6 +298,11 @@ def seller_prep(request):
     return HttpResponse()
 
 
+sell_payload = Sell()
+seller_payloads = {
+    'CANCELLED': sell_payload.cancel_action,
+    'VENDOR_LOCATION': sell_payload.save_location,
+}
 @csrf_exempt
 def seller_webhook(request):
     if request.method == 'GET':
@@ -308,4 +314,121 @@ def seller_webhook(request):
         sell = Sell()
         # Converts the text payload into a python dictionary
         incoming_message = json.loads(request.body.decode('utf-8'))
-        return HttpResponse()
+        # Facebook recommends going through every entry since they might send
+        # multiple messages in a single call during high load
+        for entry in incoming_message['entry']:
+            for message in entry['messaging']:
+                # Check to make sure the received call is a message call
+                # This might be delivery, optin, postback for other events
+                pprint(message)
+                fbid = message['sender']['id']
+                seller = None
+                connected = False
+                try:
+                    seller = Seller.objects.get(fbid=fbid)
+                    connected = True
+                except Seller.DoesNotExist:
+                    #should ask for code here,
+                    msg =  'Hi {{user_first_name}}, please enter the jollof code provided by my creator.'
+                    sell.text_message(fbid, msg)
+                    return HttpResponse()
+                if 'message' in message:
+                    if 'quick_reply' in message['message']:
+                        print('QR Received.')
+                    elif 'text' in message['message']:
+                        print('Text Message Recieved')
+                        if connected is False:
+                            print('received jollofcode')
+                            sell.process_code(fbid, message['message']['text'])
+                            return HttpResponse()
+                        random_greeting = ['hello', 'hi', 'hey', 'what\'s up?', 'what\'s up', 'wasap']
+                        received_text = message['message']['text'].lower()
+                        seller = Seller.objects.get(fbid=fbid)
+                        current_state = seller.current_state
+                        if current_state == 'DEFAULT':
+                            print('Buselleryer in default state')
+                            if received_text in random_greeting:
+                                print('Random greeting State: ' + current_state)
+                                msg = 'Hi {{user_first_name}}! You are doing a great job!'
+                                sell.text_message(fbid, msg)        
+                            else:
+                                print('Not a random greeting. State: ' + current_state)
+                                sell.text_message(fbid, 'You sell the greatest jollof in the world.')
+                                seller.current_state = 'DEFAULT'
+                                seller.save()
+                        else:
+                            sell.text_message(fbid, 'You sell the greatest jollof in the world.')
+                            seller.current_state = 'DEFAULT'
+                            seller.save()
+                        return HttpResponse()
+                    elif 'attachments' in message['message']:
+                        print('Attachment Recieved')
+                        for attachment in message['message']['attachments']:
+                            if attachment['type'] == 'location':
+                                print('Location Received')
+                                seller = Seller.objects.get(fbid=fbid)
+                                current_state = seller.current_state
+                                print('loc, current_state: ' + current_state)
+                                location_title = attachment['title']
+                                location_url = attachment['url']
+                                location_lat = attachment['payload']['coordinates']['lat'] # This is a float, not a str
+                                location_long = attachment['payload']['coordinates']['long'] # This is a float, not a str
+                                try:
+                                    seller_payloads[current_state](fbid, current_state, location_title, location_url, location_lat, location_long)
+                                except Exception as e:
+                                    print('Exception\n' + str(e))
+                                    sell.alert_me(fbid, 'Failed to get location.')
+                                    seller.current_state = 'DEFAULT'
+                                    seller.save()
+                        return HttpResponse()
+                elif 'postback' in message:
+                    payload = message['postback']['payload']
+                    if payload == 'GET_STARTED':
+                        return HttpResponse()
+                    else:
+                        current_state = buyer.current_state
+                        if current_state == 'DEFAULT':
+                            pass
+                        else:
+                            temp_payload = payload
+                            generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS']
+                            for generic in generic_payloads:
+                                if generic in payload:
+                                    payload = generic
+                                    next_state_status = is_seller_next_state(current_state, payload)
+                                    if next_state_status:
+                                        try:
+                                            seller_payloads[current_state](fbid, temp_payload)
+                                            return HttpResponse()
+                                        except Exception as e:
+                                            seller.current_state = 'DEFAULT'
+                                            seller.save()
+                                            print('Exception\n' + str(e))
+                                            msg = 'Failed Button payload. current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload
+                                            alert_me(fbid, msg)
+                                        return HttpResponse()
+                                    else:
+                                        msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
+                                        text_message(fbid, msg)
+                                        seller.current_state = 'DEFAULT'
+                                        seller.save()
+                                        alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                        return HttpResponse()
+                            next_state_status = is_seller_next_state(current_state, payload)
+                            if next_state_status:
+                                # perform function for next state == payload
+                                try:
+                                    seller_payloads[payload](fbid, payload) # this function is in charge of setting the new state.
+                                except Exception as e:
+                                    print('Exception\n' + str(e))
+                                    alert_me(fbid, 'Can not find the current_state in other payload: ' + current_state + '. payload: ' + payload)
+                                return HttpResponse()
+                            else:
+                                msg = 'Sorry, {{user_first_name}}. Please try saying jollof!'
+                                text_message(fbid, msg)
+                                seller.current_state = 'DEFAULT'
+                                seller.save()
+                                alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
+                                return HttpResponse()
+                        return HttpResponse()
+                
