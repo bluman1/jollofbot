@@ -330,7 +330,9 @@ def seller_webhook(request):
                 except Seller.DoesNotExist:
                     #should ask for code here,
                     msg =  'Hi {{user_first_name}}, please enter the jollof code provided by my creator.'
+                    print('msg: ' + msg)
                     sell.text_message(fbid, msg)
+                    print('Sent first msg.')
                     return HttpResponse()
                 if 'message' in message:
                     if 'quick_reply' in message['message']:
