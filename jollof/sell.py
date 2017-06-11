@@ -113,7 +113,6 @@ class Sell():
     
     
     def text_message(self, fbid, msg):
-        msg = ''
         try:
             seller = Seller.objects.get(fbid=fbid)
             if '{{user_first_name}}' in msg:
