@@ -328,10 +328,7 @@ def seller_webhook(request):
                     seller = Seller.objects.get(fbid=fbid)
                     connected = True
                 except Seller.DoesNotExist:
-                    #should ask for code here,
-                    msg =  'Hi {{user_first_name}}, please enter the jollof code provided by my creator.'
-                    sell.text_message(fbid, msg)
-                    return HttpResponse()
+                    pass
                 if 'message' in message:
                     if 'quick_reply' in message['message']:
                         print('QR Received.')
@@ -384,6 +381,9 @@ def seller_webhook(request):
                 elif 'postback' in message:
                     payload = message['postback']['payload']
                     if payload == 'GET_STARTED':
+                        #should ask for code here,
+                        msg =  'Hi {{user_first_name}}, please enter the jollof code provided by my creator.'
+                        sell.text_message(fbid, msg)
                         return HttpResponse()
                     else:
                         current_state = buyer.current_state
