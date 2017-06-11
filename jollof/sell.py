@@ -113,9 +113,13 @@ class Sell():
     
     
     def text_message(self, fbid, msg):
-        seller = Seller.objects.get(fbid=fbid)
-        if '{{user_first_name}}' in msg:
-            msg = msg.replace('{{user_first_name}}', seller.first_name)
+        msg = ''
+        try:
+            seller = Seller.objects.get(fbid=fbid)
+            if '{{user_first_name}}' in msg:
+                msg = msg.replace('{{user_first_name}}', seller.first_name)
+        except Seller.DoesNotExist:
+            msg = msg.replace('{{user_first_name}}', 'Jollof Creator')
         print(msg)
         headers = {
             'Content-Type': 'application/json',
