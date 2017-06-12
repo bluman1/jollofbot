@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <!-- ==============================================
+    Title and Meta Tags
+    =============================================== -->
+    <meta charset="UTF-8">
+    <title>JollofBot - Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- ==============================================
+    CSS Files
+    =============================================== -->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://use.fontawesome.com/33f079f2f4.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/assets/materialize-assets/css/materialize.min.css">
+    <link type="text/css" rel="stylesheet" href="/static/assets/js/plugins/OwlCarousel/owl-carousel/owl.carousel.css">
+    <link type="text/css" rel="stylesheet" href="/static/assets/js/plugins/OwlCarousel/owl-carousel/owl.theme.css">
+    <link type="text/css" rel="stylesheet" href="/static/assets/js/plugins/OwlCarousel/owl-carousel/">
+    <link type="text/css" rel="stylesheet" href="/static/assets/js/plugins/lightbox2-master/dist/css/lightbox.min.css">
+    <link type="text/css" rel="stylesheet" href="/static/assets/css/main.css">
+
+</head>
+
+<body>
+
+
+    <!-- ==============================================
+    Preloader
+    =============================================== -->
+
+    <div class="preloader">
+        <h2>JollofBot<span>.</span></h2>
+        <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <div class="spinner-layer spinner-red">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <div class="spinner-layer spinner-yellow">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+
+            <div class="spinner-layer spinner-green">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+    Navigation
+    =============================================== -->
+
+    <header>
+        <nav>
+            <div class="container">
+                <div class="nav-wrapper">
+                    <a href="/" class="brand-logo page-scroll">JollofBot<span>.</span></a>
+                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                    <!-- Side Nav Links -->
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="/login">Log In</a></li>
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ==============================================
+    Contact us
+    =============================================== -->
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <img src="/static/assets/img/jollof.jpeg" class="responsive-img" alt="contact">
+                </div>
+                <div class="col l6 s12">
+                    <div class="contact-content">
+                        <h2>Sign Up<span>.</span></h2>
+                        <form id="signup-form" method="post" action=".">
+                            {% csrf_token %}
+                            <div class="input-field">
+                                <input name="username" id="username" type="text" class="validate">
+                                <label for="username" data-error="wrong" data-success="right">Username</label>
+                            </div>
+                            <div class="input-field">
+                                <input name="rest_name" id="rest-name" type="text" class="validate">
+                                <label for="rest-name" data-error="wrong" data-success="right">Restaurant Name</label>
+                            </div>
+                            <div class="input-field">
+                                <input name="email" id="email" type="email" class="validate">
+                                <label for="email">Email</label>
+                            </div>
+                            <div class="input-field">
+                                <input name="password" id="pwd" type="password" class="validate">
+                                <label for="pwd">Password</label>
+                            </div>
+                            <div class="input-field">
+                                <input name="pwd_again" id="pwd-again" type="password" class="validate">
+                                <label for="pwd-again">Password Again</label>
+                            </div>
+                            <button class="waves-effect waves-light btn-large btn-secondary" type="submit" name="action">Sign Up!
+                                <i class="material-icons right">send</i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==============================================
+    Footer
+    =============================================== -->
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h2 class="white-text">JollofBot<span>.</span></h2>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="white-text">Connect</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3 page-scroll" href="/about">About</a></li>
+                        <li><a class="grey-text text-lighten-3 page-scroll" href="/pricing">Pricing</a></li>
+                        <li><a class="grey-text text-lighten-3 page-scroll" href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © 2017
+                <a class="grey-text text-lighten-4 right" href="#!">JollofBot.</a>
+            </div>
+        </div>
+    </footer>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="/static/assets/materialize-assets/js/materialize.min.js"></script>
+    <!-- jQuery Plugins -->
+    <script type="text/javascript" src="/static/assets/js/plugins/jquery.easing.min.js"></script>
+    <script type=text/javascript src="/static/assets/js/plugins/OwlCarousel/owl-carousel/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="/static/assets/js/plugins/lightbox2-master/dist/js/lightbox.min.js"></script>
+    <script type="text/javascript" src="/static/assets/js/plugins/jquery.mixitup.min.js"></script>
+    <script type="text/javascript" src="/static/assets/js/plugins/inview/jquery.inview.min.js"></script>
+
+
+    <script type="text/javascript" src="/static/assets/js/custom.js"></script>
+</body>
+
+</html>

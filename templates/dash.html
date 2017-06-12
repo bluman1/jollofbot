@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <!-- ==============================================
+    Title and Meta Tags
+    =============================================== -->
+    <meta charset="UTF-8">
+    <title>{{restaurant_name}} - JollofBot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- ==============================================
+    CSS Files
+    =============================================== -->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="/static/assets/materialize-assets/css/materialize.min.css">
+    <link type="text/css" rel="stylesheet" href="/static/main.css">
+
+</head>
+
+<body>
+
+    <!-- ==============================================
+    Side Navbar
+    =============================================== -->
+
+    <ul id="slide-out" class="side-nav fixed">
+        <!-- Logo -->
+        <li class="logo-container"><a href="#top" class="logo">JollofBot<span>.</span></a></li>
+        <div class="nav-link">
+            <li><a href="#introduction">Overview</a></li>
+            <li><a href="#included">Deliveries</a></li>
+            <li><a href="#header">Reservations</a></li>
+            <li><a href="#page-scrolling">Jollof</a></li>
+            <li><a href="#support">Delicacies</a></li>
+            <li><a href="#back-top">Account</a></li>
+        </div>
+    </ul>
+    <a href="#" data-activates="slide-out" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+
+    <!-- ==============================================
+    Header
+    =============================================== -->
+    <header id="back-top">
+        <div class="container">
+            <div class="header-text">
+                <h3>JollofBot<span>.</span></h3>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==============================================
+    Introduction
+    =============================================== -->
+    <section id="introduction">
+        <div class="container">
+            <h2>JollofCode</h2>
+            <hr>
+            <h6>{{jollf_code}}</h6>
+
+        </div>
+    </section>
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="/static/assets/materialize-assets/js/materialize.min.js"></script>
+    <script type="text/javascript" src="/static/custom.js"></script>
+</body>
+
+</html>
