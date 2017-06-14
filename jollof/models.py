@@ -64,7 +64,7 @@ class Buyer(models.Model):
 class Seller(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=128, unique=True) # seller username
     email = models.EmailField(max_length=254, unique=True) # company email
-    fbid = models.CharField(max_length=128, unique=True)
+    fbid = models.CharField(max_length=128, unique=False)
     code = models.CharField(max_length=6, unique=True, default='')
     restaurant = models.CharField(max_length=128, default='')
     first_name = models.CharField(max_length=128)
