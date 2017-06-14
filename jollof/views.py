@@ -515,5 +515,6 @@ def show_dash(request):
         if request.user.is_authenticated:
             seller = Seller.objects.get(pk=request.user.pk)
             jollof_code = seller.code
-            return render(request, 'dash.html', {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username})
+            restaurant_name = seller.restaurant
+            return render(request, 'dash.html', {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name})
         return HttpResponseRedirect('/')
