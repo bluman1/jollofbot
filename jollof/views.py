@@ -444,8 +444,6 @@ def show_signup(request):
         rest_name = request.POST.get('rest_name')
         password2 = request.POST.get('pwd_again')
         password = request.POST.get('password')
-        if not validate_email(email):
-            return render(request, 'signup.html', {'merror': 'Enter a valid email.'})
         if len(password) < 6:
             return render(request, 'signup.html', {'merror': 'Enter a password longer than that.'})
         if password != password2:
