@@ -431,4 +431,89 @@ def seller_webhook(request):
                                 alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
                                 return HttpResponse()
                         return HttpResponse()
-                
+
+
+def show_signup(request):
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('/dash/')
+        return render(request, 'signup.html', {})
+    elif request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        rest_name = request.POST.get('rest_name')
+        password2 = request.POST.get('pwd_again')
+        password = request.POST.get('password')
+        if not validate_email(email):
+            return render(request, 'signup.html', {'merror': 'Enter a valid email.'})
+        if len(password) < 6:
+            return render(request, 'signup.html', {'merror': 'Enter a password longer than that.'})
+        if password != password2:
+            return render(request, 'signup.html', {'merror': 'Enter matching passwords.'})
+        try:
+            Seller.objects.get(email=email)
+            return render(request, 'signup.html', {'merror': 'User already exists.'})
+        except Seller.DoesNotExist:
+            pass
+        try:
+            Seller.objects.get(username=username)
+            return render(request, 'signup.html', {'merror': 'User already exists.'})
+        except Seller.DoesNotExist:
+            pass
+        print('DEBUG: Signup ' + email + '\t' + password)
+        user = None
+        try:
+            user = Seller.objects.create_user(username, email, password)
+            user.restaurant = rest_name
+            user.save()
+        except Exception as e:
+            print(str(e))
+            return render(request, 'signup.html', {'merror': 'User already exists.'})
+        try:
+            user = Seller.objects.get(email=email)
+            user.code = Buy.generate_jollof_code()
+            user.save()
+        except:
+            # The below should never run.
+            print('Duplicate Jollof code. Regenerate.')
+        auth_user = authenticate(username=username, password=password)
+        seller = Seller.objects.get(username=username)
+        if auth_user is not None:
+            login(request, auth_user)
+            return HttpResponseRedirect('/dash/')
+        else:
+            """return invalid login here"""
+            return render(request, 'signup.html', {'merror': 'Please go to login page.'})                
+
+def show_login(request):
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('/dash/')
+        return render(request, 'login.html', {})
+    elif request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect('/dash/')
+        else:
+            """return invalid login here"""
+            return render(request, 'login.html', {'merror': 'Please try again.'})
+
+
+@login_required
+def show_logout(request, username):
+    if request.method == 'GET':
+        logout(request)
+        return HttpResponseRedirect('/')
+
+
+@login_required    
+def show_dash(request):
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            seller = Seller.objects.get(pk=request.user.pk)
+            jollof_code = seller.code
+            return render(request, 'dash.html', {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username})
+        return HttpResponseRedirect('/')

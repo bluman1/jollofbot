@@ -118,11 +118,11 @@
                         <h2>Log In<span>.</span></h2>
                         <form>
                             <div class="input-field">
-                                <input id="username" type="text" class="validate">
+                                <input name="username" id="username" type="text" class="validate">
                                 <label for="username" data-error="wrong" data-success="right">Username</label>
                             </div>
                             <div class="input-field">
-                                <input id="pwd" type="password" class="validate">
+                                <input name="password" id="pwd" type="password" class="validate">
                                 <label for="pwd">Password</label>
                             </div>
 
@@ -130,6 +130,9 @@
                                 <i class="material-icons right">send</i>
                             </button>
                         </form>
+                        <div>
+                            <p>{{merror}}</p>
+                        </div>
                     </div>
                 </div>
                 <div class="col l6 s12">

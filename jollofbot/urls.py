@@ -28,5 +28,9 @@ urlpatterns = [
     url(r'^messenger/buyer/prep/$', buyer_prep),
     url(r'^messenger/seller/prep/$', seller_prep),
 
-    url(r'^$', show_landing),  # crop2cash.com/
+    url(r'^$', show_landing),  # jollofbot.com/
+    url(r'^signup/$', show_signup),
+    url(r'^login/$', show_login),
+    url(r'^logout/(?P<username>\w+)$', show_logout),
+    url(r'^dash/$', show_dash),
 ]

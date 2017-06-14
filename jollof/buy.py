@@ -30,7 +30,16 @@ class Buy():
     
 
     def generate_jollof_code(self):
-        return 'JOLLOF-' ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
+        valid = True
+        code = None
+        while valid:
+            code = 'JLF' ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
+            try:
+                seller = Seller.objects.get(code=code)
+                print(code + ' already exists.')
+            except Seller.DoesNotExist:
+                valid = False
+        return code
 
 
     def get_started_button(self):
