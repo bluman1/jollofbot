@@ -469,7 +469,8 @@ def show_signup(request):
             return render(request, 'signup.html', {'merror': 'User already exists.'})
         try:
             user = Seller.objects.get(email=email)
-            code = Buy.generate_jollof_code()
+            buy_obj = Buy()
+            code = buy_obj.generate_jollof_code()
             user.code = code
             user.save()
             print('CODE: ' + code)
@@ -516,5 +517,7 @@ def show_dash(request):
             seller = Seller.objects.get(pk=request.user.pk)
             jollof_code = seller.code
             restaurant_name = seller.restaurant
-            return render(request, 'dash.html', {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name})
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name}
+            pprint(c)
+            return render(request, 'dash.html', c)
         return HttpResponseRedirect('/')
