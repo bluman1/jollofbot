@@ -468,9 +468,10 @@ def show_signup(request):
             print(str(e))
             return render(request, 'signup.html', {'merror': 'User already exists.'})
         try:
-            user = Seller.objects.get(email=email)
+            user = Seller.objects.get(username=username)
             buy_obj = Buy()
             code = buy_obj.generate_jollof_code()
+            print('Gen Code: ' + code)
             user.code = code
             user.save()
             print('CODE: ' + code)
