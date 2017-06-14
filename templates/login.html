@@ -116,7 +116,8 @@
                 <div class="col l6 s12">
                     <div class="contact-content">
                         <h2>Log In<span>.</span></h2>
-                        <form>
+                        <form id="login-form" method="post" action=".">
+                            {% csrf_token %}
                             <div class="input-field">
                                 <input name="username" id="username" type="text" class="validate">
                                 <label for="username" data-error="wrong" data-success="right">Username</label>
