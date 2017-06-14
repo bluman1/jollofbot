@@ -33,7 +33,7 @@ class Buy():
         valid = True
         code = None
         while valid:
-            code = 'JLF' ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
+            code = 'JLF' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
             try:
                 seller = Seller.objects.get(code=code)
                 print(code + ' already exists.')
