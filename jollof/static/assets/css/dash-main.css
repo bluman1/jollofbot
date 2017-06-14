@@ -1,0 +1,67 @@
+header,
+main,
+section,
+footer {
+  padding-left: 240px; }
+
+@media only screen and (max-width: 992px) {
+  header,
+  main,
+  footer {
+    padding-left: 0; } }
+section {
+  padding-top: 40px;
+  padding-bottom: 40px; }
+
+h2, h4 {
+  font-weight: bold;
+  letter-spacing: 0.1rem; }
+
+h5 {
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.1rem; }
+
+h6 {
+  font-size: 1.2rem; }
+
+.plugin h6 {
+  font-weight: bold;
+  letter-spacing: 0.1rem;
+  font-size: 1.5rem; }
+
+.side-nav .logo-container {
+  background: #546DFE;
+  padding: 40px 0; }
+  .side-nav .logo-container .logo {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    color: #fff; }
+    .side-nav .logo-container .logo span {
+      color: #F3432C; }
+  .side-nav .logo-container .logo:hover {
+    background: none; }
+.side-nav .nav-link {
+  margin: 60px 0; }
+  .side-nav .nav-link a {
+    transition: all .3s ease-in-out; }
+  .side-nav .nav-link a:hover {
+    background: #F3432C;
+    color: #fff; }
+
+header {
+  background: #444;
+  color: #fff; }
+  header .header-text {
+    padding: 50px 0; }
+  header h3 {
+    font-size: 3rem;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+    color: #fff;
+    margin-top: 0; }
+    header h3 span {
+      color: #546DFE; }
+
+/*# sourceMappingURL=main.css.map */
