@@ -147,7 +147,7 @@ class Sell():
         params = (
             ('access_token', self.SELLER_ACCESS_TOKEN),
         )
-        data = '{"recipient":{"id":"' + str(fbid) + '"},"message":{"text":"Please share your location with me.","quick_replies":[{"content_type":"location"},{"content_type":"text","title":"Cancel"}]}}'
+        data = '{"recipient":{"id":"' + str(fbid) + '"},"message":{"text":"Please share your location with me.","quick_replies":[{"content_type":"location"}]}}'
         pprint(data)
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         print(response.json())
@@ -161,7 +161,6 @@ class Sell():
             seller.save()
             msg = 'Nice having you here ' + seller.restaurant + ' :)'
             self.text_message(fbid, msg)
-            print('stuff')
             self.request_location(fbid)
             return
         except Seller.DoesNotExist:
