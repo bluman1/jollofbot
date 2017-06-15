@@ -382,7 +382,7 @@ def seller_webhook(request):
                     payload = message['postback']['payload']
                     if payload == 'GET_STARTED':
                         #should ask for code here,
-                        msg =  'Hi {{user_first_name}}, please enter the jollof code provided by my creator.'
+                        msg =  'Hi {{user_first_name}}, please enter the jollof code shown on your dashboard.'
                         sell.text_message(fbid, msg)
                         return HttpResponse()
                     else:
