@@ -145,7 +145,7 @@ class Sell():
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', self.BUYER_ACCESS_TOKEN),
+            ('access_token', self.SELLER_ACCESS_TOKEN),
         )
         data = '{"recipient":{"id":"' + str(fbid) + '"},"message":{"text":"Please share your location with me.","quick_replies":[{"content_type":"location"},{"content_type":"text","title":"Cancel","payload":"CANCELLED"}]}}'
         pprint(data)
