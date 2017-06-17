@@ -429,7 +429,7 @@ def seller_webhook(request):
                                         return HttpResponse()
                                     else:
                                         msg = 'Sorry, {{user_first_name}}, something must have happened to my brain.'
-                                        text_message(fbid, msg)
+                                        sell.text_message(fbid, msg)
                                         seller.current_state = 'DEFAULT'
                                         seller.save()
                                         alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
@@ -445,7 +445,7 @@ def seller_webhook(request):
                                 return HttpResponse()
                             else:
                                 msg = 'Sorry, {{user_first_name}}. Please try saying jollof!'
-                                text_message(fbid, msg)
+                                sell.text_message(fbid, msg)
                                 seller.current_state = 'DEFAULT'
                                 seller.save()
                                 alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
