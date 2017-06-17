@@ -400,7 +400,7 @@ def seller_webhook(request):
                             sell.text_message(fbid, msg)
                         return HttpResponse()
                     else:
-                        current_state = buyer.current_state
+                        current_state = seller.current_state
                         if current_state != 'DEFAULT':
                             # menu click most probably
                             try:
