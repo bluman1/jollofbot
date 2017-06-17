@@ -428,11 +428,11 @@ def seller_webhook(request):
                                             alert_me(fbid, msg)
                                         return HttpResponse()
                                     else:
-                                        msg = 'Sorry, {{user_first_name}}, something must have happened to my brain.'
+                                        msg = 'Sorry {{user_first_name}}, something must have happened to my brain.'
                                         sell.text_message(fbid, msg)
                                         seller.current_state = 'DEFAULT'
                                         seller.save()
-                                        alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                        sell.alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
                                         return HttpResponse()
                             next_state_status = is_seller_next_state(current_state, payload)
                             if next_state_status:
@@ -448,7 +448,7 @@ def seller_webhook(request):
                                 sell.text_message(fbid, msg)
                                 seller.current_state = 'DEFAULT'
                                 seller.save()
-                                alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
+                                sell.alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
                                 return HttpResponse()
                         return HttpResponse()
 
