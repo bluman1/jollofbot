@@ -180,6 +180,10 @@ class Buy():
         print(response.json())
 
     
+    def jollof_chat(self, fbid):
+        pass
+
+
     def talk_to_jollof(self, fbid, text):
         if text == 'TALK_TO_JOLLOF':
             buyer = Buyer.objects.get(fbid=fbid)
@@ -187,6 +191,9 @@ class Buy():
             buyer.save()
             self.text_message(fbid, 'Hey {{user_first_name}}, what\'s up? :D')
             self.alert_me(fbid, 'Jollof chat initiated.')
+            '''admin = Buyer.objects.get(fbid=self.BLUMAN_ID)
+            admin.current_state = 'ADMIN_TALKING'
+            admin.save()'''
             return
         self.alert_me(fbid, 'Jollof: ' + text)
         self.text_message(fbid, 'Sorry {{user_first_name}}, I do not know how to say a lot yet :(')
@@ -229,7 +236,7 @@ class Buy():
                             if seller_jollof.available is False:
                                 continue
                             places_found = True
-                            imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
+                            imgur_link = 'http://via.placeholder.com/350x350'
                             print('Random Imgur Link: ' + imgur_link)
                             generic_title = seller.restaurant + ' jollof at N' + seller_jollof.price
                             generic_subtitle = seller_jollof.description
@@ -390,7 +397,7 @@ class Buy():
                             if seller_delicacy.available is False:
                                 continue
                             places_found = True
-                            imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
+                            imgur_link = 'http://via.placeholder.com/350x350'
                             print('Random Imgur Link: ' + imgur_link)
                             generic_title = seller.restaurant
                             generic_subtitle = seller.phone_number
@@ -442,7 +449,7 @@ class Buy():
                 generic_ending = ']}}}}'
                 generic_elements = ''
                 for delicacy in delicacies:
-                    imgur_link = 'http://i.imgur.com/' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(7)) + '.jpg'
+                    imgur_link = 'http://via.placeholder.com/350x350'
                     print('Random Imgur Link: ' + imgur_link)
                     generic_title = delicacy.price
                     generic_subtitle = delicacy.description

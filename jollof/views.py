@@ -302,7 +302,17 @@ sell_payload = Sell()
 seller_payloads = {
     'CANCELLED': sell_payload.cancel_action,
     'VENDOR_LOCATION': sell_payload.save_location,
+    'JOLLOF_PENDING_DELIVERIES': sell_payload.jollof_pending_deliveries,
+    'JOLLOF_PENDING_RESERVATIONS': sell_payload.jollof_pending_reservations,
+    'JOLLOF_ACCEPTED_DELIVERIES': sell_payload.jollof_accepted_deliveries,
+    'JOLLOF_ACCEPTED_RESERVATIONS': sell_payload.jollof_accepted_reservations,
+
+    'DELICACY_PENDING_DELIVERIES': sell_payload.delicacy_pending_deliveries,
+    'DELICACY_PENDING_RESERVATIONS': sell_payload.delicacy_pending_reservations,
+    'DELICACY_ACCEPTED_DELIVERIES': sell_payload.delicacy_accepted_deliveries,
+    'DELICACY_ACCEPTED_RESERVATIONS': sell_payload.delicacy_accepted_reservations,
 }
+
 @csrf_exempt
 def seller_webhook(request):
     if request.method == 'GET':
@@ -381,17 +391,27 @@ def seller_webhook(request):
                 elif 'postback' in message:
                     payload = message['postback']['payload']
                     if payload == 'GET_STARTED':
-                        #should ask for code here,
-                        msg =  'Hi {{user_first_name}}, please enter the jollof code shown on your dashboard.'
-                        sell.text_message(fbid, msg)
+                        #should ask for code here, or welcome seller back
+                        if connected:
+                            msg = 'Welcome back! i hope your jollof has been top notch.'
+                            sell.text_message(fbid, msg)
+                        else:
+                            msg =  'Hi {{user_first_name}}, please enter the jollof code shown on your dashboard.'
+                            sell.text_message(fbid, msg)
                         return HttpResponse()
                     else:
                         current_state = buyer.current_state
-                        if current_state == 'DEFAULT':
-                            pass
-                        else:
+                        if current_state != 'DEFAULT':
+                            # menu click most probably
+                            try:
+                                menu_payloads[payload](fbid, payload)
+                            except Exception as e:
+                                print('Exception\n' + str(e))
+                                alert_me(fbid, 'I can\'t seem to find the menu payload. payload: ' + payload)
+                            return HttpResponse()
+                        elif current_state == 'DEFAULT':
                             temp_payload = payload
-                            generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS']
+                            generic_payloads = ['JOLLOF_PENDING_DELIVERIES', 'JOLLOF_PENDING_RESERVATIONS', 'JOLLOF_ACCEPTED_DELIVERIES', 'JOLLOF_ACCEPTED_RESERVATIONS', 'DELICACY_PENDING_DELIVERIES', 'DELICACY_PENDING_RESERVATIONS', 'DELICACY_ACCEPTED_DELIVERIES', 'DELICACY_ACCEPTED_RESERVATIONS']
                             for generic in generic_payloads:
                                 if generic in payload:
                                     payload = generic
@@ -408,7 +428,7 @@ def seller_webhook(request):
                                             alert_me(fbid, msg)
                                         return HttpResponse()
                                     else:
-                                        msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
+                                        msg = 'Sorry, {{user_first_name}}, something must have happened to my brain.'
                                         text_message(fbid, msg)
                                         seller.current_state = 'DEFAULT'
                                         seller.save()
