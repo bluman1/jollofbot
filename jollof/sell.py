@@ -256,7 +256,7 @@ class Sell():
                 data = data.replace('PHONE_NUMBER', buyer.phone_number)
                 pprint(str(data))
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-                pprint(response.json()
+                pprint(response.json())
             elif jollof_action == 2:
                 # seller rejected order.
                 jollof_order.status = 2
@@ -563,7 +563,7 @@ class Sell():
                 data = data.replace('DELICACY_INFO', delicacy_order.description)
                 pprint(str(data))
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-                pprint(response.json()
+                pprint(response.json())
             elif delicacy_action == 2:
                 # seller rejected order.
                 delicacy_order.status = 2
