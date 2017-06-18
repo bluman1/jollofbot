@@ -418,7 +418,7 @@ def seller_webhook(request):
                             for generic in generic_payloads:
                                 if generic in payload:
                                     payload = generic
-                                    next_state_status = is_seller_next_state(current_state, payload)
+                                    next_state_status = is_seller_next_state(generic, payload)
                                     if next_state_status:
                                         try:
                                             seller_payloads[current_state](fbid, temp_payload)
