@@ -123,7 +123,6 @@ def buyer_webhook(request):
                             if received_text in random_greeting:
                                 print('Random greeting State: ' + current_state)
                                 msg = 'Hi {{user_first_name}}! Nothing is better than Nigerian Jollof! Say Jollof! anytime to know what I can do 👊'
-                                msg = msg.encode('utf-8')
                                 buy.text_message(fbid, msg)         
                                 return HttpResponse()
                             else:
