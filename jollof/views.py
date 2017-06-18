@@ -154,8 +154,8 @@ def buyer_webhook(request):
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()
-                                received_text = received_text.encode('utf-8')
-                                buy.alert_me(fbid, 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
+                                '''received_text = received_text.encode('utf-8')
+                                buy.alert_me(fbid, 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')'''
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
                             print('Not default  State: ' + current_state)
@@ -355,7 +355,7 @@ def seller_webhook(request):
                         seller = Seller.objects.get(fbid=fbid)
                         current_state = seller.current_state
                         if current_state == 'DEFAULT':
-                            print('Buselleryer in default state')
+                            print('Seller in default state')
                             if received_text in random_greeting:
                                 print('Random greeting State: ' + current_state)
                                 msg = 'Hi {{user_first_name}}! You are doing a great job!'
