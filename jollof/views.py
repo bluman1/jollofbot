@@ -148,8 +148,10 @@ def buyer_webhook(request):
                                 elif message['message']['text'].lower() == 'cancel':
                                     buy.cancel_order(fbid)
                                     return HttpResponse()
+                                elif fbid == buy.BLUMAN_ID:
+                                    buy.talk_to_jollof(fbid, received_text)
+                                    return HttpResponse()
                                 msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
-                                # msg = str(msg.encode('utf-8'))
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()

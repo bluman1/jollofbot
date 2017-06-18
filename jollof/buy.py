@@ -183,8 +183,37 @@ class Buy():
         print(response.json())
 
     
-    def jollof_chat(self, fbid):
-        pass
+    def jollof_chat(self, fbid, received):
+        if fbid == self.BLUMAN_ID:
+            splitit = received.split('_')
+            buyer_pk = int(splitit[0])
+            buyer = Buyer.objects.get(pk=buyer_pk)
+            buyer_fbid = buyer.fbid
+            pprint(splitit)
+            if splitit[1].lower() == 'done':
+                buyer.current_state = 'DEFAULT'
+                buyer.save()
+            else:
+                self.text_message(buyer_fbid, splitit[1])
+        else:
+            if received.lower() == 'done':
+                buyer = Buyer.objects.get(fbid=fbid)
+                buyer.current_state = 'DEFAULT'
+                buyer.save()
+                self.text_message(fbid, 'Jollof Chat ended.')
+            buyer = Buyer.objects.get(fbid=fbid)
+            msg = 'ID: ' + buyer.pk + '. Full Name: ' + buyer.first_name + ' ' + buyer.last_name + '. Message: ' + received 
+            headers = {
+                'Content-Type': 'application/json; charset=utf-8',         
+            }
+            params = (
+                ('access_token', self.BUYER_ACCESS_TOKEN),
+            )
+            data = {"recipient": {"id": str(self.BLUMAN_ID)},"message": {"text": str(msg)}}
+            data = json.dumps(data).encode("utf-8")
+            pprint(str(data))
+            response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+            pprint(response.json())
 
 
     def talk_to_jollof(self, fbid, text):
@@ -192,19 +221,15 @@ class Buy():
             buyer = Buyer.objects.get(fbid=fbid)
             buyer.current_state = 'TALK_TO_JOLLOF'
             buyer.save()
+            self.text_message(fbid, 'Send Done to end the conversation.')
             self.text_message(fbid, 'Hey {{user_first_name}}, what\'s up? :D')
-            self.alert_me(fbid, 'Jollof chat initiated.')
-            '''admin = Buyer.objects.get(fbid=self.BLUMAN_ID)
-            admin.current_state = 'ADMIN_TALKING'
-            admin.save()'''
             return
-        '''text = text.encode('latin-1')
-        self.alert_me(fbid, 'Jollof: ' + text)'''
-        self.text_message(fbid, 'Sorry {{user_first_name}}, I do not know how to say a lot yet :(')
+        '''self.text_message(fbid, 'Sorry {{user_first_name}}, I do not know how to say a lot yet :(')
         self.greet_buyer(fbid)
         buyer = Buyer.objects.get(fbid=fbid)
         buyer.current_state = 'DEFAULT'
-        buyer.save()
+        buyer.save()'''
+        self.jollof_chat(fbid, text)
         return
     
 
