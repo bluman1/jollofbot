@@ -69,24 +69,26 @@ class Buy():
 
             msg = 'New User - ' + buyer.first_name + ' ' + buyer.last_name + ' just became a Jollof Buyer. FBID = ' + str(fbid) + '.'
             headers = {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
             }
             params = (
                 ('access_token', self.BUYER_ACCESS_TOKEN),
             )
             data = '{"recipient": {"id": "'+str(my_fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
+            data = json.dumps(data).encode("utf-8")
             pprint(str(data))
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
         else:
             msg = 'An error just occured with fbid - ' + str(fbid) + '. Type: ' + str(alert_type) + '.'
             headers = {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
             }
             params = (
                 ('access_token', self.BUYER_ACCESS_TOKEN),
             )
             data = '{"recipient": {"id": "'+str(my_fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
+            data = json.dumps(data).encode("utf-8")
             pprint(str(data))
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
@@ -96,15 +98,15 @@ class Buy():
         buyer = Buyer.objects.get(fbid=fbid)
         if '{{user_first_name}}' in msg:
             msg = msg.replace('{{user_first_name}}', buyer.first_name)
-        msg = msg.encode('utf-8').decode('utf-8')
         print(msg)
         headers = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=utf-8',         
         }
         params = (
             ('access_token', self.BUYER_ACCESS_TOKEN),
         )
         data = '{"recipient": {"id": "'+str(fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
+        data = json.dumps(data).encode("utf-8")
         pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
