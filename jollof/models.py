@@ -114,6 +114,7 @@ class JollofOrder(models.Model):
 
 class Delicacy(models.Model):
     seller = models.ForeignKey(Seller)
+    name = models.CharField(max_length=80, default='Delicacy')
     price = models.FloatField(default=0.0)
     description = models.CharField(max_length=80)
     available = models.BooleanField(default=True)
