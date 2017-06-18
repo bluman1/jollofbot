@@ -202,7 +202,7 @@ class Buy():
                 buyer.save()
                 self.text_message(fbid, 'Jollof Chat ended.')
             buyer = Buyer.objects.get(fbid=fbid)
-            msg = 'ID: ' + buyer.pk + '. Full Name: ' + buyer.first_name + ' ' + buyer.last_name + '. Message: ' + received 
+            msg = 'ID: ' + str(buyer.pk) + '. Full Name: ' + buyer.first_name + ' ' + buyer.last_name + '. Message: ' + received 
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',         
             }
