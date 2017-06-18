@@ -421,14 +421,14 @@ def seller_webhook(request):
                                     next_state_status = is_seller_next_state(generic, payload)
                                     if next_state_status:
                                         try:
-                                            seller_payloads[current_state](fbid, temp_payload)
+                                            seller_payloads[generic](fbid, temp_payload)
                                             return HttpResponse()
                                         except Exception as e:
                                             seller.current_state = 'DEFAULT'
                                             seller.save()
                                             print('Exception\n' + str(e))
                                             msg = 'Failed Button payload. current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload
-                                            alert_me(fbid, msg)
+                                            sell.alert_me(fbid, msg)
                                         return HttpResponse()
                                     else:
                                         msg = 'Sorry {{user_first_name}}, something must have happened to my brain.'
@@ -444,7 +444,7 @@ def seller_webhook(request):
                                     seller_payloads[payload](fbid, payload) # this function is in charge of setting the new state.
                                 except Exception as e:
                                     print('Exception\n' + str(e))
-                                    alert_me(fbid, 'Can not find the current_state in other payload: ' + current_state + '. payload: ' + payload)
+                                    sell.alert_me(fbid, 'Can not find the current_state in other payload: ' + current_state + '. payload: ' + payload)
                                 return HttpResponse()
                             else:
                                 msg = 'Sorry, {{user_first_name}}. Please try saying jollof!'
