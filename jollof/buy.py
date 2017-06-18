@@ -195,6 +195,7 @@ class Buy():
             admin.current_state = 'ADMIN_TALKING'
             admin.save()'''
             return
+        text = text.encode('latin-1')
         self.alert_me(fbid, 'Jollof: ' + text)
         self.text_message(fbid, 'Sorry {{user_first_name}}, I do not know how to say a lot yet :(')
         self.greet_buyer(fbid)
