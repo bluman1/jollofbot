@@ -121,12 +121,13 @@ class Sell():
             msg = msg.replace('{{user_first_name}}', 'Jollof Creator')
         print(msg)
         headers = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=utf-8',
         }
         params = (
             ('access_token', self.SELLER_ACCESS_TOKEN),
         )
-        data = '{"recipient": {"id": "'+str(fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
+        data = {"recipient": {"id": str(fbid)},"message": {"text": str(msg)}}
+        data = json.dumps(data).encode("utf-8")
         pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
@@ -134,12 +135,13 @@ class Sell():
 
     def text_buyer(self, fbid, msg):
         headers = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=utf-8',
         }
         params = (
             ('access_token', os.environ.get('BUYER_ACCESS_TOKEN')),
         )
-        data = '{"recipient": {"id": "'+str(fbid)+'"},"message": {"text": "'+str(msg)+'"}}'
+        data = {"recipient": {"id": str(fbid)},"message": {"text": str(msg)}}
+        data = json.dumps(data).encode("utf-8")
         pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
