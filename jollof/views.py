@@ -154,8 +154,7 @@ def buyer_webhook(request):
                                 msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
-                                buyer.save()
-                                
+                                buyer.save()                    
                                 buy.alert_me(fbid, 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
@@ -227,6 +226,7 @@ def buyer_webhook(request):
                                 buy.alert_me(fbid, 'Postback recieved from default state but no next state.')
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()
+                            return HttpResponse()
                         else:
                             if payload in ['GET_LOCATION_JOLLOF', 'GET_LOCATION_DELICACY', 'TALK_TO_JOLLOF']:
                                 try:
