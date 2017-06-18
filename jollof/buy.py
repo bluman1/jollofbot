@@ -96,7 +96,7 @@ class Buy():
         buyer = Buyer.objects.get(fbid=fbid)
         if '{{user_first_name}}' in msg:
             msg = msg.replace('{{user_first_name}}', buyer.first_name)
-        msg = msg.encode('utf-8')
+        msg = msg.encode('utf-8').decode('utf-8')
         print(msg)
         headers = {
             'Content-Type': 'application/json',
