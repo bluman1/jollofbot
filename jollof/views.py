@@ -396,7 +396,7 @@ def seller_webhook(request):
                     if payload == 'GET_STARTED':
                         #should ask for code here, or welcome seller back
                         if connected:
-                            msg = 'Welcome back! i hope your jollof has been top notch.'
+                            msg = 'Welcome back! I hope your jollof has been top notch.'
                             sell.text_message(fbid, msg)
                         else:
                             msg =  'Hi {{user_first_name}}, please enter the jollof code shown on your dashboard.'

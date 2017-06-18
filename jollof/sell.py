@@ -272,7 +272,7 @@ class Sell():
             seller = Seller.objects.get(fbid=fbid)
             jollof_orders = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
             if jollof_orders.count() < 1:
-                msg = 'You have no pending jollof deliveries right now. We will send you updates in real-time.'
+                msg = 'You have no pending jollof deliveries right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
             else:
                 count = 0
@@ -339,7 +339,7 @@ class Sell():
             seller = Seller.objects.get(fbid=fbid)
             jollof_orders = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=0)
             if jollof_orders.count() < 1:
-                msg = 'You have no pending jollof reservations right now. We will send you updates in real-time.'
+                msg = 'You have no pending jollof reservations right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
             else:
                 count = 0
@@ -579,7 +579,7 @@ class Sell():
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
             if delicacy_orders.count() < 1:
-                msg = 'You have no pending delicacy deliveries right now. We will send you updates in real-time.'
+                msg = 'You have no pending delicacy deliveries right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
             else:
                 count = 0
@@ -646,7 +646,7 @@ class Sell():
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
             if delicacy_orders.count() < 1:
-                msg = 'You have no pending delicacy reservations right now. We will send you updates in real-time.'
+                msg = 'You have no pending delicacy reservations right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
             else:
                 count = 0
