@@ -123,7 +123,7 @@ def buyer_webhook(request):
                             if received_text in random_greeting:
                                 print('Random greeting State: ' + current_state)
                                 msg = 'Hi {{user_first_name}}! Nothing is better than Nigerian Jollof! Say Jollof! anytime to know what I can do 👊'
-                                msg = str(msg.encode('latin-1'))
+                                msg = msg.encode('utf-8')
                                 buy.text_message(fbid, msg)         
                                 return HttpResponse()
                             else:
@@ -154,7 +154,7 @@ def buyer_webhook(request):
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()
-                                received_text = received_text.encode('latin-1')
+                                received_text = received_text.encode('utf-8')
                                 buy.alert_me(fbid, 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
