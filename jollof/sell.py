@@ -112,6 +112,10 @@ class Sell():
         return user_details
     
     
+    def get_directions(self, origin_lat, origin_long, dest_lat, dest_long):
+        return 'https://www.google.com/maps/dir/' + str(origin_lat) + ',' + str(origin_long) + '/' + str(dest_lat) + ',' + str(dest_long) + '/'
+
+
     def text_message(self, fbid, msg):
         try:
             seller = Seller.objects.get(fbid=fbid)
@@ -128,7 +132,6 @@ class Sell():
         )
         data = {"recipient": {"id": str(fbid)},"message": {"text": str(msg)}}
         data = json.dumps(data).encode("utf-8")
-        pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
     
@@ -142,7 +145,6 @@ class Sell():
         )
         data = {"recipient": {"id": str(fbid)},"message": {"text": str(msg)}}
         data = json.dumps(data).encode("utf-8")
-        pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
 
@@ -163,9 +165,8 @@ class Sell():
             ('access_token', self.SELLER_ACCESS_TOKEN),
         )
         data = '{"recipient":{"id":"' + str(fbid) + '"},"message":{"text":"Please share your location with me.","quick_replies":[{"content_type":"location"}]}}'
-        pprint(data)
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-        print(response.json())
+        pprint(response.json())
 
 
     def process_code(self, fbid, jollof_code):
@@ -204,7 +205,6 @@ class Sell():
         if 'JOLLOF_PENDING_DELIVERIES_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
             if jollof_action == 1:
@@ -254,7 +254,7 @@ class Sell():
                 data = data.replace('FULL_NAME', buyer.first_name + ' ' + buyer.last_name)
                 data = data.replace('USER_ID', fbid)
                 data = data.replace('ORDER_CODE', jollof_order.code)
-                data = data.replace('DIRECTIONS', 'http://google.com')
+                data = data.replace('DIRECTIONS', self.get_directions(seller.latitude, seller.longitude, buyer.latitude, buyer.longitude))
                 data = data.replace('PHONE_NUMBER', buyer.phone_number)
                 pprint(str(data))
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
@@ -285,12 +285,11 @@ class Sell():
                     count += 1
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
-                    print('Random Imgur Link: ' + imgur_link)
                     generic_title = buyer.first_name + ' wants your Jollof delivered!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + jollof_order.pk + '_1'
-                    reject_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + jollof_order.pk + '_2'
+                    accept_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1'
+                    reject_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -303,7 +302,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
     
 
@@ -311,7 +310,6 @@ class Sell():
         if 'JOLLOF_PENDING_RESERVATIONS_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
             if jollof_action == 1:
@@ -355,8 +353,8 @@ class Sell():
                     generic_title = buyer.first_name + ' is requesting a Jollof reservation!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + jollof_order.pk + '_1'
-                    reject_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + jollof_order.pk + '_2'
+                    accept_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_1'
+                    reject_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -369,7 +367,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
     
 
@@ -377,7 +375,6 @@ class Sell():
         if 'JOLLOF_ACCEPTED_DELIVERIES_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
             if jollof_action == 1:
@@ -422,8 +419,8 @@ class Sell():
                     generic_title = buyer.first_name + ' wants your Jollof delivery completed!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + jollof_order.pk + '_1'
-                    reject_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + jollof_order.pk + '_2'
+                    accept_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_1'
+                    reject_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -436,7 +433,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
 
 
@@ -444,7 +441,6 @@ class Sell():
         if 'JOLLOF_ACCEPTED_RESERVATIONS_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
             if jollof_action == 1:
@@ -488,8 +484,8 @@ class Sell():
                     generic_title = buyer.first_name + ' wants their Jollof reservation completed!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + jollof_order.pk + '_1'
-                    reject_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + jollof_order.pk + '_2'
+                    accept_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + str(jollof_order.pk) + '_1'
+                    reject_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -502,7 +498,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
 
 
@@ -510,20 +506,20 @@ class Sell():
         if 'DELICACY_PENDING_DELIVERIES_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             delicacy_delivery_pk = int(payload_list[3])
             delicacy_action = int(payload_list[4])
+            delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
+            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_action == 1:
                 #seller accepted order
-                delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 delicacy_order.status = 1
                 delicacy_order.save()
-                msg = 'Great news! ' + seller.restaurant + ' have accepted your order and are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + delicacy_order.code + ' :D'
+                msg = seller.restaurant + ' just accepted your order for ' + delicacy.name + ' and are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + delicacy_order.code + ' :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
-                msg = 'You have accepted to deliver ' + buyer.first_name + '\'s Delicacy and they have been notified.'
+                msg = 'You have accepted to deliver ' + buyer.first_name + '\'s ' + delicacy.name + ' delicacy and they have been notified.'
                 self.text_message(fbid, msg)
                 headers = {
                     'Content-Type': 'application/json',
@@ -560,9 +556,9 @@ class Sell():
                 data = data.replace('FULL_NAME', buyer.first_name + ' ' + buyer.last_name)
                 data = data.replace('USER_ID', fbid)
                 data = data.replace('ORDER_CODE', delicacy_order.code)
-                data = data.replace('DIRECTIONS', 'http://google.com')
+                data = data.replace('DIRECTIONS', self.get_directions(seller.latitude, seller.longitude, buyer.latitude, buyer.longitude))
                 data = data.replace('PHONE_NUMBER', buyer.phone_number)
-                data = data.replace('DELICACY_INFO', delicacy_order.description)
+                data = data.replace('DELICACY_INFO', delicacy.name + '; ' + delicacy.description)
                 pprint(str(data))
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                 pprint(response.json())
@@ -570,14 +566,15 @@ class Sell():
                 # seller rejected order.
                 delicacy_order.status = 2
                 delicacy_order.save()
-                msg = 'You have rejected the order. I hope all is well with your restaurant.'
+                msg = 'You have rejected ' + buyer.first_name + '\'s' + ' order for ' + delicacy.name + '. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
-                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to get you your Delicacy. Say Jollof! to find other places near you.'
+                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to get you your ' + delicacy.name + ' Delicacy :( Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)            
         else:
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
+            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_orders.count() < 1:
                 msg = 'You have no pending delicacy deliveries right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
@@ -592,12 +589,11 @@ class Sell():
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
-                    print('Random Imgur Link: ' + imgur_link)
-                    generic_title = buyer.first_name + ' wants your Jollof delivered!'
+                    generic_title = buyer.first_name + ' wants ' + delicacy.name + ' delivered!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'DELICACY_PENDING_DELIVERIES_' + delicacy_order.pk + '_1'
-                    reject_order_payload = 'DELICACY_PENDING_DELIVERIES_' + delicacy_order.pk + '_2'
+                    accept_order_payload = 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1'
+                    reject_order_payload = 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -610,7 +606,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
     
 
@@ -618,33 +614,34 @@ class Sell():
         if 'DELICACY_PENDING_RESERVATIONS_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             delicacy_delivery_pk = int(payload_list[3])
             delicacy_action = int(payload_list[4])
+            delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
+            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_action == 1:
                 #seller accepted reservation
-                delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 delicacy_order.status = 1
                 delicacy_order.save()
-                msg = 'Great news! ' + seller.restaurant + ' have accepted your reservation and are waiting for you with your delicacy!. Remember your order code is ' + delicacy_order.code + ' :D'
+                msg = 'Great news! ' + seller.restaurant + ' have accepted your reservation for ' + delicacy.name + ' at their restaurant!. Remember your order code is ' + delicacy_order.code + ' :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
-                msg = 'You have accepted ' + buyer.first_name + '\'s delicacy reservation and they have been notified. They will be at your restaurant soon with their order code: ' + jollof_order.code
+                msg = 'You have accepted ' + buyer.first_name + '\'s ' + delicacy.name + ' reservation and they have been notified. They will be at your restaurant soon with their order code: ' + jollof_order.code
                 self.text_message(fbid, msg)
             elif delicacy_action == 2:
                 # seller rejected order.
                 delicacy_order.status = 2
                 delicacy_order.save()
-                msg = 'You have rejected the reservation. I hope all is well with your restaurant.'
+                msg = 'You have rejected ' + buyer.first_name + '\'s ' + delicacy.name + ' reservation. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
-                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to set up a delicacy reservation for you :( Say Jollof! to find other places near you.'
-                self.text_buyer(buyer.fbid, msg)            
+                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to set up a reservation for ' + delicacy.name + ' :( Say Jollof! to find other places near you.'
+                self.text_buyer(buyer.fbid, msg)   
         else:
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
+            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_orders.count() < 1:
                 msg = 'You have no pending delicacy reservations right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
@@ -659,11 +656,11 @@ class Sell():
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
-                    generic_title = buyer.first_name + ' is requesting a Delicacy reservation!'
+                    generic_title = buyer.first_name + ' is requesting a reservation for ' + delicacy.name + '!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + delicacy_order.pk + '_1'
-                    reject_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + delicacy_order.pk + '_2'
+                    accept_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + str(delicacy_order.pk) + '_1'
+                    reject_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -676,7 +673,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
     
 
@@ -684,33 +681,34 @@ class Sell():
         if 'DELICACY_ACCEPTED_DELIVERIES_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             delicacy_delivery_pk = int(payload_list[3])
             delicacy_action = int(payload_list[4])
+            delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
+            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_action == 1:
                 #seller completed order
-                delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 delicacy_order.status = 4
                 delicacy_order.save()
-                msg = seller.restaurant + ' just marked your delivery as completed! I hope you are enjoying your Delicacy :D'
+                msg = seller.restaurant + ' just marked your delivery as completed! I hope you are enjoying your ' + delicacy.name + ' :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
-                msg = 'You have marked ' + buyer.first_name + '\'s Delicacy delivery as completed and they have been notified. Sweet!'
+                msg = 'You have marked ' + buyer.first_name + '\'s ' + delicacy.name + ' delivery as completed and they have been notified. Sweet!'
                 self.text_message(fbid, msg)
             elif delicacy_action == 2:
                 # seller cancelled order.
                 delicacy_order.status = 3
                 delicacy_order.save()
-                msg = 'You have cancelled the delivery. I hope all is well with your restaurant.'
+                msg = 'You have cancelled ' + buyer.first_name + '\'s delivery of ' + delicacy.name + '. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
-                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to deliver your delicacy. Seems like Ghanian goblins got their delivery guy. Say Jollof! to find other places near you.'
+                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to deliver your ' + delicacy.name + '. Seems like Ghanaian goblins got their delivery guy. Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)            
         else:
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
+            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_orders.count() < 1:
                 msg = 'You have not accepted to deliver any orders.'
                 self.text_message(fbid, msg)
@@ -725,12 +723,11 @@ class Sell():
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
-                    print('Random Imgur Link: ' + imgur_link)
-                    generic_title = buyer.first_name + ' wants your Delicacy delivery completed!'
+                    generic_title = buyer.first_name + ' wants your ' + delicacy.name + ' delivery completed!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + delicacy_order.pk + '_1'
-                    reject_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + delicacy_order.pk + '_2'
+                    accept_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_1'
+                    reject_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -743,7 +740,7 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
 
 
@@ -751,7 +748,6 @@ class Sell():
         if 'DELICACY_ACCEPTED_RESERVATIONS_' in payload:
             seller = Seller.objects.get(fbid=fbid)
             payload_list = payload.split('_')
-            print(str(payload_list))
             delicacy_delivery_pk = int(payload_list[3])
             delicacy_action = int(payload_list[4])
             if delicacy_action == 1:
@@ -795,8 +791,8 @@ class Sell():
                     generic_title = buyer.first_name + ' wants their Delicacy reservation completed!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
                     # Should have a function that retrieves address from lat long
-                    accept_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + delicacy_order.pk + '_1'
-                    reject_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + delicacy_order.pk + '_2'
+                    accept_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + str(delicacy_order.pk) + '_1'
+                    reject_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
@@ -809,5 +805,5 @@ class Sell():
                     ('access_token', self.SELLER_ACCESS_TOKEN),
                 )
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
-                print(response.json())
+                pprint(response.json())
         return
