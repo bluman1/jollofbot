@@ -603,4 +603,4 @@ def show_profile(request):
             return render(request, 'profile.html', c)
         elif request.POST.get('business'):
             #handle business profile submission
-  
+            pass
