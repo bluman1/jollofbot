@@ -7,6 +7,7 @@ from pprint import pprint
 import googlemaps
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.password_validation import validate_password
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.http import JsonResponse
@@ -459,7 +460,7 @@ def seller_webhook(request):
 def show_signup(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            return HttpResponseRedirect('/dash/')
+            return HttpResponseRedirect('/vendor/overview/')
         return render(request, 'signup.html', {})
     elif request.method == 'POST':
         email = request.POST.get('email')
@@ -467,6 +468,8 @@ def show_signup(request):
         rest_name = request.POST.get('rest_name')
         password2 = request.POST.get('pwd_again')
         password = request.POST.get('password')
+        if bool(re.search(r'\d', username)):
+            return render(request, 'signup.html', {'merror': 'Username must contain alphabets only.'})
         if len(password) < 6:
             return render(request, 'signup.html', {'merror': 'Enter a password longer than that.'})
         if password != password2:
@@ -481,6 +484,10 @@ def show_signup(request):
             return render(request, 'signup.html', {'merror': 'User already exists.'})
         except Seller.DoesNotExist:
             pass
+        try:
+            validate_password(password)
+        except ValidationError  as ve:
+            return render(request, 'signup.html', {'merror': ve })
         print('DEBUG: Signup ' + email + '\t' + password)
         user = None
         try:
@@ -505,7 +512,7 @@ def show_signup(request):
         seller = Seller.objects.get(username=username)
         if auth_user is not None:
             login(request, auth_user)
-            return HttpResponseRedirect('/dash/')
+            return HttpResponseRedirect(username + '/vendor/profile/')
         else:
             """return invalid login here"""
             return render(request, 'signup.html', {'merror': 'Please go to login page.'})                
@@ -513,7 +520,7 @@ def show_signup(request):
 def show_login(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            return HttpResponseRedirect('/dash/')
+            return HttpResponseRedirect(username + '/vendor/overview/')
         return render(request, 'login.html', {})
     elif request.method == 'POST':
         username = request.POST.get('username')
@@ -521,7 +528,7 @@ def show_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect('/dash/')
+            return HttpResponseRedirect(username + '/vendor/overview/')
         else:
             """return invalid login here"""
             return render(request, 'login.html', {'merror': 'Please try again.'})
@@ -545,3 +552,54 @@ def show_dash(request):
             pprint(c)
             return render(request, 'dash.html', c)
         return HttpResponseRedirect('/')
+
+
+@login_required 
+def show_profile(request):
+    if request.method == 'GET':
+        c = {}
+        seller = Seller.objects.get(pk=request.user.pk)
+        jollof_code = seller.code
+        restaurant_name = seller.restaurant
+        email = seller.email
+        username = seller.username
+        first_name = seller.first_name
+        last_name = seller.last_name
+        phone_number = seller.phone_number
+        available_business = seller.available
+        opening_hour = seller.opening_hour
+        closing_hour = seller.closing_hour
+        available_delivery = seller.delivers
+        delivery_time = seller.average_delivery_time
+
+        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time }
+        pprint(c)
+        return render(request, 'profile.html', c)
+    elif request.method == 'POST':
+        if request.POST.get('basic'):
+            #handle basic profile submission
+            seller = Seller.objects.get(pk=request.user.pk)
+            seller.restaurant = request.POST.get('restaurant_name')
+            seller.first_name = request.POST.get('first_name')
+            seller.last_name = request.POST.get('last_name')
+            seller.phone_number = request.POST.get('phone_number')
+            seller.save()
+            jollof_code = seller.code
+            restaurant_name = seller.restaurant
+            email = seller.email
+            username = seller.username
+            first_name = seller.first_name
+            last_name = seller.last_name
+            phone_number = seller.phone_number
+            available_business = seller.available
+            opening_hour = seller.opening_hour
+            closing_hour = seller.closing_hour
+            available_delivery = seller.delivers
+            delivery_time = seller.average_delivery_time
+
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time }
+            pprint(c)
+            return render(request, 'profile.html', c)
+        elif request.POST.get('business'):
+            #handle business profile submission
+            pass

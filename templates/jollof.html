@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>Jollof - JollofBot</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/assets/css/jb.css" rel="stylesheet" />
+
+    <!--     Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Grand+Hotel|Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <link href="/static/assets/css/pe-icon-7-stroke.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <!-- Navbar will come here -->
+    <nav class="navbar navbar-ct-orange navbar-icons">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+                <a class="navbar-brand" href="/{{username}}/">JollofBot</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/{{username}}/">
+                            <i class="pe-7s-global"></i>
+                            <p>Overview</p>
+                        </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="pe-7s-cart"></i>
+                            <p>
+                                Deliveries
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/{{username}}/deliveries/jollof/">Jollof Deliveries</a></li>
+                            <li><a href="/{{username}}/deliveries/delicacy/">Delicacy Deliveries</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="pe-7s-coffee"></i>
+                            <p>
+                                Reservations
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/{{username}}/reservations/jollof/">Jollof Reservations</a></li>
+                            <li><a href="/{{username}}/reservations/delicacy/">Delicacy Reservations</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="pe-7s-portfolio"></i>
+                            <p>
+                                Products
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/{{username}}/jollof/">Jollof</a></li>
+                            <li><a href="/{{username}}/delicacies/">Delicacies</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="pe-7s-keypad"></i>
+                            <p>
+                                Account
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/{{username}}/profile/">Profile</a></li>
+                            <li><a href="#">Analytics</a></li>
+                            <li><a href="#">Billing</a></li>
+                            <li><a href="#">Contact Support</a></li>
+                            <li class="divider"></li>
+                            <li><a href="/{{username}}/logout/">Sign Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+
+        </div>
+        <!-- /.container-fluid -->
+
+    </nav>
+    <!-- end navbar -->
+
+    <div class="wrapper">
+        <div class="container">
+            <h1><span class="tim-note">Your Jollof Rice</span> <small class="subtitle">Edit your Jollof's details here.</small>                </h1>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card ">
+                        <div class="image" style="background-image: url('/static/assets/img/fish.jpg'); background-position: center center; background-size: cover;">
+                            <img src="/static/assets/img/fish.jpg" alt="..." style="display: none;">
+                            <div class="filter filter-orange"></div>
+                        </div>
+                        <div class="content">
+                            <h4 class="title">Jollof Rice</h4>
+                            <p class="description">
+                                Original Nigerian Jollof Rice
+                            </p>
+                            <div class="footer">
+                                Price:<span class="price"> ₦ 1250</span> | Delivery:
+                                <span class="price"> ₦ 250</span> |
+                                <span class="price"> Available</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end card -->
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label for="jollof_description">Description</label>
+                        <input id="jollof_description" type="text" value="Original Nigerian Jollof Rice" placeholder="Jollof Description" class="form-control"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="jollof_price">Jollof Price</label>
+                        <input id="jollof_price" type="text" value="1250" placeholder="Jollof Price" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="jollof_delivery">Delivery Price</label>
+                        <input id="jollof_delivery" type="text" value="250" placeholder="Delivery Price" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="jollof_available">Available</label>
+                        <div class="switch" data-on-label="Yes" data-off-label="No">
+                            <input id="jollof_available" type="checkbox" checked class="ct-orange" />
+                        </div>
+                    </div>
+                    <div class="form-group pull-right">
+                        <button class="btn btn-warning">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer footer-big footer-transparent" style="background-image: url('/static/assets/img/jollof.jpeg')">
+            <!-- .footer-black is another class for the footer, for the transparent version, we recommend you to change the url of the image with your favourite image.          -->
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h5 class="title">JollofBot</h5>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a href="/">
+                                    Home
+                                </a>
+                                </li>
+                                <li>
+                                    <a href="/about/">
+                                    About
+                                </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="col-md-4 col-md-offset-1">
+                        <h5 class="title"> Support</h5>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a href="/contact/">
+                                   Contact Us
+                                </a>
+                                </li>
+
+                                <li>
+                                    <a href="/tandc/">
+                                    Terms & Conditions
+                                </a>
+                                </li>
+                                <li>
+                                    <a href="/policy/">
+                                    Company Policy
+                                </a>
+                                </li>
+                                <li>
+                                    <a href="/moneyback/">
+                                   Money Back
+                                </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="col-md-4">
+                        <h5 class="title">Latest News</h5>
+                        <nav>
+                            <ul>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-twitter"></i> <b>JollofBot</b> One tap away from Nigerian Jollof...
+                                        <hr class="hr-small">
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-twitter"></i> We've just been featured on <b> Techcabal Website</b>!
+                                        Thank you everybody for...
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </div>
+
+                </div>
+                <hr />
+                <div class="copyright">
+                    &copy; 2017 JollofBot
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+</body>
+
+<!--  jQuery and Bootstrap core files    -->
+<script src="/static/assets/js/jquery.js" type="text/javascript"></script>
+<script src="/static/assets/js/jquery-ui.custom.min.js" type="text/javascript"></script>
+
+<script src="/static/assets/js/bootstrap.min.js" type="text/javascript"></script>
+
+<!--  Plugins -->
+<script src="/static/assets/js/jb-checkbox.js"></script>
+<script src="/static/assets/js/jb-morphing.js"></script>
+<script src="/static/assets/js/jb-radio.js"></script>
+<script src="/static/assets/js/jb-bootstrapswitch.js"></script>
+<script src="/static/assets/js/bootstrap-select.js"></script>
+<script src="/static/assets/js/bootstrap-datepicker.js"></script>
+<script src="/static/assets/js/chartist.min.js"></script>
+<script src="/static/assets/js/jquery.tagsinput.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+
+<!--  Get Shit Done Kit PRO Core javascript 	 -->
+<script src="/static/assets/js/jb.js"></script>
+
+<!-- If you are using TypeKit.com uncomment this code otherwise you can delete it -->
+<!--
+    <script src="https://use.typekit.net/[your kit code here].js"></script>
+    <script>try{Typekit.load({ async: true });}catch(e){}</script>
+    -->
+
+<!-- If you have retina @2x images on your server which can be sent to iPhone/iPad/MacRetina, please uncomment the next line, otherwise you can delete it -->
+<!-- <script src="/static/assets/js/retina.min.js"></script> -->
+
+
+</html>

@@ -33,4 +33,5 @@ urlpatterns = [
     url(r'^login/$', show_login),
     url(r'^logout/(?P<username>\w+)/$', show_logout),
     url(r'^dash/$', show_dash),
+    url(r'^vendor/profile/$', show_profile),
 ]
