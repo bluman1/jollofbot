@@ -535,7 +535,7 @@ def show_login(request):
 
 
 @login_required
-def show_logout(request, username):
+def show_logout(request):
     if request.method == 'GET':
         logout(request)
         return HttpResponseRedirect('/')
