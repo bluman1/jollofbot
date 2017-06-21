@@ -576,13 +576,14 @@ def show_profile(request):
         pprint(c)
         return render(request, 'profile.html', c)
     elif request.method == 'POST':
+        pprint(request.POST)
         if request.POST.get('basic'):
             #handle basic profile submission
             seller = Seller.objects.get(pk=request.user.pk)
-            seller.restaurant = request.POST.get('restaurant_name')
-            seller.first_name = request.POST.get('first_name')
-            seller.last_name = request.POST.get('last_name')
-            seller.phone_number = request.POST.get('phone_number')
+            seller.restaurant = request.POST.get('restaurant_name', '')
+            seller.first_name = request.POST.get('first_name', '')
+            seller.last_name = request.POST.get('last_name', '')
+            seller.phone_number = request.POST.get('phone_number', '')
             seller.save()
             jollof_code = seller.code
             restaurant_name = seller.restaurant
@@ -602,4 +603,4 @@ def show_profile(request):
             return render(request, 'profile.html', c)
         elif request.POST.get('business'):
             #handle business profile submission
-            pass
+  
