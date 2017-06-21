@@ -512,7 +512,7 @@ def show_signup(request):
         seller = Seller.objects.get(username=username)
         if auth_user is not None:
             login(request, auth_user)
-            return HttpResponseRedirect(username + '/vendor/profile/')
+            return HttpResponseRedirect('/vendor/profile/')
         else:
             """return invalid login here"""
             return render(request, 'signup.html', {'merror': 'Please go to login page.'})                
