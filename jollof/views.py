@@ -773,16 +773,15 @@ def show_jollof_reservations(request):
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
         jollof_order = JollofOrder.objects.get(pk=int(request.POST.get('pk')))
+        a = str(jollof_order.pk)
         if request.POST.get('accept'):
-            jollof_order.status = 1
-            #TODO: Inform seller and buyer tht order has been accepted.
+            sell.jollof_pending_reservations(seller.fbid, 'JOLLOF_PENDING_RESERVATIONS_'+a+'_1')
         elif request.POST.get('reject'):
-            jollof_order.status = 2
+            sell.jollof_pending_reservations(seller.fbid, 'JOLLOF_PENDING_RESERVATIONS_'+a+'_2)
         elif request.POST.get('complete'):
-            jollof_order.status = 4
+            sell.jollof_accepted_reservations(seller.fbid, 'JOLLOF_ACCEPTED_RESERVATIONS_'+a+'_1')
         elif request.POST.get('cancel'):
-            jollof_order.status = 3
-        jollof_order.save()
+            sell.jollof_accepted_reservations(seller.fbid, 'JOLLOF_ACCEPTED_RESERVATIONS_'+a+'_2')
         pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=0)
         accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -803,16 +802,15 @@ def show_jollof_deliveries(request):
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
         jollof_order = JollofOrder.objects.get(pk=int(request.POST.get('pk')))
+        a = str(jollof_order.pk)
         if request.POST.get('accept'):
-            jollof_order.status = 1
-            #TODO: Inform seller and buyer tht order has been accepted.
+            sell.jollof_pending_deliveries(seller.fbid, 'JOLLOF_PENDING_DELIVERIES_'+a+'_1')
         elif request.POST.get('reject'):
-            jollof_order.status = 2
+            sell.jollof_pending_deliveries(seller.fbid, 'JOLLOF_PENDING_DELIVERIES_'+a+'_2)
         elif request.POST.get('complete'):
-            jollof_order.status = 4
+            sell.jollof_accepted_deliveries(seller.fbid, 'JOLLOF_ACCEPTED_DELIVERIES_'+a+'_1')
         elif request.POST.get('cancel'):
-            jollof_order.status = 3
-        jollof_order.save()
+            sell.jollof_accepted_deliveries(seller.fbid, 'JOLLOF_ACCEPTED_DELIVERIES_'+a+'_2')
         pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
         accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -833,16 +831,15 @@ def show_delicacy_reservations(request):
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
         delicacy_order = DelicacyOrder.objects.get(pk=int(request.POST.get('pk')))
+        a = str(delicacy_order.pk)
         if request.POST.get('accept'):
-            delicacy_order.status = 1
-            #TODO: Inform seller and buyer tht order has been accepted.
+            sell.delicacy_pending_reservations(seller.fbid, 'DELICACY_PENDING_RESERVATIONS_'+a+'_1')
         elif request.POST.get('reject'):
-            delicacy_order.status = 2
+            sell.delicacy_pending_reservations(seller.fbid, 'DELICACY_PENDING_RESERVATIONS_'+a+'_2)
         elif request.POST.get('complete'):
-            delicacy_order.status = 4
+            sell.delicacy_accepted_reservations(seller.fbid, 'DELICACY_ACCEPTED_RESERVATIONS_'+a+'_1')
         elif request.POST.get('cancel'):
-            delicacy_order.status = 3
-        delicacy_order.save()
+            sell.delicacy_accepted_reservations(seller.fbid, 'DELICACY_ACCEPTED_RESERVATIONS_'+a+'_2')
         pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
         accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -863,16 +860,15 @@ def show_delicacy_deliveries(request):
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
         delicacy_order = DelicacyOrder.objects.get(pk=int(request.POST.get('pk')))
+        a = str(delicacy_order.pk)
         if request.POST.get('accept'):
-            delicacy_order.status = 1
-            #TODO: Inform seller and buyer tht order has been accepted.
+            sell.delicacy_pending_deliveries(seller.fbid, 'DELICACY_PENDING_DELIVERIES_'+a+'_1')
         elif request.POST.get('reject'):
-            delicacy_order.status = 2
+            sell.delicacy_pending_deliveries(seller.fbid, 'DELICACY_PENDING_DELIVERIES_'+a+'_2)
         elif request.POST.get('complete'):
-            delicacy_order.status = 4
+            sell.delicacy_accepted_deliveries(seller.fbid, 'DELICACY_ACCEPTED_DELIVERIES_'+a+'_1')
         elif request.POST.get('cancel'):
-            delicacy_order.status = 3
-        delicacy_order.save()
+            sell.delicacy_accepted_deliveries(seller.fbid, 'DELICACY_ACCEPTED_DELIVERIES_'+a+'_2')
         pendings = JollofOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
         accepteds = JollofOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}

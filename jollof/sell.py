@@ -207,10 +207,14 @@ class Sell():
             payload_list = payload.split('_')
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
+            jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
             if jollof_action == 1:
-                #seller accepted order
-                jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
+                #seller accepted order           
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
+                if jollof_order.status != 0:
+                    msg = 'You have can no longer accept this order.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 1
                 jollof_order.save()
                 msg = 'Great news! ' + seller.restaurant + ' have accepted your order and are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + jollof_order.code + ' :D'
@@ -261,6 +265,10 @@ class Sell():
                 pprint(response.json())
             elif jollof_action == 2:
                 # seller rejected order.
+                if jollof_order.status != 0:
+                    msg = 'You have can no longer reject this order.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 2
                 jollof_order.save()
                 msg = 'You have rejected the order. I hope all is well with your Jollof.'
@@ -312,10 +320,14 @@ class Sell():
             payload_list = payload.split('_')
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
+            jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
             if jollof_action == 1:
                 #seller accepted reservation
-                jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
+                if jollof_order.status != 0:
+                    msg = 'You have can no longer accept this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 1
                 jollof_order.save()
                 msg = 'Great news! ' + seller.restaurant + ' have accepted your reservation and are waiting for you with your jollof!. Remember your order code is ' + jollof_order.code + ' :D'
@@ -326,6 +338,10 @@ class Sell():
                 self.text_message(fbid, msg)
             elif jollof_action == 2:
                 # seller rejected order.
+                if jollof_order.status != 0:
+                    msg = 'You have can no longer reject this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 2
                 jollof_order.save()
                 msg = 'You have rejected the reservation. I hope all is well with your Jollof and your restaurant.'
@@ -377,10 +393,14 @@ class Sell():
             payload_list = payload.split('_')
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
+            jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
             if jollof_action == 1:
                 #seller completed order
-                jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
+                if jollof_order.status != 1:
+                    msg = 'You have can no longer complete this order.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 4
                 jollof_order.save()
                 msg = seller.restaurant + ' just marked your delivery as completed! I hope you are enjoying your Jollof :D'
@@ -391,6 +411,10 @@ class Sell():
                 self.text_message(fbid, msg)
             elif jollof_action == 2:
                 # seller cancelled order.
+                if jollof_order.status != 1:
+                    msg = 'You have can no longer complete this order.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 3
                 jollof_order.save()
                 msg = 'You have cancelled the delivery. I hope all is well with your Jollof.'
@@ -443,10 +467,14 @@ class Sell():
             payload_list = payload.split('_')
             jollof_delivery_pk = int(payload_list[3])
             jollof_action = int(payload_list[4])
+            jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
             if jollof_action == 1:
                 #seller completed reservation
-                jollof_order = JollofOrder.objects.get(pk=jollof_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
+                if jollof_order.status != 1:
+                    msg = 'You have can no longer complete this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 4
                 jollof_order.save()
                 msg = 'Sweet! ' + seller.restaurant + ' just marked your reservation as completed. I hope you are enjoying your jollof :D'
@@ -457,11 +485,15 @@ class Sell():
                 self.text_message(fbid, msg)
             elif jollof_action == 2:
                 # seller cancelled order.
+                if jollof_order.status != 1:
+                    msg = 'You have can no longer complete this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 jollof_order.status = 3
                 jollof_order.save()
+                buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                 msg = 'You have cancelled the reservation and ' + buyer.first_name + ' has been informed. I hope all is well with your Jollof.'
                 self.text_message(fbid, msg)
-                buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                 msg = 'I am so sorry right now but ' + seller.restaurant + ' will not be able to accept your jollof reservation. :( Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)           
         else:
@@ -513,6 +545,10 @@ class Sell():
             if delicacy_action == 1:
                 #seller accepted order
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                if delicacy_order.status != 0:
+                    msg = 'You have can no longer accept this order.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 1
                 delicacy_order.save()
                 msg = seller.restaurant + ' just accepted your order for ' + delicacy.name + ' and are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + delicacy_order.code + ' :D'
@@ -564,11 +600,15 @@ class Sell():
                 pprint(response.json())
             elif delicacy_action == 2:
                 # seller rejected order.
+                if delicacy_order.status != 0:
+                    msg = 'You have can no longer reject this order.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 2
                 delicacy_order.save()
+                buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 msg = 'You have rejected ' + buyer.first_name + '\'s' + ' order for ' + delicacy.name + '. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
-                buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to get you your ' + delicacy.name + ' Delicacy :( Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)            
         else:
@@ -621,6 +661,10 @@ class Sell():
             if delicacy_action == 1:
                 #seller accepted reservation
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                if delicacy_order.status != 0:
+                    msg = 'You have can no longer accept this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 1
                 delicacy_order.save()
                 msg = 'Great news! ' + seller.restaurant + ' have accepted your reservation for ' + delicacy.name + ' at their restaurant!. Remember your order code is ' + delicacy_order.code + ' :D'
@@ -631,11 +675,15 @@ class Sell():
                 self.text_message(fbid, msg)
             elif delicacy_action == 2:
                 # seller rejected order.
+                if delicacy_order.status != 0:
+                    msg = 'You have can no longer reject this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 2
                 delicacy_order.save()
+                buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 msg = 'You have rejected ' + buyer.first_name + '\'s ' + delicacy.name + ' reservation. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
-                buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to set up a reservation for ' + delicacy.name + ' :( Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)   
         else:
@@ -688,6 +736,10 @@ class Sell():
             if delicacy_action == 1:
                 #seller completed order
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                if delicacy_order.status != 1:
+                    msg = 'You have can no longer complete this order.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 4
                 delicacy_order.save()
                 msg = seller.restaurant + ' just marked your delivery as completed! I hope you are enjoying your ' + delicacy.name + ' :D'
@@ -698,11 +750,15 @@ class Sell():
                 self.text_message(fbid, msg)
             elif delicacy_action == 2:
                 # seller cancelled order.
+                if delicacy_order.status != 1:
+                    msg = 'You have can no longer cancel this order.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 3
                 delicacy_order.save()
+                buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 msg = 'You have cancelled ' + buyer.first_name + '\'s delivery of ' + delicacy.name + '. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
-                buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to deliver your ' + delicacy.name + '. Seems like Ghanaian goblins got their delivery guy. Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)            
         else:
@@ -750,10 +806,14 @@ class Sell():
             payload_list = payload.split('_')
             delicacy_delivery_pk = int(payload_list[3])
             delicacy_action = int(payload_list[4])
+            delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
             if delicacy_action == 1:
                 #seller completed reservation
-                delicacy_order = DelicacyOrder.objects.get(pk=delicacy_delivery_pk)
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                if delicacy_order.status != 1:
+                    msg = 'You have can no longer complete this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 4
                 delicacy_order.save()
                 msg = 'Sweet! ' + seller.restaurant + ' just marked your reservation as completed. I hope you are enjoying your delicacy :D'
@@ -764,11 +824,15 @@ class Sell():
                 self.text_message(fbid, msg)
             elif delicacy_action == 2:
                 # seller cancelled order.
+                if delicacy_order.status != 1:
+                    msg = 'You have can no longer cancel this reservation.'
+                    self.text_message(fbid, msg)
+                    return
                 delicacy_order.status = 3
                 delicacy_order.save()
+                buyer = Buyer.objects.get(pk=int(delicacy_order.jollof_buyer.pk))
                 msg = 'You have cancelled the reservation and ' + buyer.first_name + ' has been informed. I hope all is well with your restaurant.'
                 self.text_message(fbid, msg)
-                buyer = Buyer.objects.get(pk=int(delicacy_order.jollof_buyer.pk))
                 msg = 'I am so sorry right now but ' + seller.restaurant + ' will not be able to accept your delicacy reservation. :( Say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)           
         else:
