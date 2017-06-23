@@ -214,6 +214,8 @@ class Sell():
                 if jollof_order.status != 0:
                     msg = 'You can no longer accept this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 1
                 jollof_order.save()
@@ -268,6 +270,8 @@ class Sell():
                 if jollof_order.status != 0:
                     msg = 'You can no longer reject this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 2
                 jollof_order.save()
@@ -327,6 +331,8 @@ class Sell():
                 if jollof_order.status != 0:
                     msg = 'You can no longer accept this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 1
                 jollof_order.save()
@@ -341,6 +347,8 @@ class Sell():
                 if jollof_order.status != 0:
                     msg = 'You can no longer reject this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 2
                 jollof_order.save()
@@ -400,6 +408,8 @@ class Sell():
                 if jollof_order.status != 1:
                     msg = 'You can no longer complete this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 4
                 jollof_order.save()
@@ -414,6 +424,8 @@ class Sell():
                 if jollof_order.status != 1:
                     msg = 'You can no longer complete this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 3
                 jollof_order.save()
@@ -474,6 +486,8 @@ class Sell():
                 if jollof_order.status != 1:
                     msg = 'You can no longer complete this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 4
                 jollof_order.save()
@@ -488,6 +502,8 @@ class Sell():
                 if jollof_order.status != 1:
                     msg = 'You can no longer complete this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 jollof_order.status = 3
                 jollof_order.save()
@@ -548,6 +564,8 @@ class Sell():
                 if delicacy_order.status != 0:
                     msg = 'You can no longer accept this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 1
                 delicacy_order.save()
@@ -603,6 +621,8 @@ class Sell():
                 if delicacy_order.status != 0:
                     msg = 'You can no longer reject this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 2
                 delicacy_order.save()
@@ -664,6 +684,8 @@ class Sell():
                 if delicacy_order.status != 0:
                     msg = 'You can no longer accept this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 1
                 delicacy_order.save()
@@ -678,6 +700,8 @@ class Sell():
                 if delicacy_order.status != 0:
                     msg = 'You can no longer reject this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 2
                 delicacy_order.save()
@@ -739,6 +763,8 @@ class Sell():
                 if delicacy_order.status != 1:
                     msg = 'You can no longer complete this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 4
                 delicacy_order.save()
@@ -753,6 +779,8 @@ class Sell():
                 if delicacy_order.status != 1:
                     msg = 'You can no longer cancel this order.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 3
                 delicacy_order.save()
@@ -813,6 +841,8 @@ class Sell():
                 if delicacy_order.status != 1:
                     msg = 'You can no longer complete this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 4
                 delicacy_order.save()
@@ -827,6 +857,8 @@ class Sell():
                 if delicacy_order.status != 1:
                     msg = 'You can no longer cancel this reservation.'
                     self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
                     return
                 delicacy_order.status = 3
                 delicacy_order.save()
