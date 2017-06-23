@@ -65,6 +65,10 @@ class Buy():
         return code
 
 
+    def parse_phone(self, text):
+        return True
+
+
     def get_started_button(self):
         headers = {
             'Content-Type': 'application/json',
@@ -202,6 +206,22 @@ class Buy():
         self.text_message(fbid, msg)
 
 
+    def request_phone(self, fbid, text):
+        buyer = Buyer.objects.get(fbid=fbid)
+        phone = self.parse_phone(text)
+        if not phone:
+            msg = 'Ugh mehn, that phone number doesn\'t look right. Please enter a valid Nigerian Phone Number.'
+            self.text_message(fbid, msg)
+            return
+        buyer.phone_number = phone
+        buyer.current_state = 'DEFAULT'
+        buyer.save()
+        msg = 'Woot woot! I can now contact you when any of your deliveries arrive. Now to properly introduce myself...'
+        self.text_message(fbid, msg)
+        self.greet_buyer(fbid)
+        return
+
+
     def request_location(self, fbid):
         headers = {
             'Content-Type': 'application/json',
@@ -271,7 +291,7 @@ class Buy():
             buyer.latitude = float(location_lat)
             buyer.current_state = 'DEFAULT'
             buyer.save()       
-            self.text_message(fbid, 'Searching for nearby Jollof!')
+            self.text_message(fbid, 'Searching for nearby Jollof!💪')
             # Pass lat and long to function that will retrieve nearest sellers
             sellers = Seller.objects.all()
             if sellers.count() < 1:

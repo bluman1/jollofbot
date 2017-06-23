@@ -212,7 +212,7 @@ class Sell():
                 #seller accepted order           
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                 if jollof_order.status != 0:
-                    msg = 'You have can no longer accept this order.'
+                    msg = 'You can no longer accept this order.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 1
@@ -266,7 +266,7 @@ class Sell():
             elif jollof_action == 2:
                 # seller rejected order.
                 if jollof_order.status != 0:
-                    msg = 'You have can no longer reject this order.'
+                    msg = 'You can no longer reject this order.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 2
@@ -325,7 +325,7 @@ class Sell():
                 #seller accepted reservation
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                 if jollof_order.status != 0:
-                    msg = 'You have can no longer accept this reservation.'
+                    msg = 'You can no longer accept this reservation.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 1
@@ -339,7 +339,7 @@ class Sell():
             elif jollof_action == 2:
                 # seller rejected order.
                 if jollof_order.status != 0:
-                    msg = 'You have can no longer reject this reservation.'
+                    msg = 'You can no longer reject this reservation.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 2
@@ -398,7 +398,7 @@ class Sell():
                 #seller completed order
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                 if jollof_order.status != 1:
-                    msg = 'You have can no longer complete this order.'
+                    msg = 'You can no longer complete this order.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 4
@@ -412,7 +412,7 @@ class Sell():
             elif jollof_action == 2:
                 # seller cancelled order.
                 if jollof_order.status != 1:
-                    msg = 'You have can no longer complete this order.'
+                    msg = 'You can no longer complete this order.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 3
@@ -472,7 +472,7 @@ class Sell():
                 #seller completed reservation
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                 if jollof_order.status != 1:
-                    msg = 'You have can no longer complete this reservation.'
+                    msg = 'You can no longer complete this reservation.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 4
@@ -486,7 +486,7 @@ class Sell():
             elif jollof_action == 2:
                 # seller cancelled order.
                 if jollof_order.status != 1:
-                    msg = 'You have can no longer complete this reservation.'
+                    msg = 'You can no longer complete this reservation.'
                     self.text_message(fbid, msg)
                     return
                 jollof_order.status = 3
@@ -546,7 +546,7 @@ class Sell():
                 #seller accepted order
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 if delicacy_order.status != 0:
-                    msg = 'You have can no longer accept this order.'
+                    msg = 'You can no longer accept this order.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 1
@@ -601,7 +601,7 @@ class Sell():
             elif delicacy_action == 2:
                 # seller rejected order.
                 if delicacy_order.status != 0:
-                    msg = 'You have can no longer reject this order.'
+                    msg = 'You can no longer reject this order.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 2
@@ -662,7 +662,7 @@ class Sell():
                 #seller accepted reservation
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 if delicacy_order.status != 0:
-                    msg = 'You have can no longer accept this reservation.'
+                    msg = 'You can no longer accept this reservation.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 1
@@ -676,7 +676,7 @@ class Sell():
             elif delicacy_action == 2:
                 # seller rejected order.
                 if delicacy_order.status != 0:
-                    msg = 'You have can no longer reject this reservation.'
+                    msg = 'You can no longer reject this reservation.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 2
@@ -737,7 +737,7 @@ class Sell():
                 #seller completed order
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 if delicacy_order.status != 1:
-                    msg = 'You have can no longer complete this order.'
+                    msg = 'You can no longer complete this order.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 4
@@ -751,7 +751,7 @@ class Sell():
             elif delicacy_action == 2:
                 # seller cancelled order.
                 if delicacy_order.status != 1:
-                    msg = 'You have can no longer cancel this order.'
+                    msg = 'You can no longer cancel this order.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 3
@@ -811,7 +811,7 @@ class Sell():
                 #seller completed reservation
                 buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                 if delicacy_order.status != 1:
-                    msg = 'You have can no longer complete this reservation.'
+                    msg = 'You can no longer complete this reservation.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 4
@@ -825,7 +825,7 @@ class Sell():
             elif delicacy_action == 2:
                 # seller cancelled order.
                 if delicacy_order.status != 1:
-                    msg = 'You have can no longer cancel this reservation.'
+                    msg = 'You can no longer cancel this reservation.'
                     self.text_message(fbid, msg)
                     return
                 delicacy_order.status = 3

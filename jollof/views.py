@@ -55,6 +55,7 @@ def buyer_prep(request):
 buy_payload = Buy()
 buyer_payloads = {
     'CANCELLED': buy_payload.cancel_action,
+    'REQUEST_PHONE': buy_payload.request_phone,
     'GET_LOCATION_JOLLOF': buy_payload.get_jollof_location,
     'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
@@ -161,6 +162,9 @@ def buyer_webhook(request):
                         elif current_state == 'TALK_TO_JOLLOF':
                             print('Not default  State: ' + current_state)
                             buy.talk_to_jollof(fbid, received_text)
+                        elif current_state == 'REQUEST_PHONE':
+                            print('Not default  State: ' + current_state)
+                            buy.request_phone(fbid, received_text)
                         else:
                             buy.alert_me(fbid, 'jollof buyer is sending a text we don\'t understand yet from an empty state. Text: ' + str(received_text) + '.')
                             buy.text_message(fbid, 'I am but the greatest jollof in the world.')
@@ -190,9 +194,10 @@ def buyer_webhook(request):
                 elif 'postback' in message:
                     payload = message['postback']['payload']
                     if payload == 'GET_STARTED':
-                        buyer.current_state = 'DEFAULT'
+                        buyer.current_state = 'REQUEST_PHONE'
                         buyer.save()
-                        buy.greet_buyer(fbid)
+                        msg = 'Hey {{user_first_name}}, we finally meet 😁 But first, please share your phone number with me to get this party started. I need it to contact you when any of your deliveries arrive. 🙏'
+                        buy.text_message(fbid, msg)
                         return HttpResponse()
                     else:
                         current_state = buyer.current_state
@@ -363,10 +368,15 @@ def seller_webhook(request):
                                 msg = 'Hi {{user_first_name}}! You are doing a great job!'
                                 sell.text_message(fbid, msg)        
                             else:
-                                print('Not a random greeting. State: ' + current_state)
-                                sell.text_message(fbid, 'You sell the greatest jollof in the world.')
-                                seller.current_state = 'DEFAULT'
-                                seller.save()
+                                if received_text.lower() == 'location':
+                                    seller.current_state = 'VENDOR_LOCATION'
+                                    seller.save()
+                                    sell.request_location(fbid)
+                                else:
+                                    print('Not a random greeting. State: ' + current_state)
+                                    sell.text_message(fbid, 'You sell the greatest jollof in the world.')
+                                    seller.current_state = 'DEFAULT'
+                                    seller.save()
                         else:
                             sell.text_message(fbid, 'You sell the greatest jollof in the world.')
                             seller.current_state = 'DEFAULT'
