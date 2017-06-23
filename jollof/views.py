@@ -671,7 +671,13 @@ def show_profile(request):
 def show_jollof(request):
     if request.method == 'GET':
         seller = Seller.objects.get(pk=request.user.pk)
-        jollof = Jollof.objects.get(seller=seller)
+        jollof = None
+        try:
+            jollof = Jollof.objects.get(seller=seller)
+        except Jollof.DoesNotExist:
+            c = {'user': request.user}
+            pprint(c)
+            return render(request, 'jollof.html', c)
         price = jollof.price
         description = jollof.description
         available = jollof.available
@@ -682,12 +688,19 @@ def show_jollof(request):
     elif request.method == 'POST':
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
-        jollof = Jollof.objects.get(seller=seller)
-        jollof.price = request.POST.get('price', '')
-        jollof.description = request.POST.get('description', '')
-        if request.POST.get('available'):
-            jollof.available = True
-        jollof.save()
+        try:
+            jollof = Jollof.objects.get(seller=seller)
+            jollof.price = request.POST.get('price', '')
+            jollof.description = request.POST.get('description', '')
+            if request.POST.get('available'):
+                jollof.available = True
+            jollof.save()
+        except Jollof.DoesNotExist:
+            available = False
+            if request.POST.get('available'):
+                available = True
+            jollof = Jollof(seller=seller, price=request.POST.get('price', ''), description=request.POST.get('description', ''), available=available)
+            jollof.save()
         #retrieve uptodate info
         price = jollof.price
         description = jollof.description
@@ -710,11 +723,10 @@ def show_delicacies(request):
     elif request.method == 'POST':
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
-        delicacies = Delicacy.objects.filter(seller=seller)
         delivery_price = seller.delivery_price
         delicacy_result = None
         delicacy = None
-        if delicacies.count() < 10:
+        if request.POST.get('pk'):         
             delicacy = Delicacy.objects.get(pk=int(request.POST.get('pk')))
             delicacy.name = request.POST.get('name', '')
             delicacy.description = request.POST.get('description', '')
@@ -722,8 +734,18 @@ def show_delicacies(request):
             if request.POST.get('available'):
                 delicacy.available = True
             delicacy.save()
+            delicacy_result = 'Delicacy changes saved.'
         else:
-            delicacy_result = 'Sorry, you can\'t have more than 10 delicacies for now.'
+            delicacies = Delicacy.objects.filter(seller=seller)  
+            if delicacies.count() < 10:
+                available = False
+                if request.POST.get('available'):
+                    available = True
+                delicacy = Delicacy(seller=seller, name=request.POST.get('name', ''), price=request.POST.get('price', ''), description=request.POST.get('description', ''), available=available)
+                delicacy.save()
+                delicacy_result = 'Delicacy created.'
+            else:
+                delicacy_result = 'Sorry, you can\'t have more than 10 delicacies for now.'
         delicacies = Delicacy.objects.filter(seller=seller)
         c = {'user': request.user, 'delicacies': delicacies, 'delivery_price': delivery_price, 'delicacy_result': delicacy_result }
         pprint(c)

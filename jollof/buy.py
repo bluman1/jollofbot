@@ -286,7 +286,11 @@ class Buy():
                         distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
                         if distance <= self.NEAREST_KM:
                             # gather restaurant location here and build generic template.
-                            seller_jollof = Jollof.objects.get(seller=seller.pk)
+                            seller_jollof = None
+                            try:
+                                seller_jollof = Jollof.objects.get(seller=seller.pk)
+                            except Jollof.DoesNotExist:
+                                continue
                             if seller_jollof.available is False:
                                 continue
                             places_found = True
