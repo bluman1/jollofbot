@@ -198,7 +198,7 @@ def buyer_webhook(request):
                         current_state = buyer.current_state
                         if current_state == 'DEFAULT':
                             temp_payload = payload
-                            generic_payloads = ['ORDER_JOLLOF', 'ORDER_DELICACY', 'VIEW_DELICACY_SELLERS']
+                            generic_payloads = ['ORDER_JOLLOF', 'ORDER_DELICACY', 'VIEW_DELICACY_SELLERS', 'JOLLOF_RESERVATION', 'DELICACY_RESERVATION']
                             for generic in generic_payloads:
                                 if generic in payload:
                                     payload = generic
