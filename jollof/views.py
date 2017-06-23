@@ -600,11 +600,13 @@ def show_profile(request):
         available_business = seller.available
         opening_hour = seller.opening_hour
         closing_hour = seller.closing_hour
+        start_day = seller.start_day
+        end_day = seller.end_day
         available_delivery = seller.delivers
         delivery_time = seller.average_delivery_time
         delivery_price = seller.delivery_price
 
-        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price }
+        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price, 'start_day': start_day, 'end_day': end_day }
         pprint(c)
         return render(request, 'profile.html', c)
     elif request.method == 'POST':
@@ -640,6 +642,8 @@ def show_profile(request):
             seller = Seller.objects.get(pk=request.user.pk)
             seller.opening_hour = request.POST.get('opening_hour', '')
             seller.closing_hour = request.POST.get('closing_hour', '')
+            seller.start_day = request.POST.get('start_day', '')
+            seller.end_day = request.POST.get('end_day', '')
             seller.average_delivery_time = request.POST.get('delivery_time', '')
             seller.delivery_price = request.POST.get('delivery_price', '')
             if request.POST.get('available_delivery'):

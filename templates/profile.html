@@ -200,7 +200,7 @@
                         <div class="form-group">
                             <label for="openid">Start Day</label>
                             <div class="btn-group bootstrap-select dropup">
-                                <select id="openid" name="start_day" class="selectpicker" data-style="form-control" tabindex="-98">
+                                <select id="startid" name="start_day" class="selectpicker" data-style="form-control" tabindex="-98">
                                             <option disabled="" selected="">Select Start Day</option>
                                             <option value="1">Monday </option>
                                             <option value="2">Tuesday</option>
@@ -216,7 +216,7 @@
                         <div class="form-group">
                             <label for="openid">End Day</label>
                             <div class="btn-group bootstrap-select dropup">
-                                <select id="openid" name="end_day" class="selectpicker" data-style="form-control" tabindex="-98">
+                                <select id="endid" name="end_day" class="selectpicker" data-style="form-control" tabindex="-98">
                                             <option disabled="" selected="">Select End Day</option>
                                             <option value="1">Monday </option>
                                             <option value="2">Tuesday</option>
@@ -361,6 +361,10 @@
 
 <!--  Get Shit Done Kit PRO Core javascript 	 -->
 <script src="/static/assets/js/jb.js"></script>
+<script>
+    document.getElementById('startid').value = "{{start_day}}";
+    document.getElementById('endid').value = "{{end_day}}";
+</script>
 
 <!-- If you are using TypeKit.com uncomment this code otherwise you can delete it -->
 <!--
