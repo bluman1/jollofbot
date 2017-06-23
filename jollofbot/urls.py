@@ -38,8 +38,8 @@ urlpatterns = [
     url(r'^vendor/profile/$', show_profile),
     url(r'^vendor/jollof/$', show_jollof),
     url(r'^vendor/delicacies/$', show_delicacies),
-    url(r'^vendor/jollof/reservations/$', show_jollof_reservations),
-    url(r'^vendor/jollof/deliveries/$', show_jollof_deliveries),
-    url(r'^vendor/delicacy/reservations/$', show_delicacy_reservations),
-    url(r'^vendor/delicacy/deliveries/$', show_delicacy_deliveries),
+    url(r'^vendor/reservations/jollof/$', show_jollof_reservations),
+    url(r'^vendor/deliveries/jollof/$', show_jollof_deliveries),
+    url(r'^vendor/reservations/delicacy/$', show_delicacy_reservations),
+    url(r'^vendor/deliveries/delicacy/$', show_delicacy_deliveries),
 ]

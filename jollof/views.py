@@ -694,6 +694,8 @@ def show_jollof(request):
             jollof.description = request.POST.get('description', '')
             if request.POST.get('available'):
                 jollof.available = True
+            else:
+                jollof.available = False
             jollof.save()
         except Jollof.DoesNotExist:
             available = False
@@ -733,6 +735,8 @@ def show_delicacies(request):
             delicacy.price = request.POST.get('price', '')
             if request.POST.get('available'):
                 delicacy.available = True
+            else:
+                delicacy.available = False
             delicacy.save()
             delicacy_result = 'Delicacy changes saved.'
         else:
