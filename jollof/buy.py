@@ -518,7 +518,6 @@ class Buy():
             print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
             buyer.current_state = 'DEFAULT'
             buyer.save()       
-            self.text_message(fbid, 'You are at ' + str(location_title) + '.')
             self.text_message(fbid, 'Searching for nearby delicacies!')
             # Pass lat and long to function that will retrieve nearest sellers
             sellers = Seller.objects.all()
@@ -534,8 +533,8 @@ class Buy():
                         distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
                         if distance <= self.NEAREST_KM:
                             # gather restaurant location here and build generic template.
-                            seller_delicacy = Delicacy.objects.get(seller=seller.pk)
-                            if seller_delicacy.available is False:
+                            seller_delicacy = Delicacy.objects.filter(seller=seller.pk)
+                            if seller_delicacy.count() < 1:
                                 continue
                             places_found = True
                             imgur_link = 'http://via.placeholder.com/350x350'
