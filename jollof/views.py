@@ -698,9 +698,9 @@ def show_jollof(request):
         return render(request, 'jollof.html', c)
 
 
-@login_required 
+@login_required
 def show_delicacies(request):
-    if request.method = 'GET':
+    if request.method == 'GET':
         seller = Seller.objects.get(pk=request.user.pk)
         delicacies = Delicacy.objects.filter(seller=seller)
         delivery_price = seller.delivery_price
