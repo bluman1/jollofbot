@@ -457,6 +457,7 @@ def seller_webhook(request):
                         return HttpResponse()
 
 
+sell = Sell()
 def show_signup(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
