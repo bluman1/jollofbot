@@ -533,14 +533,14 @@ class Buy():
                         distance = self.get_distance((location_lat,location_long), (seller.latitude, seller.longitude))
                         if distance <= self.NEAREST_KM:
                             # gather restaurant location here and build generic template.
-                            seller_delicacy = Delicacy.objects.filter(seller=seller.pk)
+                            seller_delicacy = Delicacy.objects.filter(seller=seller)
                             if seller_delicacy.count() < 1:
                                 continue
                             places_found = True
                             imgur_link = 'http://via.placeholder.com/350x350'
                             generic_title = seller.restaurant
                             generic_subtitle = seller.phone_number
-                            generic_payload = 'VIEW_DELICACY_SELLERS_' + seller.pk
+                            generic_payload = 'VIEW_DELICACY_SELLERS_' + str(seller.pk)
                             generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"View Delicacies","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"'+self.get_directions(buyer.latitude, buyer.longitude, seller.latitude, seller.longitude)+'","title":"Get Directions"}]},'
                             #TODO: get gmaps link for directions, retrieve restaurants logo from url    
                 if places_found:
@@ -588,10 +588,10 @@ class Buy():
                 generic_elements = ''
                 for delicacy in delicacies:
                     imgur_link = 'http://via.placeholder.com/350x350'
-                    generic_title = delicacy.price
+                    generic_title = str(delicacy.price)
                     generic_subtitle = delicacy.description
-                    order_payload = 'ORDER_DELICACY_' + delicacy.pk
-                    reservation_payload = 'DELICACY_RESERVATION_' + delicacy.pk
+                    order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
+                    reservation_payload = 'DELICACY_RESERVATION_' + str(delicacy.pk)
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation","payload":"'+str(reservation_payload)+'"}]},'
                     #TODO:  retrieve restaurants logo from url
                 #Remove trailing comma
