@@ -497,7 +497,7 @@ class Buy():
             # Buyer can cancel anytime before the order is accepted.
             msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. Your order code is ' + jollof_order.code
             self.text_message(fbid, msg)
-            msg ='If the restaurant have not accepted your order yet, you can send cancel to... well, cancel the order. You can also send status to track your meal\'s status.'
+            msg ='If the restaurant have not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             #Alert me of the order made here.
             buyer = Buyer.objects.get(fbid=fbid)
@@ -518,7 +518,7 @@ class Buy():
             print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
             buyer.current_state = 'DEFAULT'
             buyer.save()       
-            self.text_message(fbid, 'Searching for nearby delicacies!')
+            self.text_message(fbid, 'Searching for nearby delicacies! 💪')
             # Pass lat and long to function that will retrieve nearest sellers
             sellers = Seller.objects.all()
             if sellers.count() < 1:
@@ -780,7 +780,7 @@ class Buy():
             # Buyer can cancel anytime before the order is accepted.
             msg = 'Great {{user_first_name}}, I have ordered the sumptuous N'+str(delicacy.price)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
             self.text_message(fbid, msg)
-            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order. You can also send status to track your meal\'s status.'
+            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             # Alert me of the order made here.
             buyer = Buyer.objects.get(fbid=fbid)

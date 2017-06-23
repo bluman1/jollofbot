@@ -614,7 +614,6 @@ class Sell():
         else:
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
-            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_orders.count() < 1:
                 msg = 'You have no pending delicacy deliveries right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
@@ -628,6 +627,7 @@ class Sell():
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                    delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants ' + delicacy.name + ' delivered!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
@@ -689,7 +689,6 @@ class Sell():
         else:
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
-            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_orders.count() < 1:
                 msg = 'You have no pending delicacy reservations right now. I will send you updates in real-time.'
                 self.text_message(fbid, msg)
@@ -703,6 +702,7 @@ class Sell():
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                    delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' is requesting a reservation for ' + delicacy.name + '!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
@@ -764,7 +764,6 @@ class Sell():
         else:
             seller = Seller.objects.get(fbid=fbid)
             delicacy_orders = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
-            delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
             if delicacy_orders.count() < 1:
                 msg = 'You have not accepted to deliver any orders.'
                 self.text_message(fbid, msg)
@@ -777,6 +776,7 @@ class Sell():
                     if count >= 10:
                         break
                     count += 1
+                    delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants your ' + delicacy.name + ' delivery completed!'
@@ -851,6 +851,7 @@ class Sell():
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
+                    delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants their Delicacy reservation completed!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
