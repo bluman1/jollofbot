@@ -580,7 +580,7 @@ def show_overview(request):
         accepted_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
         accepted_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
         accepted_reservations = accepted_delicacies.count() + accepted_jollof.count()
-        c = {'user': request.user, 'pending_deliveries': pending_deliveries, 'available': available, 'accepted_deliveries': accepted_deliveries, 'accepted_reservations': accepted_reservations, 'jollof_code': jollof_code }
+        c = {'user': request.user, 'pending_deliveries': pending_deliveries, 'pending_reservations': pending_reservations, 'accepted_deliveries': accepted_deliveries, 'accepted_reservations': accepted_reservations, 'jollof_code': jollof_code }
         pprint(c)
         return render(request, 'overview.html', c)
 
