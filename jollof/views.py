@@ -777,7 +777,7 @@ def show_jollof_reservations(request):
         if request.POST.get('accept'):
             sell.jollof_pending_reservations(seller.fbid, 'JOLLOF_PENDING_RESERVATIONS_'+a+'_1')
         elif request.POST.get('reject'):
-            sell.jollof_pending_reservations(seller.fbid, 'JOLLOF_PENDING_RESERVATIONS_'+a+'_2)
+            sell.jollof_pending_reservations(seller.fbid, 'JOLLOF_PENDING_RESERVATIONS_'+a+'_2')
         elif request.POST.get('complete'):
             sell.jollof_accepted_reservations(seller.fbid, 'JOLLOF_ACCEPTED_RESERVATIONS_'+a+'_1')
         elif request.POST.get('cancel'):
@@ -806,7 +806,7 @@ def show_jollof_deliveries(request):
         if request.POST.get('accept'):
             sell.jollof_pending_deliveries(seller.fbid, 'JOLLOF_PENDING_DELIVERIES_'+a+'_1')
         elif request.POST.get('reject'):
-            sell.jollof_pending_deliveries(seller.fbid, 'JOLLOF_PENDING_DELIVERIES_'+a+'_2)
+            sell.jollof_pending_deliveries(seller.fbid, 'JOLLOF_PENDING_DELIVERIES_'+a+'_2')
         elif request.POST.get('complete'):
             sell.jollof_accepted_deliveries(seller.fbid, 'JOLLOF_ACCEPTED_DELIVERIES_'+a+'_1')
         elif request.POST.get('cancel'):
@@ -835,7 +835,7 @@ def show_delicacy_reservations(request):
         if request.POST.get('accept'):
             sell.delicacy_pending_reservations(seller.fbid, 'DELICACY_PENDING_RESERVATIONS_'+a+'_1')
         elif request.POST.get('reject'):
-            sell.delicacy_pending_reservations(seller.fbid, 'DELICACY_PENDING_RESERVATIONS_'+a+'_2)
+            sell.delicacy_pending_reservations(seller.fbid, 'DELICACY_PENDING_RESERVATIONS_'+a+'_2')
         elif request.POST.get('complete'):
             sell.delicacy_accepted_reservations(seller.fbid, 'DELICACY_ACCEPTED_RESERVATIONS_'+a+'_1')
         elif request.POST.get('cancel'):
@@ -864,7 +864,7 @@ def show_delicacy_deliveries(request):
         if request.POST.get('accept'):
             sell.delicacy_pending_deliveries(seller.fbid, 'DELICACY_PENDING_DELIVERIES_'+a+'_1')
         elif request.POST.get('reject'):
-            sell.delicacy_pending_deliveries(seller.fbid, 'DELICACY_PENDING_DELIVERIES_'+a+'_2)
+            sell.delicacy_pending_deliveries(seller.fbid, 'DELICACY_PENDING_DELIVERIES_'+a+'_2')
         elif request.POST.get('complete'):
             sell.delicacy_accepted_deliveries(seller.fbid, 'DELICACY_ACCEPTED_DELIVERIES_'+a+'_1')
         elif request.POST.get('cancel'):
