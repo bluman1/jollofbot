@@ -870,8 +870,8 @@ def show_delicacy_deliveries(request):
             sell.delicacy_accepted_deliveries(seller.fbid, 'DELICACY_ACCEPTED_DELIVERIES_'+a+'_1')
         elif request.POST.get('cancel'):
             sell.delicacy_accepted_deliveries(seller.fbid, 'DELICACY_ACCEPTED_DELIVERIES_'+a+'_2')
-        pendings = JollofOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
-        accepteds = JollofOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
+        pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
+        accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
         pprint(c)
         return render(request, 'delicacy_deliveries.html', c)
