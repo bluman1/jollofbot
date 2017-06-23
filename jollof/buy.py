@@ -719,7 +719,7 @@ class Buy():
     def order_delicacy(self, fbid, payload):
         if 'ORDER_DELICACY' in payload:
             # reconfirm the distance between the buyer and the seller here first.
-            delicacy_id = int(payload[13:])
+            delicacy_id = int(payload[15:])
             delicacy = Delicacy.objects.get(pk=delicacy_id)
             seller = Seller.objects.get(pk=int(delicacy.seller.pk))
             buyer = Buyer.objects.get(fbid=fbid)

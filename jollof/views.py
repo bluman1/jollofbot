@@ -211,7 +211,7 @@ def buyer_webhook(request):
                                             buyer.current_state = 'DEFAULT'
                                             buyer.save()
                                             print('Exception\n' + str(e))
-                                            alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
+                                            buy.alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
                                         return HttpResponse()
                                     else:
                                         msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
