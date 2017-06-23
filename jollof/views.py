@@ -218,7 +218,7 @@ def buyer_webhook(request):
                                         text_message(fbid, msg)
                                         buyer.current_state = 'DEFAULT'
                                         buyer.save()
-                                        alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                        buy.alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
                                         return HttpResponse()
                             try:
                                 buyer_payloads[payload](fbid, payload)
@@ -253,14 +253,14 @@ def buyer_webhook(request):
                                                 buyer.save()
                                                 print('Exception\n' + str(e))
                                                 msg = 'Failed Button payload. current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload
-                                                alert_me(fbid, msg)
+                                                buy.alert_me(fbid, msg)
                                             return HttpResponse()
                                         else:
                                             msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
                                             text_message(fbid, msg)
                                             buyer.current_state = 'DEFAULT'
                                             buyer.save()
-                                            alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                            buy.alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
                                             return HttpResponse()
                                 next_state_status = is_buyer_next_state(current_state, payload)
                                 if next_state_status:
@@ -269,14 +269,14 @@ def buyer_webhook(request):
                                         buyer_payloads[payload](fbid, payload) # this function is in charge of setting the new state.
                                     except Exception as e:
                                         print('Exception\n' + str(e))
-                                        alert_me(fbid, 'Can not find the current_state in other payload: ' + current_state + '. payload: ' + payload)
+                                        buy.alert_me(fbid, 'Can not find the current_state in other payload: ' + current_state + '. payload: ' + payload)
                                     return HttpResponse()
                                 else:
                                     msg = 'Sorry, {{user_first_name}}. Please try saying jollof!'
                                     text_message(fbid, msg)
                                     buyer.current_state = 'DEFAULT'
                                     buyer.save()
-                                    alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
+                                    buy.alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
                                     return HttpResponse()
                             return HttpResponse()
 
