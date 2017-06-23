@@ -1,3 +1,4 @@
+{% load humanize %}
 <!doctype html>
 <html lang="en">
 
@@ -34,13 +35,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-                <a class="navbar-brand" href="/{{username}}/">JollofBot</a>
+                <a class="navbar-brand" href="/vendor/">JollofBot</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/{{username}}/">
+                        <a href="/vendor/">
                             <i class="pe-7s-global"></i>
                             <p>Overview</p>
                         </a>
@@ -54,8 +55,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/deliveries/jollof/">Jollof Deliveries</a></li>
-                            <li><a href="/{{username}}/deliveries/delicacy/">Delicacy Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/jollof/">Jollof Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/delicacy/">Delicacy Deliveries</a></li>
 
                         </ul>
                     </li>
@@ -68,8 +69,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/reservations/jollof/">Jollof Reservations</a></li>
-                            <li><a href="/{{username}}/reservations/delicacy/">Delicacy Reservations</a></li>
+                            <li><a href="/vendor/reservations/jollof/">Jollof Reservations</a></li>
+                            <li><a href="/vendor/reservations/delicacy/">Delicacy Reservations</a></li>
 
                         </ul>
                     </li>
@@ -82,8 +83,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/jollof/">Jollof</a></li>
-                            <li><a href="/{{username}}/delicacies/">Delicacies</a></li>
+                            <li><a href="/vendor/jollof/">Jollof</a></li>
+                            <li><a href="/vendor/delicacies/">Delicacies</a></li>
 
                         </ul>
                     </li>
@@ -96,12 +97,12 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/profile/">Profile</a></li>
+                            <li><a href="/vendor/profile/">Profile</a></li>
                             <li><a href="#">Analytics</a></li>
                             <li><a href="#">Billing</a></li>
                             <li><a href="#">Contact Support</a></li>
                             <li class="divider"></li>
-                            <li><a href="/{{username}}/logout/">Sign Out</a></li>
+                            <li><a href="/vendor/logout/">Sign Out</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -127,32 +128,48 @@
                             <thead>
                                 <tr>
                                     <th class="th-description">Order Code</th>
+                                    <th class="th-description">When</th>
                                     <th class="th-description">Name</th>
                                     <th class="text-center">Price</th>
                                     <th class="th-description">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for pending in pendings %}
                                 <tr>
                                     <td>
-                                        FJVWYR
+                                        {{pending.code}}
                                     </td>
                                     <td>
-                                        James Sawyer
+                                        {{pending.updated | naturaltime | capfirst}}
+                                    </td>
+                                    <td>
+                                        {{pending.jollof_buyer.first_name}} {{pending.jollof_buyer.last_name}}
                                     </td>
                                     <td class="td-price">
-                                        <small>₦</small>1250
+                                        <small>₦</small>{{pending.jollof.price}}
                                     </td>
 
                                     <td class="td-actions">
-                                        <button type="button" rel="tooltip" data-placement="top" title="" class="btn btn-info btn-simple btn-icon" data-original-title="Accept">
-                                        <i class="fa fa-check"></i>
-                                    </button>
-                                        <button type="button" rel="tooltip" data-placement="top" title="" class="btn btn-danger btn-simple btn-icon " data-original-title="Reject">
-                                        <i class="fa fa-times"></i>
-                                    </button>
+                                        <form method="POST" action=".">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="accept" value="1">
+                                            <input type="hidden" name="pk" value="{{pending.pk}}">
+                                            <button type="submit" rel="tooltip" data-placement="top" title="" class="btn btn-info btn-simple btn-icon" data-original-title="Accept">
+                                                <i class="fa fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action=".">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="reject" value="1">
+                                            <input type="hidden" name="pk" value="{{pending.pk}}">
+                                            <button type="submit" rel="tooltip" data-placement="top" title="" class="btn btn-danger btn-simple btn-icon " data-original-title="Reject">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -169,6 +186,7 @@
                             <thead>
                                 <tr>
                                     <th class="th-description">Order Code</th>
+                                    <th class="th-description">When</th>
                                     <th class="th-description">Name</th>
                                     <th class="th-description">Phone</th>
                                     <th class="th-description">Directions</th>
@@ -177,33 +195,45 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for accepted in accepteds %}
                                 <tr>
                                     <td>
-                                        FJVWYR
+                                        {{accepted.code}}
                                     </td>
                                     <td>
-                                        James Sawyer
+                                        {{accepted.updated | naturaltime | capfirst}}
                                     </td>
                                     <td>
-                                        +2348033221144
+                                        {{accepted.jollof_buyer.first_name}} {{accepted.jollof_buyer.last_name}}
                                     </td>
                                     <td>
-                                        <a href="http://google.com/" target="_blank">View Directions</a>
+                                        {{accepted.jollof_buyer.phone_number}}
                                     </td>
                                     <td class="td-price">
-                                        <small>₦</small>1250
+                                        <small>₦</small>{{pending.jollof.price}}
                                     </td>
 
                                     <td class="td-actions">
-                                        <button type="button" rel="tooltip" data-placement="top" title="" class="btn btn-info btn-simple btn-icon" data-original-title="Complete">
+                                        <form method="POST" action=".">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="complete" value="1">
+                                            <input type="hidden" name="pk" value="{{accepted.pk}}">
+                                            <button type="button" rel="tooltip" data-placement="top" title="" class="btn btn-info btn-simple btn-icon" data-original-title="Complete">
                                         <i class="fa fa-check"></i>
                                     </button>
-                                        <button type="button" rel="tooltip" data-placement="top" title="" class="btn btn-danger btn-simple btn-icon " data-original-title="Cancel">
+                                        </form>
+                                        <form method="POST" action=".">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="cancel" value="1">
+                                            <input type="hidden" name="pk" value="{{accepted.pk}}">
+                                            <button type="button" rel="tooltip" data-placement="top" title="" class="btn btn-danger btn-simple btn-icon " data-original-title="Cancel">
                                         <i class="fa fa-times"></i>
                                     </button>
+                                        </form>
 
                                     </td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>

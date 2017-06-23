@@ -34,13 +34,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-                <a class="navbar-brand" href="/{{username}}/">JollofBot</a>
+                <a class="navbar-brand" href="/vendor/">JollofBot</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/{{username}}/">
+                        <a href="/vendor/">
                             <i class="pe-7s-global"></i>
                             <p>Overview</p>
                         </a>
@@ -54,8 +54,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/deliveries/jollof/">Jollof Deliveries</a></li>
-                            <li><a href="/{{username}}/deliveries/delicacy/">Delicacy Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/jollof/">Jollof Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/delicacy/">Delicacy Deliveries</a></li>
 
                         </ul>
                     </li>
@@ -68,8 +68,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/reservations/jollof/">Jollof Reservations</a></li>
-                            <li><a href="/{{username}}/reservations/delicacy/">Delicacy Reservations</a></li>
+                            <li><a href="/vendor/reservations/jollof/">Jollof Reservations</a></li>
+                            <li><a href="/vendor/reservations/delicacy/">Delicacy Reservations</a></li>
 
                         </ul>
                     </li>
@@ -82,8 +82,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/jollof/">Jollof</a></li>
-                            <li><a href="/{{username}}/delicacies/">Delicacies</a></li>
+                            <li><a href="/vendor/jollof/">Jollof</a></li>
+                            <li><a href="/vendor/delicacies/">Delicacies</a></li>
 
                         </ul>
                     </li>
@@ -96,12 +96,12 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/profile/">Profile</a></li>
+                            <li><a href="/vendor/profile/">Profile</a></li>
                             <li><a href="#">Analytics</a></li>
                             <li><a href="#">Billing</a></li>
                             <li><a href="#">Contact Support</a></li>
                             <li class="divider"></li>
-                            <li><a href="/{{username}}/logout/">Sign Out</a></li>
+                            <li><a href="/vendor/logout/">Sign Out</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -125,7 +125,7 @@
             </div>
             <div class="separator"></div>
             <h1><span class="tim-note">Your Delicacies</span> <small class="subtitle">Edit your Delicacies  here.</small> </h1>
-
+            {% for delicacy in delicacies %}
             <div class="row">
                 <div class="col-md-4">
                     <div class="card card-background">
@@ -134,48 +134,49 @@
                             <div class="filter"></div>
                         </div>
                         <div class="content">
-                            <p class="category">Yam & Egg Sauce</p>
-                            <a href="#">
-                                <h4 class="title">Sliced yam with egg sauce</h4>
-                            </a>
+                            <p class="category">{{delicacy.name}}</p>
+                            <h4 class="title">{{delicacy.description}}</h4>
                         </div>
                         <div class="footer">
-                            Price:<span class="price"> ₦ 1250</span> | Delivery:
-                            <span class="price"> ₦ 250</span> |
-                            <span class="price"> Available</span>
+                            Price:<span class="price"> ₦ {{delicacy.price}}</span> | Delivery:
+                            <span class="price"> ₦ {{delivery_price}}</span> |
+                            <span class="price"> {% if delicacy.available %} Available {% else %} Not Available {% endif %}</span>
                         </div>
                     </div>
                     <!-- end card -->
                 </div>
-                <div class="col-md-8">
-                    <div class="form-group">
-                        <label for="deli_name">Name</label>
-                        <input id="deli_name" type="text" value="Yam & Egg Sauce" placeholder="Delicacy Name" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_description">Description</label>
-                        <input id="jollof_description" type="text" value="Sliced yam with egg sauce" placeholder="Delicacy Description" class="form-control"
-                        />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_price">Delicacy Price</label>
-                        <input id="jollof_price" type="text" value="1250" placeholder="Delicacy Price" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_delivery">Delivery Price</label>
-                        <input id="jollof_delivery" type="text" value="250" placeholder="Delivery Price" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_available">Available</label>
-                        <div class="switch" data-on-label="Yes" data-off-label="No">
-                            <input id="jollof_available" type="checkbox" checked class="ct-orange" />
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input name="name" id="name" type="text" value="{{delicacy.name}}" placeholder="Delicacy Name" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input name="description" id="description" type="text" value="{{delicacy.description}}" placeholder="Delicacy Description"
+                                class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Delicacy Price</label>
+                            <input name="price" id="price" type="text" value="1250" placeholder="{{delicacy.price}}" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="available">Available</label>
+                            <div class="switch" data-on-label="Yes" data-off-label="No">
+                                <input name="available" id="available" type="checkbox" {% if delicacy.available %} checked {% endif %} class="ct-orange"
+                                />
+                            </div>
+                        </div>
+                        <input type="hidden" name="pk" value="{{delicacy.pk}}">
+                        <h5>{{delicacy_result}}</h5>
+                        <div class="form-group pull-right">
+                            <button type="submit" class="btn btn-warning">Save</button>
                         </div>
                     </div>
-                    <div class="form-group pull-right">
-                        <button class="btn btn-warning">Save</button>
-                    </div>
-                </div>
+                </form>
             </div>
+            {% endfor %}
         </div>
         <footer class="footer footer-big footer-transparent" style="background-image: url('/static/assets/img/jollof.jpeg')">
             <!-- .footer-black is another class for the footer, for the transparent version, we recommend you to change the url of the image with your favourite image.          -->
@@ -262,41 +263,39 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="myModalLabel"><span>New Delicacy</span><small class="subtitle">Leave Delivery Price blank if you do not deliver.</small></h4>
+                    <h4 class="modal-title" id="myModalLabel"><span>New Delicacy</span>></h4>
                 </div>
-                <div class="modal-body">
-                    <div>
-                        <div class="form-group">
-                            <label for="deli_name">Name</label>
-                            <input id="deli_name" type="text" value="" placeholder="Delicacy Name" class="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label for="jollof_description">Description</label>
-                            <input id="jollof_description" type="text" value="" placeholder="Delicacy Description" class="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label for="jollof_price">Delicacy Price</label>
-                            <input id="jollof_price" type="number" value="" placeholder="1250" class="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label for="jollof_delivery">Delivery Price</label>
-                            <input id="jollof_delivery" type="number" value="" placeholder="0" class="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label for="jollof_available">Available</label>
-                            <div class="switch" data-on-label="Yes" data-off-label="No">
-                                <input id="jollof_available" type="checkbox" checked class="ct-orange" />
+                <form method="POST" action=".">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div>
+                            <div class="form-group">
+                                <label for="deli_name">Name</label>
+                                <input name="name" id="deli_name" type="text" value="" placeholder="Delicacy Name" class="form-control" />
                             </div>
+                            <div class="form-group">
+                                <label for="jollof_description">Description</label>
+                                <input name="description" id="jollof_description" type="text" value="" placeholder="Delicacy Description" class="form-control"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label for="jollof_price">Delicacy Price</label>
+                                <input name="price" id="jollof_price" type="number" value="" placeholder="1250" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="jollof_available">Available</label>
+                                <div class="switch" data-on-label="Yes" data-off-label="No">
+                                    <input name="available" id="jollof_available" type="checkbox" checked class="ct-orange" />
+                                </div>
+                            </div>
+                            </div-->
                         </div>
-                        <!--div class="form-group pull-right">
-                            <button class="btn btn-warning">Save</button>
-                        </div-->
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default btn-simple" data-dismiss="modal">Close</button>
-                    <button class="btn btn-warning">Save</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-simple" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-warning">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

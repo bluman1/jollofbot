@@ -152,7 +152,7 @@ def buyer_webhook(request):
                                 elif fbid == buy.BLUMAN_ID:
                                     buy.talk_to_jollof(fbid, received_text)
                                     return HttpResponse()
-                                msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
+                                msg = 'So you wanna slide into my DM uhn? Just say Jollof! and tap on "Chat with Jollof"'
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()                    
@@ -520,7 +520,7 @@ def show_signup(request):
 def show_login(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            return HttpResponseRedirect(username + '/vendor/overview/')
+            return HttpResponseRedirect('/vendor/overview/')
         return render(request, 'login.html', {})
     elif request.method == 'POST':
         username = request.POST.get('username')
@@ -528,7 +528,7 @@ def show_login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(username + '/vendor/overview/')
+            return HttpResponseRedirect('/vendor/overview/')
         else:
             """return invalid login here"""
             return render(request, 'login.html', {'merror': 'Please try again.'})
@@ -554,6 +554,37 @@ def show_dash(request):
         return HttpResponseRedirect('/')
 
 
+@login_required
+def show_vendor(request):
+    if request.method == 'GET':
+        return HttpResponseRedirect('/vendor/overview/')
+
+
+@login_required 
+def show_overview(request):
+    if request.method == 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        jollof_code = seller.code
+        pending_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
+        pending_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
+        pending_deliveries = pending_delicacies.count() + pending_jollof.count()
+
+        pending_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
+        pending_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=0)
+        pending_reservations = pending_delicacies.count() + pending_jollof.count()
+
+        accepted_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
+        accepted_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=1)
+        accepted_deliveries = accepted_delicacies.count() + accepted_jollof.count()
+
+        accepted_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
+        accepted_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
+        accepted_reservations = accepted_delicacies.count() + accepted_jollof.count()
+        c = {'user': request.user, 'pending_deliveries': pending_deliveries, 'available': available, 'accepted_deliveries': accepted_deliveries, 'accepted_reservations': accepted_reservations, 'jollof_code': jollof_code }
+        pprint(c)
+        return render(request, 'overview.html', c)
+
+
 @login_required 
 def show_profile(request):
     if request.method == 'GET':
@@ -571,8 +602,9 @@ def show_profile(request):
         closing_hour = seller.closing_hour
         available_delivery = seller.delivers
         delivery_time = seller.average_delivery_time
+        delivery_price = seller.delivery_price
 
-        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time }
+        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price }
         pprint(c)
         return render(request, 'profile.html', c)
     elif request.method == 'POST':
@@ -585,6 +617,7 @@ def show_profile(request):
             seller.last_name = request.POST.get('last_name', '')
             seller.phone_number = request.POST.get('phone_number', '')
             seller.save()
+            #retrieve new values
             jollof_code = seller.code
             restaurant_name = seller.restaurant
             email = seller.email
@@ -597,10 +630,222 @@ def show_profile(request):
             closing_hour = seller.closing_hour
             available_delivery = seller.delivers
             delivery_time = seller.average_delivery_time
+            delivery_price = seller.delivery_price
 
-            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'basic_result': 'Changes saved successfully.' }
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'basic_result': 'Changes saved successfully.' }
             pprint(c)
             return render(request, 'profile.html', c)
         elif request.POST.get('business'):
             #handle business profile submission
-            pass
+            seller = Seller.objects.get(pk=request.user.pk)
+            seller.opening_hour = request.POST.get('opening_hour', '')
+            seller.closing_hour = request.POST.get('closing_hour', '')
+            seller.delivery_time = request.POST.get('delivery_time', '')
+            seller.delivery_price = request.POST.get('delivery_price', '')
+            if request.POST.get('available_delivery'):
+                seller.delivers = True
+            if request.POST.get('available_business'):
+                seller.delivers = True
+            seller.save()
+            #retrieve new values
+            jollof_code = seller.code
+            restaurant_name = seller.restaurant
+            email = seller.email
+            username = seller.username
+            first_name = seller.first_name
+            last_name = seller.last_name
+            phone_number = seller.phone_number
+            available_business = seller.available
+            opening_hour = seller.opening_hour
+            closing_hour = seller.closing_hour
+            available_delivery = seller.delivers
+            delivery_time = seller.average_delivery_time
+            delivery_price = seller.delivery_price
+
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'business_result': 'Changes saved successfully.' }
+            pprint(c)
+            return render(request, 'profile.html', c)
+
+
+@login_required 
+def show_jollof(request):
+    if request.method == 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        jollof = Jollof.objects.get(seller=seller)
+        price = jollof.price
+        description = jollof.description
+        available = jollof.available
+        delivery_price = seller.delivery_price
+        c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description }
+        pprint(c)
+        return render(request, 'jollof.html', c)
+    elif request.method == 'POST':
+        pprint(request.POST)
+        seller = Seller.objects.get(pk=request.user.pk)
+        jollof = Jollof.objects.get(seller=seller)
+        jollof.price = request.POST.get('price', '')
+        jollof.description = request.POST.get('description', '')
+        if request.POST.get('available'):
+            jollof.available = True
+        jollof.save()
+        #retrieve uptodate info
+        price = jollof.price
+        description = jollof.description
+        available = jollof.available
+        delivery_price = seller.delivery_price
+        c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description, 'jollof_result': 'Jollof details saved.' }
+        pprint(c)
+        return render(request, 'jollof.html', c)
+
+
+@login_required 
+def show_delicacies(request):
+    if request.method = 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        delicacies = Delicacy.objects.filter(seller=seller)
+        delivery_price = seller.delivery_price
+        c = {'user': request.user, 'delicacies': delicacies, 'delivery_price': delivery_price}
+        pprint(c)
+        return render(request, 'delicacies.html', c)
+    elif request.method == 'POST':
+        pprint(request.POST)
+        seller = Seller.objects.get(pk=request.user.pk)
+        delicacies = Delicacy.objects.filter(seller=seller)
+        delivery_price = seller.delivery_price
+        delicacy_result = None
+        delicacy = None
+        if delicacies.count() < 10:
+            delicacy = Delicacy.objects.get(pk=int(request.POST.get('pk')))
+            delicacy.name = request.POST.get('name', '')
+            delicacy.description = request.POST.get('description', '')
+            delicacy.price = request.POST.get('price', '')
+            if request.POST.get('available'):
+                delicacy.available = True
+            delicacy.save()
+        else:
+            delicacy_result = 'Sorry, you can\'t have more than 10 delicacies for now.'
+        delicacies = Delicacy.objects.filter(seller=seller)
+        c = {'user': request.user, 'delicacies': delicacies, 'delivery_price': delivery_price, 'delicacy_result': delicacy_result }
+        pprint(c)
+        return render(request, 'delicacies.html', c)
+
+
+@login_required 
+def show_jollof_reservations(request):
+    if request.method == 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=0)
+        accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'jollof_reservations.html', c)
+    elif request.method == 'POST':
+        pprint(request.POST)
+        seller = Seller.objects.get(pk=request.user.pk)
+        jollof_order = JollofOrder.objects.get(pk=int(request.POST.get('pk')))
+        if request.POST.get('accept'):
+            jollof_order.status = 1
+            #TODO: Inform seller and buyer tht order has been accepted.
+        elif request.POST.get('reject'):
+            jollof_order.status = 2
+        elif request.POST.get('complete'):
+            jollof_order.status = 4
+        elif request.POST.get('cancel'):
+            jollof_order.status = 3
+        jollof_order.save()
+        pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=0)
+        accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'jollof_reservations.html', c)
+
+
+@login_required 
+def show_jollof_deliveries(request):
+    if request.method == 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
+        accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'jollof_deliveries.html', c)
+    elif request.method == 'POST':
+        pprint(request.POST)
+        seller = Seller.objects.get(pk=request.user.pk)
+        jollof_order = JollofOrder.objects.get(pk=int(request.POST.get('pk')))
+        if request.POST.get('accept'):
+            jollof_order.status = 1
+            #TODO: Inform seller and buyer tht order has been accepted.
+        elif request.POST.get('reject'):
+            jollof_order.status = 2
+        elif request.POST.get('complete'):
+            jollof_order.status = 4
+        elif request.POST.get('cancel'):
+            jollof_order.status = 3
+        jollof_order.save()
+        pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
+        accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'jollof_deliveries.html', c)
+
+
+@login_required 
+def show_delicacy_reservations(request):
+    if request.method == 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
+        accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'delicacy_reservations.html', c)
+    elif request.method == 'POST':
+        pprint(request.POST)
+        seller = Seller.objects.get(pk=request.user.pk)
+        delicacy_order = DelicacyOrder.objects.get(pk=int(request.POST.get('pk')))
+        if request.POST.get('accept'):
+            delicacy_order.status = 1
+            #TODO: Inform seller and buyer tht order has been accepted.
+        elif request.POST.get('reject'):
+            delicacy_order.status = 2
+        elif request.POST.get('complete'):
+            delicacy_order.status = 4
+        elif request.POST.get('cancel'):
+            delicacy_order.status = 3
+        delicacy_order.save()
+        pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
+        accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'delicacy_reservations.html', c)
+
+
+@login_required 
+def show_delicacy_deliveries(request):
+    if request.method == 'GET':
+        seller = Seller.objects.get(pk=request.user.pk)
+        pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
+        accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'delicacy_deliveries.html', c)
+    elif request.method == 'POST':
+        pprint(request.POST)
+        seller = Seller.objects.get(pk=request.user.pk)
+        delicacy_order = DelicacyOrder.objects.get(pk=int(request.POST.get('pk')))
+        if request.POST.get('accept'):
+            delicacy_order.status = 1
+            #TODO: Inform seller and buyer tht order has been accepted.
+        elif request.POST.get('reject'):
+            delicacy_order.status = 2
+        elif request.POST.get('complete'):
+            delicacy_order.status = 4
+        elif request.POST.get('cancel'):
+            delicacy_order.status = 3
+        delicacy_order.save()
+        pendings = JollofOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
+        accepteds = JollofOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
+        c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
+        pprint(c)
+        return render(request, 'delicacy_deliveries.html', c)
+        

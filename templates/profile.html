@@ -246,10 +246,16 @@
                             <input id="avgid" type="number" name="delivery_time" class="form-control" placeholder="15" value="{{delivery_time}}">
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="priceid">Delivery Price (Naira)</label>
+                            <input id="priceid" type="number" name="delivery_price" class="form-control" placeholder="0" value="{{delivery_price}}">
+                        </div>
+                    </div>
                 </div>
                 <input type="hidden" name="business" value="1">
                 <h5>{{business_result}}</h5>
-                <div><button class="btn btn-warning">Save Business Profile</button></div>
+                <div><button type="submit" class="btn btn-warning">Save Business Profile</button></div>
             </form>
         </div>
         <footer class="footer footer-big footer-transparent" style="background-image: url('/static/assets/img/jollof.jpeg')">

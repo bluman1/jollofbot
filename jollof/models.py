@@ -81,6 +81,7 @@ class Seller(AbstractBaseUser, PermissionsMixin):
     start_day = models.IntegerField(default=1) # Monday
     end_day = models.IntegerField(default=7) # Sunday
     delivers = models.BooleanField(default=False)
+    delivery_price = models.FloatField(default=0.0)
     available = models.BooleanField(default=True)
     average_delivery_time = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)

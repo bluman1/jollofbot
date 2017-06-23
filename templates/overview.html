@@ -34,13 +34,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-                <a class="navbar-brand" href="/{{username}}/">JollofBot</a>
+                <a class="navbar-brand" href="/vendor/">JollofBot</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/{{username}}/">
+                        <a href="/vendor/">
                             <i class="pe-7s-global"></i>
                             <p>Overview</p>
                         </a>
@@ -54,8 +54,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/deliveries/jollof/">Jollof Deliveries</a></li>
-                            <li><a href="/{{username}}/deliveries/delicacy/">Delicacy Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/jollof/">Jollof Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/delicacy/">Delicacy Deliveries</a></li>
 
                         </ul>
                     </li>
@@ -68,8 +68,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/reservations/jollof/">Jollof Reservations</a></li>
-                            <li><a href="/{{username}}/reservations/delicacy/">Delicacy Reservations</a></li>
+                            <li><a href="/vendor/reservations/jollof/">Jollof Reservations</a></li>
+                            <li><a href="/vendor/reservations/delicacy/">Delicacy Reservations</a></li>
 
                         </ul>
                     </li>
@@ -82,8 +82,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/jollof/">Jollof</a></li>
-                            <li><a href="/{{username}}/delicacies/">Delicacies</a></li>
+                            <li><a href="/vendor/jollof/">Jollof</a></li>
+                            <li><a href="/vendor/delicacies/">Delicacies</a></li>
 
                         </ul>
                     </li>
@@ -96,12 +96,12 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/profile/">Profile</a></li>
+                            <li><a href="/vendor/profile/">Profile</a></li>
                             <li><a href="#">Analytics</a></li>
                             <li><a href="#">Billing</a></li>
                             <li><a href="#">Contact Support</a></li>
                             <li class="divider"></li>
-                            <li><a href="/{{username}}/logout/">Sign Out</a></li>
+                            <li><a href="/vendor/logout/">Sign Out</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -119,7 +119,7 @@
             <div class="alert alert-warning">
                 <div class="container text-center">
                     You Jollof Code is
-                    <b>JLFPVC</b>.
+                    <b>{{jollof_code}}</b>.
                 </div>
             </div>
             <h1><span class="tim-note">Overview</span> <small class="subtitle">Overview of your activity</small> </h1>
@@ -130,11 +130,9 @@
                             <img src="/static/assets/img/meat.jpg" alt="..." style="display: none;">
                             <div class="filter filter-orange"></div>
                         </div>
-                        <div class="content text-center">
-                            <a href="#"><br>
-                                <h1 class="title"> 17 </h1>
-                                <h5>Pending Deliveries</h5>
-                            </a>
+                        <div class="content text-center"><br>
+                            <h1 class="title"> {{pending_deliveries}} </h1>
+                            <h5>Pending Deliveries</h5>
                         </div>
                     </div>
                     <!-- end card -->
@@ -142,14 +140,12 @@
                 <div class="col-md-6">
                     <div class="card card-background">
                         <div class="image" style="background-image: url('/static/assets/img/fish.jpg'); background-position: center center; background-size: cover;">
-                            <img src="/static/assets/img/fish.jpg" alt="..." style="display: none;">">
+                            <img src="/static/assets/img/fish.jpg" alt="..." style="display: none;">
                             <div class="filter filter-orange"></div>
                         </div>
-                        <div class="content text-center">
-                            <a href="#"><br>
-                                <h1 class="title"> 11 </h1>
-                                <h5>Pending Reservations</h5>
-                            </a>
+                        <div class="content text-center"><br>
+                            <h1 class="title"> {{pending_reservations}} </h1>
+                            <h5>Pending Reservations</h5>
                         </div>
                     </div>
                     <!-- end card -->
@@ -162,11 +158,9 @@
                             <img src="/static/assets/img/spoon.jpg" alt="..." style="display: none;">
                             <div class="filter filter-orange"></div>
                         </div>
-                        <div class="content text-center">
-                            <a href="#"><br>
-                                <h1 class="title"> 8 </h1>
-                                <h5>Accepted Deliveries</h5>
-                            </a>
+                        <div class="content text-center"><br>
+                            <h1 class="title"> {{accepted_deliveries}} </h1>
+                            <h5>Accepted Deliveries</h5>
                         </div>
                     </div>
                     <!-- end card -->
@@ -177,11 +171,9 @@
                             <img src="/static/assets/img/plate.jpg" alt="..." style="display: none;">
                             <div class="filter filter-orange"></div>
                         </div>
-                        <div class="content text-center">
-                            <a href="#"><br>
-                                <h1 class="title"> 15 </h1>
-                                <h5>Accepted Reservations</h5>
-                            </a>
+                        <div class="content text-center"><br>
+                            <h1 class="title"> {{accepted_reservations}} </h1>
+                            <h5>Accepted Reservations</h5>
                         </div>
                     </div>
                     <!-- end card -->

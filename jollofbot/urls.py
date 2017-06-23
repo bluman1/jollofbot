@@ -33,5 +33,13 @@ urlpatterns = [
     url(r'^login/$', show_login),
     url(r'^vendor/logout/$', show_logout),
     url(r'^dash/$', show_dash),
+    url(r'^vendor/$', show_vendor),
+    url(r'^vendor/overview/$', show_overview),
     url(r'^vendor/profile/$', show_profile),
+    url(r'^vendor/jollof/$', show_jollof),
+    url(r'^vendor/delicacies/$', show_delicacies),
+    url(r'^vendor/jollof/reservations/$', show_jollof_reservations),
+    url(r'^vendor/jollof/deliveries/$', show_jollof_deliveries),
+    url(r'^vendor/delicacy/reservations/$', show_delicacy_reservations),
+    url(r'^vendor/delicacy/deliveries/$', show_delicacy_deliveries),
 ]

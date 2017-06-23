@@ -34,13 +34,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-                <a class="navbar-brand" href="/{{username}}/">JollofBot</a>
+                <a class="navbar-brand" href="/vendor/">JollofBot</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/{{username}}/">
+                        <a href="/vendor/">
                             <i class="pe-7s-global"></i>
                             <p>Overview</p>
                         </a>
@@ -54,8 +54,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/deliveries/jollof/">Jollof Deliveries</a></li>
-                            <li><a href="/{{username}}/deliveries/delicacy/">Delicacy Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/jollof/">Jollof Deliveries</a></li>
+                            <li><a href="/vendor/deliveries/delicacy/">Delicacy Deliveries</a></li>
 
                         </ul>
                     </li>
@@ -68,8 +68,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/reservations/jollof/">Jollof Reservations</a></li>
-                            <li><a href="/{{username}}/reservations/delicacy/">Delicacy Reservations</a></li>
+                            <li><a href="/vendor/reservations/jollof/">Jollof Reservations</a></li>
+                            <li><a href="/vendor/reservations/delicacy/">Delicacy Reservations</a></li>
 
                         </ul>
                     </li>
@@ -82,8 +82,8 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/jollof/">Jollof</a></li>
-                            <li><a href="/{{username}}/delicacies/">Delicacies</a></li>
+                            <li><a href="/vendor/jollof/">Jollof</a></li>
+                            <li><a href="/vendor/delicacies/">Delicacies</a></li>
 
                         </ul>
                     </li>
@@ -96,12 +96,12 @@
                             </p>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="/{{username}}/profile/">Profile</a></li>
+                            <li><a href="/vendor/profile/">Profile</a></li>
                             <li><a href="#">Analytics</a></li>
                             <li><a href="#">Billing</a></li>
                             <li><a href="#">Contact Support</a></li>
                             <li class="divider"></li>
-                            <li><a href="/{{username}}/logout/">Sign Out</a></li>
+                            <li><a href="/vendor/logout/">Sign Out</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -130,37 +130,37 @@
                                 Original Nigerian Jollof Rice
                             </p>
                             <div class="footer">
-                                Price:<span class="price"> ₦ 1250</span> | Delivery:
-                                <span class="price"> ₦ 250</span> |
-                                <span class="price"> Available</span>
+                                Price:<span class="price"> ₦ {{price}}</span> | Delivery:
+                                <span class="price"> ₦ {{delivery_price}}</span> |
+                                <span class="price"> {% if available %} Available {% else %} Not Available {% endif %}</span>
                             </div>
                         </div>
                     </div>
                     <!-- end card -->
                 </div>
                 <div class="col-md-8">
-                    <div class="form-group">
-                        <label for="jollof_description">Description</label>
-                        <input id="jollof_description" type="text" value="Original Nigerian Jollof Rice" placeholder="Jollof Description" class="form-control"
-                        />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_price">Jollof Price</label>
-                        <input id="jollof_price" type="text" value="1250" placeholder="Jollof Price" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_delivery">Delivery Price</label>
-                        <input id="jollof_delivery" type="text" value="250" placeholder="Delivery Price" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="jollof_available">Available</label>
-                        <div class="switch" data-on-label="Yes" data-off-label="No">
-                            <input id="jollof_available" type="checkbox" checked class="ct-orange" />
+                    <form action="." method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input id="description" type="text" value="{{description}}" placeholder="Jollof Description" class="form-control" name="description"
+                            />
                         </div>
-                    </div>
-                    <div class="form-group pull-right">
-                        <button class="btn btn-warning">Save</button>
-                    </div>
+                        <div class="form-group">
+                            <label for="price">Jollof Price</label>
+                            <input id="price" type="text" value="{{price}}" placeholder="Jollof Price" class="form-control" name="price" />
+                        </div>
+                        <div class="form-group">
+                            <label for="available">Available</label>
+                            <div class="switch" data-on-label="Yes" data-off-label="No">
+                                <input id="available" type="checkbox" {% if available %} checked {% endif %} class="ct-orange" name="available" />
+                            </div>
+                        </div>
+                        <h5>{{jollof_result}}</h5>
+                        <div class="form-group pull-right">
+                            <button type="submit" class="btn btn-warning">Save</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
