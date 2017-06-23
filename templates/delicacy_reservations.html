@@ -123,6 +123,7 @@
                     <h4><span>Pending Reservations</span></h4><small class="subtitle">You can accept or reject reservations here.</small>
                 </div>
                 <div class="col-md-10">
+                    {% if pendings %}
                     <div class="table-responsive">
                         <table class="table table-shopping">
                             <thead>
@@ -174,7 +175,9 @@
                             </tbody>
                         </table>
                     </div>
-
+                    {% else %}
+                    <h2 class="text-center">You have no pending reservations.</h2>
+                    {% endif %}
                 </div>
             </div>
             <div class="row">
@@ -182,6 +185,7 @@
                     <h4><span>Accepted Reservations</span></h4><small class="subtitle">You can mark a reservation as complete or cancelled here.</small>
                 </div>
                 <div class="col-md-10">
+                    {% if accepteds %}
                     <div class="table-responsive">
                         <table class="table table-shopping">
                             <thead>
@@ -238,7 +242,9 @@
                             </tbody>
                         </table>
                     </div>
-
+                    {% else %}
+                    <h2 class="text-center">You have no accepted reservations.</h2>
+                    {% endif %}
                 </div>
             </div>
         </div>

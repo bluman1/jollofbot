@@ -640,7 +640,7 @@ def show_profile(request):
             seller = Seller.objects.get(pk=request.user.pk)
             seller.opening_hour = request.POST.get('opening_hour', '')
             seller.closing_hour = request.POST.get('closing_hour', '')
-            seller.delivery_time = request.POST.get('delivery_time', '')
+            seller.average_delivery_time = request.POST.get('delivery_time', '')
             seller.delivery_price = request.POST.get('delivery_price', '')
             if request.POST.get('available_delivery'):
                 seller.delivers = True

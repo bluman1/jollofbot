@@ -127,11 +127,11 @@
                         <div class="content">
                             <h4 class="title">Jollof Rice</h4>
                             <p class="description">
-                                {{description}}
+                                {{description | default:"Description goes here..."}}
                             </p>
                             <div class="footer">
-                                Price:<span class="price"> ₦ {{price | 0}}</span> | Delivery:
-                                <span class="price"> ₦ {{delivery_price | 0}}</span> |
+                                Price:<span class="price"> ₦ {{price | default:"0"}}</span> | Delivery:
+                                <span class="price"> ₦ {{delivery_price | default:"0"}}</span> |
                                 <span class="price"> {% if available %} Available {% else %} Not Available {% endif %}</span>
                             </div>
                         </div>
