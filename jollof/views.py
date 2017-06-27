@@ -196,7 +196,7 @@ def buyer_webhook(request):
                     if payload == 'GET_STARTED':
                         buyer.current_state = 'REQUEST_PHONE'
                         buyer.save()
-                        msg = 'Hey {{user_first_name}}, we finally meet 😁 But first, please share your phone number with me to get this party started. I need it to contact you when any of your deliveries arrive. 🙏'
+                        msg = 'Hey {{user_first_name}}, we finally meet 😁 But first, please share your phone number with me to get this party started 🙏'
                         buy.text_message(fbid, msg)
                         return HttpResponse()
                     else:
