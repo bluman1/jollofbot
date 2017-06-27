@@ -14,7 +14,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 class UserManager(BaseUserManager):
 
     def _create_user(self, username, email, password,
-                     is_superuser, **extra_fields):
+                     is_superuser, is_staff, **extra_fields):
         """
         Creates and saves a User with the given email and password.
         """
@@ -34,7 +34,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_user(self, username, email, password=None, **extra_fields):
-        return self._create_user(username, email, password, False,
+        return self._create_user(username, email, password, False, False,
                                  **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
