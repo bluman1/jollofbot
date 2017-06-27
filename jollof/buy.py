@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 import json
 import random
@@ -9,14 +10,12 @@ from pprint import pprint
 from jollof.models import *
 
 
-class Buy():
-
-    BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
-    BLUMAN_ID = os.environ.get('BLUMAN_ID')
-    NEAREST_KM = 1
+class Buy(object):
     
     def __init__(self):
-        pass
+        self.BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
+        self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
+        self.NEAREST_KM = 1
 
     
     def get_distance(self, coords1, coords2):
@@ -65,8 +64,24 @@ class Buy():
         return code
 
 
-    def parse_phone(self, text):
-        return True
+    def parse_phone(self, phone):
+        ''' A valid Nigerian phone number.  
+        08012345678 - 11 digits starts with 0, network=80,81,70,90, followed by 8 digits
+        +2348012345678 - 13 digits with +, code=234, network=80,81,70,90, followed by 8 digits
+        0112345678 - 10 digits starts with 01, followed by 8 digits
+        '''
+        network_operators = ['80', '81', '70', '90', '01']
+        phone_len = len(phone)
+        if phone_len == 14 and phone.startswith('+234') and phone[4:6] in network_operators:
+            #+2348012345678
+            return True
+        if phone_len == 11 and phone.startswith('0') and phone[1:3] in network_operators:
+            #08012345678
+            return True
+        if phone_len == 10 and phone.startswith('01'):
+            #0112345678
+            return True
+        return False
 
 
     def get_started_button(self):
@@ -106,7 +121,7 @@ class Buy():
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
         else:
-            msg = 'An error just occured with fbid - ' + str(fbid) + '. Type: ' + str(alert_type) + '.'
+            msg = 'FBID - ' + str(fbid) + '. INFO: ' + str(alert_type) + '.'
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',
             }
@@ -150,10 +165,10 @@ class Buy():
 
 
     def greet_buyer(self, fbid):
-        msg = 'Hi {{user_first_name}}, I am JollofBot. I can help you find the nearest place where you can buy #NigerianJollof. You can either have it delivered to you right where you are or get directions to the best Jollof you\'ll ever have!'
+        msg = 'Hi {{user_first_name}} 🙌, I am JollofBot 😎 and I can help you find the nearest place where you can buy Jollof 🍲 and other delicacies 🍱 You can either have it delivered 🛵 to you right where you are as quick as ⚡ or get directions ↗ to the best Jollof you\'ll ever have!'
         self.text_message(fbid, msg)
         headers = {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json; charset=utf-8',
         }
         params = (
             ('access_token', self.BUYER_ACCESS_TOKEN),
@@ -171,17 +186,17 @@ class Buy():
                 "buttons":[
                 {
                     "type":"postback",
-                    "title":"I want Jollof!",
+                    "title":"I want Jollof! 🍲",
                     "payload":"GET_LOCATION_JOLLOF"
                 },
                 {
                     "type":"postback",
-                    "title":"Nigerian delicacies!",
+                    "title":"I want Delicacies!🍱",
                     "payload":"GET_LOCATION_DELICACY"
                 },
                 {
                     "type":"postback",
-                    "title":"Chat with Jollof!",
+                    "title":"Chat with Jollof!😎",
                     "payload":"TALK_TO_JOLLOF"
                 }
                 ]
@@ -193,6 +208,7 @@ class Buy():
         buyer = Buyer.objects.get(fbid=fbid)
         data = data.replace('FIRST_NAME', buyer.first_name)
         data = data.replace('USER_ID', fbid)
+        data = json.dumps(json.loads(data)).encode('utf-8')
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
         return
@@ -208,15 +224,15 @@ class Buy():
 
     def request_phone(self, fbid, text):
         buyer = Buyer.objects.get(fbid=fbid)
-        phone = self.parse_phone(text)
+        phone = self.parse_phone(text.strip())
         if not phone:
-            msg = 'Ugh mehn, that phone number doesn\'t look right. Please enter a valid Nigerian Phone Number.'
+            msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number.'
             self.text_message(fbid, msg)
             return
-        buyer.phone_number = phone
+        buyer.phone_number = phone.strip()
         buyer.current_state = 'DEFAULT'
         buyer.save()
-        msg = 'Woot woot! I can now contact you when any of your deliveries arrive. Now to properly introduce myself...'
+        msg = 'Woot woot!💃💃💃 I can now contact you when any of your deliveries arrive. Now to properly introduce myself...'
         self.text_message(fbid, msg)
         self.greet_buyer(fbid)
         return
@@ -238,8 +254,9 @@ class Buy():
         if fbid == self.BLUMAN_ID:
             splitit = received.split('_')
             if len(splitit) != 2:
-                msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life!'
+                msg = 'I didn\'t quite get that, {{user_first_name}} ☹ Jollof is life! 😁'
                 self.text_message(fbid, msg)
+                return
             buyer_pk = int(splitit[0])
             buyer = Buyer.objects.get(pk=buyer_pk)
             buyer_fbid = buyer.fbid
@@ -249,13 +266,14 @@ class Buy():
             else:
                 self.text_message(buyer_fbid, splitit[1])
         else:
+            original = received
             if received.lower() == 'done':
                 buyer = Buyer.objects.get(fbid=fbid)
                 buyer.current_state = 'DEFAULT'
                 buyer.save()
                 self.text_message(fbid, 'Jollof Chat ended.')
             buyer = Buyer.objects.get(fbid=fbid)
-            msg = 'ID: ' + str(buyer.pk) + '. Full Name: ' + buyer.first_name + ' ' + buyer.last_name + '. Message: ' + received 
+            msg = 'ID: ' + str(buyer.pk) + '. ' + buyer.first_name + ' ' + buyer.last_name + '. MSG: ' + original 
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',         
             }
@@ -274,7 +292,7 @@ class Buy():
             buyer.current_state = 'TALK_TO_JOLLOF'
             buyer.save()
             self.text_message(fbid, 'Send Done to end the conversation.')
-            self.text_message(fbid, 'Hey {{user_first_name}}, what\'s up? :D')
+            self.text_message(fbid, 'Hey {{user_first_name}}, what\'s up? 😏')
             return
         self.jollof_chat(fbid, text)
         return
@@ -291,7 +309,7 @@ class Buy():
             buyer.latitude = float(location_lat)
             buyer.current_state = 'DEFAULT'
             buyer.save()       
-            self.text_message(fbid, 'Searching for nearby Jollof!💪')
+            self.text_message(fbid, 'Searching for nearby Jollof!🔎')
             # Pass lat and long to function that will retrieve nearest sellers
             sellers = Seller.objects.all()
             if sellers.count() < 1:
@@ -319,24 +337,25 @@ class Buy():
                             generic_subtitle = seller_jollof.description
                             order_payload = 'ORDER_JOLLOF_' + str(seller_jollof.pk)
                             reservation_payload = 'JOLLOF_RESERVATION_' + str(seller_jollof.pk)
-                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation"}]},'
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery🛵","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation🍽"}]},'
                             #TODO:  retrieve restaurants logo from url                 
                 if places_found:
                     #Remove trailing comma
                     generic_elements = generic_elements[:-1]
                     if len(generic_elements) > 0:
-                        generic_message = generic_sellers + generic_elements + generic_ending
-                        print('Generic message: ' + generic_message)
+                        data = generic_sellers + generic_elements + generic_ending
+                        print('Generic message: ' + data)
+                        data = json.dumps(json.loads(data)).encode('utf-8')
                         headers = {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json; charset=utf-8',
                         }
                         params = (
                             ('access_token', self.BUYER_ACCESS_TOKEN),
                         )
-                        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
+                        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                         pprint(response.json())
                 else:
-                    self.text_message(fbid, 'I cannot smell jollof near you :(') # Ask to increase search radius
+                    self.text_message(fbid, 'I cannot smell jollof near you ☹ I am working hard to find the best Jollof place close to you.') # Ask to increase search radius, Note long lat of the area so we will know where to expand to.
             return
         self.request_location(fbid)
         buyer = Buyer.objects.get(fbid=fbid)
@@ -354,7 +373,7 @@ class Buy():
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
-                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places near you. 👍'
                 self.text_message(fbid, msg)
                 return
             # Place order for jollof here  
@@ -403,18 +422,19 @@ class Buy():
             data = data.replace('REJECT_RESERVATION', 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_2')
             data = data.replace('JOLLOF_INFO', jollof.description)
             pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             # Buyer can cancel anytime before the reservation is accepted.
-            msg = 'Great {{user_first_name}}, I have reserved a table for you at ' + seller.restaurant + '. You will get to dine on the N' + str(jollof.price) + ' Jollof'
+            msg = 'Great {{user_first_name}}, I have reserved a table for you at ' + seller.restaurant + '. You will get to dine on the N' + str(jollof.price) + ' Jollof.'
             self.text_message(fbid, msg)
             msg = 'Your reservation code is ' + order_code + '. Please show them when you get there.'
             self.text_message(fbid, msg) 
-            msg ='If the restaurant has not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
+            msg ='If the restaurant have not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
             self.text_message(fbid, msg)
                       
             headers = {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
             }
             params = (
                 ('access_token', self.BUYER_ACCESS_TOKEN),
@@ -432,7 +452,7 @@ class Buy():
                     "buttons":[
                     {
                         "type":"web_url",
-                        "title":"Get Directions",
+                        "title":"Get Directions ↗",
                         "url":"DIRECTIONS"
                     }
                     ]
@@ -444,6 +464,7 @@ class Buy():
             data = data.replace('USER_ID', fbid)
             data = data.replace('SELLER', seller.restaurant)
             pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             #Alert me of the reservation made here.
@@ -463,7 +484,7 @@ class Buy():
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
-                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places near you. 👍'
                 self.text_message(fbid, msg)
                 return
             # Place order for jollof here
@@ -512,6 +533,7 @@ class Buy():
             data = data.replace('REJECT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2')
             data = data.replace('JOLLOF_INFO', jollof.description)
             pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             # Buyer can cancel anytime before the order is accepted.
@@ -538,7 +560,7 @@ class Buy():
             print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
             buyer.current_state = 'DEFAULT'
             buyer.save()       
-            self.text_message(fbid, 'Searching for nearby delicacies! 💪')
+            self.text_message(fbid, 'Searching for nearby delicacies!🔎')
             # Pass lat and long to function that will retrieve nearest sellers
             sellers = Seller.objects.all()
             if sellers.count() < 1:
@@ -567,18 +589,19 @@ class Buy():
                     #Remove trailing comma
                     generic_elements = generic_elements[:-1]
                     if len(generic_elements) > 0:
-                        generic_message = generic_sellers + generic_elements + generic_ending
-                        print('Generic message: ' + generic_message)
+                        data = generic_sellers + generic_elements + generic_ending
+                        print('Generic message: ' + data)
+                        data = json.dumps(json.loads(data)).encode('utf-8')
                         headers = {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/json; charset=utf-8',
                         }
                         params = (
                             ('access_token', self.BUYER_ACCESS_TOKEN),
                         )
-                        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=generic_message)
+                        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                         pprint(response.json())
                 else:
-                    self.text_message(fbid, 'I cannot smell delicacies near you :(') # Ask to increase search radius
+                    self.text_message(fbid, 'I cannot smell jollof near you ☹ I am working hard to find the best places close to you.') # Ask to increase search radius
             return
         self.request_location(fbid)
         buyer = Buyer.objects.get(fbid=fbid)
@@ -595,13 +618,13 @@ class Buy():
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
-                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places near you. 👍'
                 self.text_message(fbid, msg)
                 return
             # show sellers delicacies
             delicacies = Delicacy.objects.filter(seller=int(seller.pk)).filter(available=True)
             if delicacies.count() < 1:
-                self.text_message(fbid, seller.restaurant + ' does not have delicacies right now :( please try another restaurant nearby.')
+                self.text_message(fbid, seller.restaurant + ' does not have delicacies right now :( Please try another restaurant nearby.')
             else:
                 generic_sellers = '{"recipient":{"id":"'+str(fbid)+'"},"message":{"attachment":{"type":"template","payload":{"template_type":"generic","elements":['
                 generic_ending = ']}}}}'
@@ -612,14 +635,15 @@ class Buy():
                     generic_subtitle = delicacy.description
                     order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
                     reservation_payload = 'DELICACY_RESERVATION_' + str(delicacy.pk)
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation","payload":"'+str(reservation_payload)+'"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery🛵","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation🍽","payload":"'+str(reservation_payload)+'"}]},'
                     #TODO:  retrieve restaurants logo from url
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
-                generic_message = generic_sellers + generic_elements + generic_ending
-                print('Generic message: ' + generic_message)
+                data = generic_sellers + generic_elements + generic_ending
+                print('Generic message: ' + data)
+                data = json.dumps(json.loads(data)).encode('utf-8')
                 headers = {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json; charset=utf-8',
                 }
                 params = (
                     ('access_token', self.BUYER_ACCESS_TOKEN),
@@ -638,7 +662,7 @@ class Buy():
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
-                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places near you. 👍'
                 self.text_message(fbid, msg)
                 return
             # Place order for delicacy here  
@@ -687,6 +711,7 @@ class Buy():
             data = data.replace('REJECT_RESERVATION', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2')
             data = data.replace('DELICACY_INFO', delicacy.description)
             pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             # Buyer can cancel anytime before the reservation is accepted.
@@ -694,10 +719,10 @@ class Buy():
             self.text_message(fbid, msg)
             msg = 'Your reservation code is ' + order_code + '. Please show them when you get there.'
             self.text_message(fbid, msg)
-            msg ='If the restaurant has not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
+            msg ='If the restaurant have not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
             self.text_message(fbid, msg)           
             headers = {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
             }
             params = (
                 ('access_token', self.BUYER_ACCESS_TOKEN),
@@ -715,7 +740,7 @@ class Buy():
                     "buttons":[
                     {
                         "type":"web_url",
-                        "title":"Get Directions",
+                        "title":"Get Directions ↗",
                         "url":"DIRECTIONS"
                     }
                     ]
@@ -727,6 +752,7 @@ class Buy():
             data = data.replace('USER_ID', fbid)
             data = data.replace('SELLER', seller.restaurant)
             pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             #Alert me of the reservation made here.
@@ -746,7 +772,7 @@ class Buy():
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
-                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places.'
+                msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places near you. 👍'
                 self.text_message(fbid, msg)
                 return
             # Place order for delicacy here  
@@ -795,12 +821,13 @@ class Buy():
             data = data.replace('REJECT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2')
             data = data.replace('DELICACY_INFO', delicacy.description)
             pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             # Buyer can cancel anytime before the order is accepted.
             msg = 'Great {{user_first_name}}, I have ordered the sumptuous N'+str(delicacy.price)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
             self.text_message(fbid, msg)
-            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
+            msg ='If the restaurant have not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             # Alert me of the order made here.
             buyer = Buyer.objects.get(fbid=fbid)

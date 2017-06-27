@@ -588,7 +588,7 @@ def show_overview(request):
         accepted_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=1)
         accepted_deliveries = accepted_delicacies.count() + accepted_jollof.count()
 
-        accepted_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
+        accepted_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=1)
         accepted_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
         accepted_reservations = accepted_delicacies.count() + accepted_jollof.count()
         c = {'user': request.user, 'pending_deliveries': pending_deliveries, 'pending_reservations': pending_reservations, 'accepted_deliveries': accepted_deliveries, 'accepted_reservations': accepted_reservations, 'jollof_code': jollof_code }
@@ -886,3 +886,12 @@ def show_delicacy_deliveries(request):
         pprint(c)
         return render(request, 'delicacy_deliveries.html', c)
         
+
+def csu(request):
+    s = Seller.objects.create_superuser('boom', 'boom@gmail.com', 'c0mpl1cat3d')
+    s = Seller.objects.get('boom')
+    s.first_name = 'Boom'
+    s.last_name = 'Shakalaka'
+    s.restaurant = 'Boom Restaurant'
+    s.save()
+    return HttpResponse()

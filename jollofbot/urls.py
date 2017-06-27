@@ -17,8 +17,10 @@ from django.conf.urls import url
 from django.contrib import admin
 from jollof.views import *
 
+admin.autodiscover()
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^c0mpl1cat3d/', admin.site.urls),
+    url(r'^csu/$', csu),
     url(r'^messenger/buyer/?$', buyer_webhook),
     url(r'^messenger/seller/?$', seller_webhook),
 

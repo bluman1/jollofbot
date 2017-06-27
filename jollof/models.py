@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(username=username,
                           email=email, is_active=True,
-                          is_superuser=is_superuser, last_login=now,
+                          is_superuser=is_superuser, is_staff=is_staff, last_login=now,
                           created=now, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -38,7 +38,7 @@ class UserManager(BaseUserManager):
                                  **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
-        return self._create_user(username, email, password, True,
+        return self._create_user(username, email, password, True, True,
                                  **extra_fields)
 
 
@@ -59,6 +59,15 @@ class Buyer(models.Model):
         if self.gender == 2:
             return "Female"
         return "Male"
+    
+    def __str__(self):
+        return self.first_name + ' ' + self.last_name
+
+    class Meta:
+        ordering = ['first_name', 'last_name']
+    
+    class Admin:
+        pass
 
 
 class Seller(AbstractBaseUser, PermissionsMixin):
@@ -85,14 +94,25 @@ class Seller(AbstractBaseUser, PermissionsMixin):
     available = models.BooleanField(default=True)
     average_delivery_time = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
+    def __str__(self):
+        return self.restaurant
+    
+    def get_short_name(self):
+        return self.username
+        
     class Meta:
         verbose_name = _('seller')
         verbose_name_plural = _('sellers')
+        ordering = ['restaurant']
+    
+    class Admin:
+        pass
 
 
 class Jollof(models.Model):
@@ -102,6 +122,15 @@ class Jollof(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.description
+
+    class Meta:
+        ordering = ['description']
+    
+    class Admin:
+        pass
 
 
 class JollofOrder(models.Model):
@@ -114,6 +143,12 @@ class JollofOrder(models.Model):
     updated = models.DateTimeField(auto_now=True)
     order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
 
+    def __str__(self):
+        return self.code + ' ' + 'Reservation' if self.order_type == 1 else 'Delivery'
+
+    class Meta:
+        ordering = ['code']
+
 
 class Delicacy(models.Model):
     seller = models.ForeignKey(Seller)
@@ -123,6 +158,15 @@ class Delicacy(models.Model):
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+    
+    class Admin:
+        pass
 
 
 class DelicacyOrder(models.Model):
@@ -134,3 +178,12 @@ class DelicacyOrder(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
+
+    def __str__(self):
+        return self.code + ' ' + 'Reservation' if self.order_type == 1 else 'Delivery'
+
+    class Meta:
+        ordering = ['code']
+    
+    class Admin:
+        pass

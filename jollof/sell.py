@@ -7,14 +7,12 @@ from pprint import pprint
 from jollof.models import *
 
 
-class Sell():
-
-    SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
-    BLUMAN_ID = os.environ.get('BLUMAN_ID')
-    NEAREST_KM = 1
+class Sell(object):
 
     def __init__(self):
-        pass
+        self.SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
+        self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
+        self.NEAREST_KM = 1
 
     
     def get_started_button(self):
@@ -48,22 +46,22 @@ class Sell():
                         "type":"nested",
                         "call_to_actions":[
                             {
-                                "title":"Pending Deliv. Orders",
+                                "title":"Pending Jollof Deliveries",
                                 "type":"postback",
                                 "payload":"JOLLOF_PENDING_DELIVERIES"
                             },
                             {
-                                "title":"Pending Reservations",
+                                "title":"Pending Jollof Reservations",
                                 "type":"postback",
                                 "payload":"JOLLOF_PENDING_RESERVATIONS"
                             },
                             {
-                                "title":"Accepted Deliv. Orders",
+                                "title":"Accepted Jollof Deliveries",
                                 "type":"postback",
                                 "payload":"JOLLOF_ACCEPTED_DELIVERIES"
                             },
                             {
-                                "title":"Accepted Reservations",
+                                "title":"Accepted Jollof Reservations",
                                 "type":"postback",
                                 "payload":"JOLLOF_ACCEPTED_RESERVATIONS"
                             }
@@ -74,22 +72,22 @@ class Sell():
                         "type":"nested",
                         "call_to_actions":[
                             {
-                                "title":"Pending Deliv. Orders",
+                                "title":"Pending Delicacy Deliveries",
                                 "type":"postback",
                                 "payload":"DELICACY_PENDING_DELIVERIES"
                             },
                             {
-                                "title":"Pending Reservations",
+                                "title":"Pending Delicacy Reservations",
                                 "type":"postback",
                                 "payload":"DELICACY_PENDING_RESERVATIONS"
                             },
                             {
-                                "title":"Accepted Deliv. Orders",
+                                "title":"Accepted Delicacy Deliveries",
                                 "type":"postback",
                                 "payload":"DELICACY_ACCEPTED_DELIVERIES"
                             },
                             {
-                                "title":"Accepted Reservations",
+                                "title":"Accepted Delicacy Reservations",
                                 "type":"postback",
                                 "payload":"DELICACY_ACCEPTED_RESERVATIONS"
                             }
@@ -298,8 +296,7 @@ class Sell():
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants your Jollof delivered!'
-                    generic_subtitle = 'Order Code: ' + jollof_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + jollof_order.code                   
                     accept_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
@@ -375,8 +372,7 @@ class Sell():
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' is requesting a Jollof reservation!'
-                    generic_subtitle = 'Order Code: ' + jollof_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + jollof_order.code           
                     accept_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
@@ -451,10 +447,8 @@ class Sell():
                     count += 1
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
-                    print('Random Imgur Link: ' + imgur_link)
                     generic_title = buyer.first_name + ' wants your Jollof delivery completed!'
-                    generic_subtitle = 'Order Code: ' + jollof_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + jollof_order.code                
                     accept_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
@@ -530,8 +524,7 @@ class Sell():
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants their Jollof reservation completed!'
-                    generic_subtitle = 'Order Code: ' + jollof_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + jollof_order.code                   
                     accept_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + str(jollof_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
@@ -650,8 +643,7 @@ class Sell():
                     delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants ' + delicacy.name + ' delivered!'
-                    generic_subtitle = 'Order Code: ' + delicacy_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + delicacy_order.code          
                     accept_order_payload = 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
@@ -730,7 +722,6 @@ class Sell():
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' is requesting a reservation for ' + delicacy.name + '!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
-                    # Should have a function that retrieves address from lat long
                     accept_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
@@ -808,8 +799,7 @@ class Sell():
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants your ' + delicacy.name + ' delivery completed!'
-                    generic_subtitle = 'Order Code: ' + delicacy_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + delicacy_order.code        
                     accept_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
@@ -886,8 +876,7 @@ class Sell():
                     delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     imgur_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants their Delicacy reservation completed!'
-                    generic_subtitle = 'Order Code: ' + delicacy_order.code 
-                    # Should have a function that retrieves address from lat long
+                    generic_subtitle = 'Order Code: ' + delicacy_order.code       
                     accept_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + str(delicacy_order.pk) + '_2'
                     generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
