@@ -254,7 +254,7 @@ class Buy(object):
         if fbid == self.BLUMAN_ID:
             splitit = received.split('_')
             if len(splitit) != 2:
-                msg = 'I didn\'t quite get that, {{user_first_name}} ☹ Jollof is life! 😁'
+                msg = 'I didn\'t quite get that, {{user_first_name}}. Jollof is life! 😁'
                 self.text_message(fbid, msg)
                 return
             buyer_pk = int(splitit[0])
@@ -288,6 +288,8 @@ class Buy(object):
 
     def talk_to_jollof(self, fbid, text):
         if text == 'TALK_TO_JOLLOF':
+            if fbid == self.BLUMAN_ID:
+                return self.text_message(fbid, 'Sorry fam, you can not be chatting with yurself.')
             buyer = Buyer.objects.get(fbid=fbid)
             buyer.current_state = 'TALK_TO_JOLLOF'
             buyer.save()

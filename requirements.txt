@@ -19,3 +19,7 @@ gunicorn == 19.7.1
 geopy == 1.11.0
 
 django-extensions == 1.7.9
+
+boto3 == 1.4.4
+
+django-storages == 1.6.3

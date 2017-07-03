@@ -44,4 +44,6 @@ urlpatterns = [
     url(r'^vendor/deliveries/jollof/$', show_jollof_deliveries),
     url(r'^vendor/reservations/delicacy/$', show_delicacy_reservations),
     url(r'^vendor/deliveries/delicacy/$', show_delicacy_deliveries),
+
+    url(r'^upload/$', show_test_upload),
 ]

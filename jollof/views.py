@@ -20,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 
 from jollof.models import *
+from jollof.forms import *
 from jollof.buy import Buy
 from jollof.buy_states import *
 from jollof.sell_states import *
@@ -895,3 +896,20 @@ def csu(request):
     s.restaurant = 'Boom Restaurant'
     s.save()
     return HttpResponse()
+
+
+def show_test_upload(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            m = SampleFile(title=form.cleaned_data['title'], file=form.cleaned_data['file'])
+            m.save()
+            form = UploadFileForm()
+            c = {'form': form, 'result': 'Done', 'sample': m}
+            pprint(c)
+            return render(request, 'upload.html', c)
+        else:
+            print('not valid')
+    else:
+        form = UploadFileForm()
+    return render(request, 'upload.html', {'form': form})

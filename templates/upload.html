@@ -1,0 +1,15 @@
+<html>
+<img src="{{m.file.url}}" alt="Nothing here">
+
+<form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+    <p>
+        <input name="title" value="default">
+    </p>
+    <p>
+        <input id="id_image" type="file" class="" name="file">
+    </p>
+    <input type="submit" value="Submit" />
+</form>
+<p> {{result}}</p>
+
+</html>
