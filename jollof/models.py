@@ -191,4 +191,4 @@ class DelicacyOrder(models.Model):
 
 class SampleFile(models.Model):
     title = models.CharField(max_length=50)
-    file = models.FileField(upload_to='samples', default = '/no-img.jpg')
+    file = models.ImageField(upload_to='samples', default = '/no-img.jpg')
