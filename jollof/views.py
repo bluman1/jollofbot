@@ -907,6 +907,11 @@ def show_test_upload(request):
             form = UploadFileForm()
             c = {'form': form, 'result': 'Done', 'sample': m}
             pprint(c)
+            pprint(m.file.url)
+            img_url = str(m.file.url)
+            img_url = img_url[:int(img_url.index('?'))]
+            pprint(img_url)
+            c['img_url'] = img_url
             return render(request, 'upload.html', c)
         else:
             print('not valid')
