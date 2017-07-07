@@ -738,7 +738,7 @@ def show_jollof(request):
         available = jollof.available
         delivery_price = seller.delivery_price
         jollof_url = str(jollof.image.url)
-        jollof_url = img_url[:int(jollof_url.index('?'))]
+        jollof_url = jollof_url[:int(jollof_url.index('?'))]
         c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description, 'jollof_url': jollof_url }
         pprint(c)
         return render(request, 'jollof.html', c)
