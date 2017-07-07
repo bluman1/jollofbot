@@ -120,8 +120,8 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="card ">
-                        <div class="image" style="background-image: url('/static/assets/img/fish.jpg'); background-position: center center; background-size: cover;">
-                            <img src="/static/assets/img/fish.jpg" alt="..." style="display: none;">
+                        <div class="image" style="background-image: url('{{jollof_url}}'); background-position: center center; background-size: cover;">
+                            <img src="{{jollof_url}}" alt="..." style="display: none;">
                             <div class="filter filter-orange"></div>
                         </div>
                         <div class="content">
@@ -139,28 +139,53 @@
                     <!-- end card -->
                 </div>
                 <div class="col-md-8">
-                    <form action="." method="post">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <input id="description" type="text" value="{{description}}" placeholder="Jollof Description" class="form-control" name="description"
-                            />
-                        </div>
-                        <div class="form-group">
-                            <label for="price">Jollof Price</label>
-                            <input id="price" type="text" value="{{price}}" placeholder="Jollof Price" class="form-control" name="price" />
-                        </div>
-                        <div class="form-group">
-                            <label for="available">Available</label>
-                            <div class="switch" data-on-label="Yes" data-off-label="No">
-                                <input id="available" type="checkbox" {% if available %} checked {% endif %} class="ct-orange" name="available" />
+                    <div class="row">
+                        <form action="." method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <input id="description" type="text" value="{{description}}" placeholder="Jollof Description" class="form-control" name="description"
+                                />
                             </div>
-                        </div>
-                        <h5>{{jollof_result}}</h5>
-                        <div class="form-group pull-right">
-                            <button type="submit" class="btn btn-warning">Save</button>
-                        </div>
-                    </form>
+                            <div class="form-group">
+                                <label for="price">Jollof Price</label>
+                                <input id="price" type="text" value="{{price}}" placeholder="Jollof Price" class="form-control" name="price" />
+                            </div>
+                            <div class="form-group">
+                                <label for="available">Available</label>
+                                <div class="switch" data-on-label="Yes" data-off-label="No">
+                                    <input id="available" type="checkbox" {% if available %} checked {% endif %} class="ct-orange" name="available" />
+                                </div>
+                            </div>
+                            <h5>{{jollof_result}}</h5>
+                            <div class="form-group pull-right">
+                                <button type="submit" class="btn btn-warning">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="row">
+                        <form method="POST" action="." enctype="multipart/form-data">
+                            {%csrf_token%}
+                            <div class="row">
+                                <h3><span class="tim-notes">Jollof Image</span></h3>
+                                <div class="col-md-4">
+                                    <img src="{{jollof_url}}" alt="Jollof Image.">
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="file" class="" name="image">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-warning">Save Image</button>
+                                    </div>
+                                </div>
+                                <h5>{{jollof_result}}</h5>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>

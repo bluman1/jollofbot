@@ -645,8 +645,10 @@ def show_profile(request):
             available_delivery = seller.delivers
             delivery_time = seller.average_delivery_time
             delivery_price = seller.delivery_price
+            logo_url = str(seller.logo.url)
+            logo_url = img_url[:int(logo_url.index('?'))]
 
-            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'basic_result': 'Changes saved successfully.' }
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'basic_result': 'Changes saved successfully.', 'logo_url': logo_url}
             pprint(c)
             return render(request, 'profile.html', c)
         elif request.POST.get('business'):
@@ -677,10 +679,47 @@ def show_profile(request):
             available_delivery = seller.delivers
             delivery_time = seller.average_delivery_time
             delivery_price = seller.delivery_price
+            logo_url = str(seller.logo.url)
+            logo_url = img_url[:int(logo_url.index('?'))]
 
-            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'business_result': 'Changes saved successfully.' }
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'business_result': 'Changes saved successfully.', 'logo_url': logo_url}
             pprint(c)
             return render(request, 'profile.html', c)
+        elif request.POST.get('logo'):
+            #handle restaurant logo submission
+            seller = Seller.objects.get(pk=request.user.pk)
+            form = SellerLogo(request.POST, request.FILES)
+            logo_result = None
+            logo_url = None
+            if form.is_valid():
+                seller.logo = form.cleaned_data['logo']
+                seller.save()
+                logo_url = str(seller.logo.url)
+                logo_url = img_url[:int(logo_url.index('?'))]
+                logo_result = 'Saved successfully.'
+            else:
+                #seller uploaded a non image file.
+                logo_result = 'Shucks! An error occured. Please try again with a file with any of these extensions: jpg,png.'
+            #retrieve new values
+            jollof_code = seller.code
+            restaurant_name = seller.restaurant
+            email = seller.email
+            username = seller.username
+            first_name = seller.first_name
+            last_name = seller.last_name
+            phone_number = seller.phone_number
+            available_business = seller.available
+            opening_hour = seller.opening_hour
+            closing_hour = seller.closing_hour
+            available_delivery = seller.delivers
+            delivery_time = seller.average_delivery_time
+            delivery_price = seller.delivery_price
+            logo_url = str(seller.logo.url)
+            logo_url = img_url[:int(logo_url.index('?'))]
+
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'logo_result': logo_result, 'logo_url': logo_url}
+
+
 
 
 @login_required 
@@ -698,35 +737,69 @@ def show_jollof(request):
         description = jollof.description
         available = jollof.available
         delivery_price = seller.delivery_price
-        c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description }
+        jollof_url = str(jollof.image.url)
+        jollof_url = img_url[:int(jollof_url.index('?'))]
+        c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description, 'jollof_url': jollof_url }
         pprint(c)
         return render(request, 'jollof.html', c)
     elif request.method == 'POST':
         pprint(request.POST)
         seller = Seller.objects.get(pk=request.user.pk)
-        try:
-            jollof = Jollof.objects.get(seller=seller)
-            jollof.price = request.POST.get('price', '')
-            jollof.description = request.POST.get('description', '')
-            if request.POST.get('available'):
-                jollof.available = True
+        jollof = None
+        if request.POST.get('price'):
+            try:
+                jollof = Jollof.objects.get(seller=seller)
+                jollof.price = request.POST.get('price', '')
+                jollof.description = request.POST.get('description', '')
+                if request.POST.get('available'):
+                    jollof.available = True
+                else:
+                    jollof.available = False
+                jollof.save()
+            except Jollof.DoesNotExist:
+                available = False
+                if request.POST.get('available'):
+                    available = True
+                jollof = Jollof(seller=seller, price=request.POST.get('price', ''), description=request.POST.get('description', ''), available=available)
+                jollof.save()
+            #retrieve uptodate info
+            price = jollof.price
+            description = jollof.description
+            available = jollof.available
+            delivery_price = seller.delivery_price
+            jollof_url = str(jollof.image.url)
+                    jollof_url = img_url[:int(jollof_url.index('?'))]
+            c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description, 'jollof_result': 'Jollof details saved.', 'jollof_url': jollof_url }
+            pprint(c)
+            return render(request, 'jollof.html', c)
+        elif request.POST.get('image'):
+            form = JollofImage(request.POST, request.FILES)
+            jollof_result = None
+            jollof_url = None
+            if form.is_valid():
+                try:
+                    jollof = Jollof.objects.get(seller=seller)
+                    jollof.image = form.cleaned_data['image']
+                    jollof.save()
+                    jollof_url = str(jollof.image.url)
+                    jollof_url = img_url[:int(jollof_url.index('?'))]
+                    jollof_result = 'Saved successfully.'
+
+                    price = jollof.price
+                    description = jollof.description
+                    available = jollof.available
+                    delivery_price = seller.delivery_price
+                    c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description, 'jollof_result': jollof_result, 'jollof_url': jollof_url }
+                    pprint(c)
+                    return render(request, 'jollof.html', c)
+                except jollof.DoesNotExist:
+                    jollof_result = 'Sorry, you need to setup your restaurant\'s Jollof first.'
             else:
-                jollof.available = False
-            jollof.save()
-        except Jollof.DoesNotExist:
-            available = False
-            if request.POST.get('available'):
-                available = True
-            jollof = Jollof(seller=seller, price=request.POST.get('price', ''), description=request.POST.get('description', ''), available=available)
-            jollof.save()
-        #retrieve uptodate info
-        price = jollof.price
-        description = jollof.description
-        available = jollof.available
-        delivery_price = seller.delivery_price
-        c = {'user': request.user, 'price': price, 'available': available, 'delivery_price': delivery_price, 'description': description, 'jollof_result': 'Jollof details saved.' }
-        pprint(c)
-        return render(request, 'jollof.html', c)
+                #seller uploaded a non image file.
+                jollof_result = 'Shucks! An error occured. Please try again with a file with any of these extensions: jpg,png.'
+            c = {'user': request.user, 'jollof_result': jollof_result}
+            pprint(c)
+            return render(request, 'jollof.html', c)           
 
 
 @login_required

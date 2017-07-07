@@ -334,12 +334,12 @@ class Buy(object):
                             if seller_jollof.available is False:
                                 continue
                             places_found = True
-                            imgur_link = 'http://via.placeholder.com/350x350'
+                            img_link = 'http://via.placeholder.com/350x350'
                             generic_title = seller.restaurant + ' jollof at N' + str(seller_jollof.price)
                             generic_subtitle = seller_jollof.description
                             order_payload = 'ORDER_JOLLOF_' + str(seller_jollof.pk)
                             reservation_payload = 'JOLLOF_RESERVATION_' + str(seller_jollof.pk)
-                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery🛵","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation🍽"}]},'
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery 🚚","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation🍽"}]},'
                             #TODO:  retrieve restaurants logo from url                 
                 if places_found:
                     #Remove trailing comma
@@ -581,11 +581,11 @@ class Buy(object):
                             if seller_delicacy.count() < 1:
                                 continue
                             places_found = True
-                            imgur_link = 'http://via.placeholder.com/350x350'
+                            img_link = 'http://via.placeholder.com/350x350'
                             generic_title = seller.restaurant
                             generic_subtitle = seller.phone_number
                             generic_payload = 'VIEW_DELICACY_SELLERS_' + str(seller.pk)
-                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"View Delicacies","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"'+self.get_directions(buyer.latitude, buyer.longitude, seller.latitude, seller.longitude)+'","title":"Get Directions"}]},'
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"View Delicacies","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"'+self.get_directions(buyer.latitude, buyer.longitude, seller.latitude, seller.longitude)+'","title":"Get Directions"}]},'
                             #TODO: get gmaps link for directions, retrieve restaurants logo from url    
                 if places_found:
                     #Remove trailing comma
@@ -632,12 +632,12 @@ class Buy(object):
                 generic_ending = ']}}}}'
                 generic_elements = ''
                 for delicacy in delicacies:
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = str(delicacy.price)
                     generic_subtitle = delicacy.description
                     order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
                     reservation_payload = 'DELICACY_RESERVATION_' + str(delicacy.pk)
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery🛵","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation🍽","payload":"'+str(reservation_payload)+'"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery🛵","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation🍽","payload":"'+str(reservation_payload)+'"}]},'
                     #TODO:  retrieve restaurants logo from url
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]

@@ -294,12 +294,12 @@ class Sell(object):
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants your Jollof delivered!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code                   
                     accept_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -370,12 +370,12 @@ class Sell(object):
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' is requesting a Jollof reservation!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code           
                     accept_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -446,12 +446,12 @@ class Sell(object):
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants your Jollof delivery completed!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code                
                     accept_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -522,12 +522,12 @@ class Sell(object):
                         break
                     count += 1
                     buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants their Jollof reservation completed!'
                     generic_subtitle = 'Order Code: ' + jollof_order.code                   
                     accept_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + str(jollof_order.pk) + '_1'
                     reject_order_payload = 'JOLLOF_ACCEPTED_RESERVATIONS_' + str(jollof_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -641,12 +641,12 @@ class Sell(object):
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants ' + delicacy.name + ' delivered!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code          
                     accept_order_payload = 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -719,12 +719,12 @@ class Sell(object):
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' is requesting a reservation for ' + delicacy.name + '!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code 
                     accept_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_PENDING_RESERVATIONS_' + str(delicacy_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Reject Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -797,12 +797,12 @@ class Sell(object):
                     count += 1
                     delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants your ' + delicacy.name + ' delivery completed!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code        
                     accept_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Order","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Order"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending
@@ -874,12 +874,12 @@ class Sell(object):
                     count += 1
                     buyer = Buyer.objects.get(pk=int(delicacy_order.delicacy_buyer.pk))
                     delicacy = Delicacy.objects.get(pk=int(delicacy_order.delicacy.pk))
-                    imgur_link = 'http://via.placeholder.com/350x350'
+                    img_link = 'http://via.placeholder.com/350x350'
                     generic_title = buyer.first_name + ' wants their Delicacy reservation completed!'
                     generic_subtitle = 'Order Code: ' + delicacy_order.code       
                     accept_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + str(delicacy_order.pk) + '_1'
                     reject_order_payload = 'DELICACY_ACCEPTED_RESERVATIONS_' + str(delicacy_order.pk) + '_2'
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(imgur_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Complete Reservation","payload":"'+str(accept_order_payload)+'"},{"type":"postback","payload":"'+str(reject_order_payload)+'","title":"Cancel Reservation"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 generic_message = generic_sellers + generic_elements + generic_ending

@@ -95,6 +95,7 @@ class Seller(AbstractBaseUser, PermissionsMixin):
     average_delivery_time = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    logo = models.ImageField(upload_to='logos', default = '/default_logo.jpg')
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
@@ -122,6 +123,7 @@ class Jollof(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     available = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='jollofs', default = '/default_jollof.jpg')
 
     def __str__(self):
         return self.description
@@ -158,6 +160,7 @@ class Delicacy(models.Model):
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    image = models.ImageField(upload_to='delicacies', default = '/default_delicacy.jpg')
 
     def __str__(self):
         return self.name

@@ -118,7 +118,7 @@
         <div class="container">
             <div class="alert alert-warning">
                 <div class="container text-center">
-                    You Jollof Code is
+                    Your Jollof Code is
                     <b>{{jollof_code}}</b>.
                 </div>
             </div>
@@ -168,6 +168,26 @@
                 </form>
             </div>
             <h1><span class="tim-note">Business Profile</span> <small class="subtitle">Edit your business details here.</small>                </h1>
+            <form method="POST" action="." enctype="multipart/form-data">
+                {%csrf_token%}
+                <div class="row">
+                    <h3><span class="tim-notes">Restaurant Logo</span></h3>
+                    <div class="col-md-4">
+                        <img src="{{logo_url}}" alt="Restaurant Logo.">
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input type="file" class="" name="logo">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-warning">Save Logo</button>
+                        </div>
+                    </div>
+                    <h5>{{logo_result}}</h5>
+                </div>
+            </form>
             <form method="post" action=".">
                 {% csrf_token %}
                 <div class="row">
