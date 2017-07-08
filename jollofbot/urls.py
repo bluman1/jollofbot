@@ -31,8 +31,8 @@ urlpatterns = [
     url(r'^messenger/seller/prep/$', seller_prep),
 
     url(r'^$', show_landing),  # jollofbot.com/
-    url(r'^signup/$', show_signup),
-    url(r'^login/$', show_login),
+    url(r'^vendor/signup/$', show_signup),
+    url(r'^vendor/login/$', show_login),
     url(r'^vendor/logout/$', show_logout),
     url(r'^dash/$', show_dash),
     url(r'^vendor/$', show_vendor),
