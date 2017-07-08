@@ -339,12 +339,12 @@ class Buy(object):
                             if seller_jollof.available is False:
                                 continue
                             places_found = True
-                            img_link = 'http://via.placeholder.com/350x350'
-                            '''img_link = str(seller_jollof.image.url)
+                            #img_link = 'http://via.placeholder.com/350x350'
+                            img_link = str(seller_jollof.image.url)
                             try:
                                 img_link = img_link[:int(img_link.index('?'))]
                             except:
-                                pass'''
+                                pass
                             generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price)
                             generic_subtitle = seller_jollof.description
                             order_payload = 'ORDER_JOLLOF_' + str(seller_jollof.pk)
@@ -592,12 +592,12 @@ class Buy(object):
                             if seller_delicacy.count() < 1:
                                 continue
                             places_found = True
-                            img_link = 'http://via.placeholder.com/350x350'
-                            '''img_link = str(seller.logo.url)
+                            #img_link = 'http://via.placeholder.com/350x350'
+                            img_link = str(seller.logo.url)
                             try:
                                 img_link = img_link[:int(img_link.index('?'))]
                             except:
-                                pass'''
+                                pass
                             generic_title = seller.restaurant
                             generic_subtitle = seller.phone_number
                             generic_payload = 'VIEW_DELICACY_SELLERS_' + str(seller.pk)
@@ -647,12 +647,12 @@ class Buy(object):
                 generic_ending = ']}}}}'
                 generic_elements = ''
                 for delicacy in delicacies:
-                    img_link = 'http://via.placeholder.com/350x350'
-                    '''img_link = str(delicacy.image.url)
-                        try:
-                            img_link = img_link[:int(img_link.index('?'))]
-                        except:
-                            pass'''
+                    #img_link = 'http://via.placeholder.com/350x350'
+                    img_link = str(delicacy.image.url)
+                    try:
+                        img_link = img_link[:int(img_link.index('?'))]
+                    except:
+                        pass
                     generic_title = str(delicacy.price)
                     generic_subtitle = delicacy.description
                     order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
