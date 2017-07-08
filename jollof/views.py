@@ -35,7 +35,8 @@ SELLER_CHALLENGE = os.environ.get('SELLER_CHALLENGE')
 # Create your views here.
 
 def show_landing(request):
-    return HttpResponse()
+    if request.method == 'GET':
+        return render(request, 'home.html')
 
 
 @csrf_exempt
