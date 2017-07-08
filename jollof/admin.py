@@ -37,3 +37,9 @@ class DelicacyOrderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DelicacyOrder, DelicacyOrderAdmin)
+
+class FutureLocationAdmin(admin.ModelAdmin):
+    list_display = ['fbid', 'latitude', 'longitude']
+
+
+admin.site.register(FutureLocation, FutureLocationAdmin)

@@ -310,12 +310,17 @@ class Buy(object):
             buyer.longitude = float(location_long)
             buyer.latitude = float(location_lat)
             buyer.current_state = 'DEFAULT'
+            prev_locations = str(buyer.history)
+            if prev_locations == '':
+                buyer.history = location_lat + ',' + location_long #try to add the datetime too
+            else:
+                buyer.history = prev_locations + '\n' + location_lat + ',' + location_long #try to add the datetime here too.
             buyer.save()       
             self.text_message(fbid, 'Searching for nearby Jollof!🔎')
             # Pass lat and long to function that will retrieve nearest sellers
             sellers = Seller.objects.all()
             if sellers.count() < 1:
-                self.text_message(fbid, 'I am working very hard to find the best places for you to find Jollof. I will let you know when you can find them, thank you.')
+                self.text_message(fbid, 'I am working very hard to find the best places for you to find Jollof around you. I will let you know when you can find them, thank you.')
             else:
                 generic_sellers = '{"recipient":{"id":"'+str(fbid)+'"},"message":{"attachment":{"type":"template","payload":{"template_type":"generic","elements":['
                 generic_ending = ']}}}}'
@@ -335,12 +340,16 @@ class Buy(object):
                                 continue
                             places_found = True
                             img_link = 'http://via.placeholder.com/350x350'
-                            generic_title = seller.restaurant + ' jollof at N' + str(seller_jollof.price)
+                            '''img_link = str(seller_jollof.image.url)
+                            try:
+                                img_link = img_link[:int(img_link.index('?'))]
+                            except:
+                                pass'''
+                            generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price)
                             generic_subtitle = seller_jollof.description
                             order_payload = 'ORDER_JOLLOF_' + str(seller_jollof.pk)
                             reservation_payload = 'JOLLOF_RESERVATION_' + str(seller_jollof.pk)
-                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery 🚚","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation🍽"}]},'
-                            #TODO:  retrieve restaurants logo from url                 
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery 🚚","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation🍽"}]},'      
                 if places_found:
                     #Remove trailing comma
                     generic_elements = generic_elements[:-1]
@@ -357,7 +366,9 @@ class Buy(object):
                         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                         pprint(response.json())
                 else:
-                    self.text_message(fbid, 'I cannot smell jollof near you ☹ I am working hard to find the best Jollof place close to you.') # Ask to increase search radius, Note long lat of the area so we will know where to expand to.
+                    self.text_message(fbid, 'I cannot smell jollof near you ☹ I am working hard to find the best Jollof place close to you.') 
+                    future_location = FutureLocation(fbid=buyer.fbid, latitude=float(location_lat), longitude=float(location_long))
+                    future_location.save()
             return
         self.request_location(fbid)
         buyer = Buyer.objects.get(fbid=fbid)
@@ -582,11 +593,15 @@ class Buy(object):
                                 continue
                             places_found = True
                             img_link = 'http://via.placeholder.com/350x350'
+                            '''img_link = str(seller.logo.url)
+                            try:
+                                img_link = img_link[:int(img_link.index('?'))]
+                            except:
+                                pass'''
                             generic_title = seller.restaurant
                             generic_subtitle = seller.phone_number
                             generic_payload = 'VIEW_DELICACY_SELLERS_' + str(seller.pk)
-                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"View Delicacies","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"'+self.get_directions(buyer.latitude, buyer.longitude, seller.latitude, seller.longitude)+'","title":"Get Directions"}]},'
-                            #TODO: get gmaps link for directions, retrieve restaurants logo from url    
+                            generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"View Delicacies","payload":"'+str(generic_payload)+'"},{"type":"web_url","url":"'+self.get_directions(buyer.latitude, buyer.longitude, seller.latitude, seller.longitude)+'","title":"Get Directions"}]},'  
                 if places_found:
                     #Remove trailing comma
                     generic_elements = generic_elements[:-1]
@@ -633,12 +648,16 @@ class Buy(object):
                 generic_elements = ''
                 for delicacy in delicacies:
                     img_link = 'http://via.placeholder.com/350x350'
+                    '''img_link = str(delicacy.image.url)
+                        try:
+                            img_link = img_link[:int(img_link.index('?'))]
+                        except:
+                            pass'''
                     generic_title = str(delicacy.price)
                     generic_subtitle = delicacy.description
                     order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
                     reservation_payload = 'DELICACY_RESERVATION_' + str(delicacy.pk)
-                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery🛵","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation🍽","payload":"'+str(reservation_payload)+'"}]},'
-                    #TODO:  retrieve restaurants logo from url
+                    generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery 🚚","payload":"'+str(order_payload)+'"},{"type":"postback","title":"Make Reservation🍽","payload":"'+str(reservation_payload)+'"}]},'
                 #Remove trailing comma
                 generic_elements = generic_elements[:-1]
                 data = generic_sellers + generic_elements + generic_ending

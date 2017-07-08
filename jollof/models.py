@@ -54,6 +54,7 @@ class Buyer(models.Model):
     updated = models.DateTimeField(auto_now=True)
     current_state = models.CharField(max_length=128, default='DEFAULT')
     has_order = models.BooleanField(default=False)
+    history = models.TextField(default='')
 
     def get_gender(self):
         if self.gender == 2:
@@ -123,10 +124,14 @@ class Jollof(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     available = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='jollofs', default = '/default_jollof.jpg')
 
     def __str__(self):
         return self.description
+    
+    def get_pk(self):
+        return self.seller.pk
+
+    image = models.ImageField(upload_to='jollofs', default = '/default_jollof.jpg')
 
     class Meta:
         ordering = ['description']
@@ -160,10 +165,14 @@ class Delicacy(models.Model):
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    image = models.ImageField(upload_to='delicacies', default = '/default_delicacy.jpg')
 
     def __str__(self):
         return self.name
+
+    def get_pk(self):
+        return self.seller.pk
+
+    image = models.ImageField(upload_to='delicacies', default = '/default_delicacy.jpg')
 
     class Meta:
         ordering = ['name']
@@ -195,3 +204,20 @@ class DelicacyOrder(models.Model):
 class SampleFile(models.Model):
     title = models.CharField(max_length=50)
     file = models.ImageField(upload_to='samples', default = '/no-img.jpg')
+
+
+class FutureLocation(models.Model):
+    fbid = models.CharField(max_length=128, unique=False)
+    longitude = models.FloatField(default=0.0)
+    latitude = models.FloatField(default=0.0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.fbid
+
+    class Meta:
+        ordering = ['fbid']
+    
+    class Admin:
+        pass
