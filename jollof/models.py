@@ -96,7 +96,7 @@ class Seller(AbstractBaseUser, PermissionsMixin):
     average_delivery_time = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    logo = models.ImageField(upload_to='logos', default = '/default_logo.jpg')
+    logo = models.ImageField(upload_to='logos', default = '/default_logo.png')
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
