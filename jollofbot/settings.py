@@ -22,7 +22,7 @@ AUTH_USER_MODEL = 'jollof.Seller'
 
 APPEND_SLASHES = True
 
-LOGIN_URL = '/login/'
+LOGIN_URL = '/vendor/login/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # Quick-start development settings - unsuitable for production
