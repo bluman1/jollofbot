@@ -836,7 +836,7 @@ def show_jollof(request):
                 pass
             c = {'user': request.user, 'jollof_result': jollof_result}
             pprint(c)
-            return render(request, 'jollof.html', c)           
+            return render(request, 'jollof.html', c)
 
 
 @login_required
