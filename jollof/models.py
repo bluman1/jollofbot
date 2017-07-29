@@ -97,7 +97,7 @@ class Seller(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     logo = models.ImageField(upload_to='logos', default = '/default_logo.png')
-    star = models.IntegerField(default=1) #1star,3star,5star
+    star = models.IntegerField(default=1) #1star,3star,5star, 0star for free trial
     objects = UserManager()
 
     USERNAME_FIELD = 'username'

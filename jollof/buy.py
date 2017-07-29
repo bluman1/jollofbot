@@ -312,9 +312,9 @@ class Buy(object):
             buyer.current_state = 'DEFAULT'
             prev_locations = str(buyer.history)
             if prev_locations == '':
-                buyer.history = location_lat + ',' + location_long #try to add the datetime too
+                buyer.history = str(location_lat) + ',' + str(location_long) #try to add the datetime too
             else:
-                buyer.history = prev_locations + '\n' + location_lat + ',' + location_long #try to add the datetime here too.
+                buyer.history = prev_locations + '\n' + str(location_lat) + ',' + str(location_long) #try to add the datetime here too.
             buyer.save()       
             self.text_message(fbid, 'Searching for nearby Jollof!🔎')
             # Pass lat and long to function that will retrieve nearest sellers
@@ -572,6 +572,11 @@ class Buy(object):
             buyer.latitude = float(location_lat)
             print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
             buyer.current_state = 'DEFAULT'
+            prev_locations = str(buyer.history)
+            if prev_locations == '':
+                buyer.history = str(location_lat) + ',' + str(location_long) #try to add the datetime too
+            else:
+                buyer.history = prev_locations + '\n' + str(location_lat) + ',' + str(location_long) #try to add the datetime here too.
             buyer.save()       
             self.text_message(fbid, 'Searching for nearby delicacies!🔎')
             # Pass lat and long to function that will retrieve nearest sellers

@@ -474,7 +474,8 @@ def show_signup(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
             return HttpResponseRedirect('/vendor/overview/')
-        return render(request, 'signup.html', {})
+        user_type = request.GET.get('t')
+        return render(request, 'signup.html', {'user_type': user_type })
     elif request.method == 'POST':
         email = request.POST.get('email')
         username = request.POST.get('username')
