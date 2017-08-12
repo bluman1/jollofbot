@@ -443,7 +443,7 @@ class Buy(object):
             self.text_message(fbid, msg)
             msg = 'Your reservation code is ' + order_code + '. Please show them when you get there.'
             self.text_message(fbid, msg) 
-            msg ='If the restaurant have not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
+            msg ='If the restaurant has not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
             self.text_message(fbid, msg)
                       
             headers = {
@@ -745,7 +745,7 @@ class Buy(object):
             self.text_message(fbid, msg)
             msg = 'Your reservation code is ' + order_code + '. Please show them when you get there.'
             self.text_message(fbid, msg)
-            msg ='If the restaurant have not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
+            msg ='If the restaurant has not accepted your reservation yet, you can send cancel to... well, cancel the reservation.'
             self.text_message(fbid, msg)           
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',
