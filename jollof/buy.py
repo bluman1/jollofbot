@@ -229,7 +229,7 @@ class Buy(object):
             msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number.'
             self.text_message(fbid, msg)
             return
-        buyer.phone_number = phone.strip()
+        buyer.phone_number = text.strip()
         buyer.current_state = 'DEFAULT'
         buyer.save()
         msg = 'Woot woot!💃💃💃 I can now contact you when any of your deliveries arrive. Now to properly introduce myself...'
