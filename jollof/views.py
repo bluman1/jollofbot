@@ -159,7 +159,7 @@ def buyer_webhook(request):
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()                    
-                                buy.alert_me(fbid, 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
+                                buy.alert_me(fbid, '\nID: ' + str(buyer.pk) + 'Jollof buyer is sending a text we don\'t understand yet from the DEFAULT state. Text: ' + str(received_text) + '.')
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
                             print('Not default  State: ' + current_state)
