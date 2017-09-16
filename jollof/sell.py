@@ -217,7 +217,7 @@ class Sell(object):
                     return
                 jollof_order.status = 1
                 jollof_order.save()
-                msg = 'Great news! ' + seller.restaurant + ' have accepted your order and are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + jollof_order.code + ' :D'
+                msg = 'Great news! ' + seller.restaurant + ' has accepted your order and they are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + jollof_order.code + ' :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
@@ -276,7 +276,7 @@ class Sell(object):
                 msg = 'You have rejected the order. I hope all is well with your Jollof.'
                 self.text_message(fbid, msg)
                 buyer = Buyer.objects.get(pk=int(jollof_order.jollof_buyer.pk))
-                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to get you your Jollof. Say Jollof! to find other places near you.'
+                msg = 'Oh shucks! ' + seller.restaurant + ' will not be able to get you your Jollof :( Just say Jollof! to find other places near you.'
                 self.text_buyer(buyer.fbid, msg)            
         else:
             seller = Seller.objects.get(fbid=fbid)
@@ -333,7 +333,7 @@ class Sell(object):
                     return
                 jollof_order.status = 1
                 jollof_order.save()
-                msg = 'Great news! ' + seller.restaurant + ' have accepted your reservation and are waiting for you with your jollof!. Remember your order code is ' + jollof_order.code + ' :D'
+                msg = 'Great news! ' + seller.restaurant + ' have accepted your reservation and they are waiting for you with your jollof!. Remember your order code is ' + jollof_order.code + ' :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
