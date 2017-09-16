@@ -54,7 +54,7 @@ class Buyer(models.Model):
     updated = models.DateTimeField(auto_now=True)
     current_state = models.CharField(max_length=128, default='DEFAULT')
     has_order = models.BooleanField(default=False)
-    history = models.TextField(default='')
+    location_history = models.TextField(default='')
 
     def get_gender(self):
         if self.gender == 2:
