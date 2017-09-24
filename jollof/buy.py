@@ -260,11 +260,12 @@ class Buy(object):
             buyer_pk = int(splitit[0])
             buyer = Buyer.objects.get(pk=buyer_pk)
             buyer_fbid = buyer.fbid
+            to_send = str(splitit[1])
             if splitit[1].lower() == 'done':
                 buyer.current_state = 'DEFAULT'
                 buyer.save()
             else:
-                self.text_message(buyer_fbid, splitit[1])
+                self.text_message(buyer_fbid, to_send)
         else:
             original = received
             if received.lower() == 'done':
