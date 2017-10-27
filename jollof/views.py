@@ -495,7 +495,7 @@ def deliver_prep(request):
 
 deliver_payload = Deliver()
 deliver_payloads = {
-    'CANCELLED': deliver_payload.cancel_action,
+    #  'CANCELLED': deliver_payload.cancel_action,
 
 }
 
