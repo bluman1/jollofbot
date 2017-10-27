@@ -23,12 +23,15 @@ urlpatterns = [
     url(r'^csu/$', csu),
     url(r'^messenger/buyer/?$', buyer_webhook),
     url(r'^messenger/seller/?$', seller_webhook),
+    url(r'^messenger/deliver/?$', deliver_webhook),
 
     url(r'^messenger/buyer/subscribe/$', buyer_subscribe),
     url(r'^messenger/seller/subscribe/$', seller_subscribe),
+    url(r'^messenger/deliver/subscribe/$', deliver_subscribe),
 
     url(r'^messenger/buyer/prep/$', buyer_prep),
     url(r'^messenger/seller/prep/$', seller_prep),
+    url(r'^messenger/deliver/prep/$', deliver_prep),
 
     url(r'^$', show_landing),  # jollofbot.com/
     url(r'^vendor/signup/$', show_signup),

@@ -25,12 +25,16 @@ from jollof.buy import Buy
 from jollof.buy_states import *
 from jollof.sell_states import *
 from jollof.sell import Sell
+from jollof.deliver_states import *
+from jollof.deliver import Deliver
 
 BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
 SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
+DELIVER_ACCESS_TOKEN = os.environ.get('DELIVER_ACCESS_TOKEN')
 
 BUYER_CHALLENGE = os.environ.get('BUYER_CHALLENGE')
 SELLER_CHALLENGE = os.environ.get('SELLER_CHALLENGE')
+DELIVER_CHALLENGE = os.environ.get('DELIVER_CHALLENGE')
 
 # Create your views here.
 
@@ -467,6 +471,42 @@ def seller_webhook(request):
                                 # sell.alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
                                 return HttpResponse()
                         return HttpResponse()
+
+
+################################################################################
+
+
+@csrf_exempt
+def deliver_subscribe(request):
+    if request.method == 'GET':
+        response = requests.post(
+            'https://graph.facebook.com/v2.6/me/subscribed_apps?access_token=' + DELIVER_ACCESS_TOKEN)
+        pprint(response.json())
+        return HttpResponse()
+
+
+@csrf_exempt
+def deliver_prep(request):
+    deliver = Deliver()
+    deliver.get_started_button()
+    deliver.persistent_menu()
+    return HttpResponse()
+
+
+deliver_payload = Deliver()
+deliver_payloads = {
+    'CANCELLED': deliver_payload.cancel_action,
+
+}
+
+
+@csrf_exempt
+def deliver_webhook(request):
+    if request.method == 'GET':
+        if request.GET['hub.verify_token'] == DELIVER_CHALLENGE:
+            return HttpResponse(request.GET['hub.challenge'])
+        else:
+            return HttpResponse('Error, invalid token')
 
 
 sell = Sell()
