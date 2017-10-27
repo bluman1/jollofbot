@@ -10,7 +10,7 @@ from pprint import pprint
 from jollof.models import *
 
 
-class Buy(object):
+class Deliver(object):
 
     def __init__(self):
         pass
