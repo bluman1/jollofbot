@@ -498,6 +498,11 @@ def create_fake_flash(request, flash_name):
     if request.method == 'GET':
         valid = True
         code = None
+        try:
+            flash = Flash.objects.get(fbid=flash_name)
+            return HttpResponse(request, 'flash_code.html', {'flash_code': 'Flash group Already Exists.' }) 
+        except Flash.DoesNotExist:
+            pass
         while valid:
             code = 'FLASH-' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
             try:
