@@ -73,6 +73,7 @@ buyer_payloads = {
 
 }
 
+
 @csrf_exempt
 def buyer_webhook(request):
     if request.method == 'GET':
@@ -493,9 +494,42 @@ def deliver_prep(request):
     return HttpResponse()
 
 
+def create_fake_flash(request, flash_name):
+    if request.method == 'GET':
+        valid = True
+        code = None
+        while valid:
+            code = 'FLASH-' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
+            try:
+                flash = Flash.objects.get(flash_code=code)
+                pprint(code + ' already exists.')
+            except Flash.DoesNotExist:
+                valid = False
+        pprint('FLASHCDOE: ' + code)
+        flash = Flash(fbid=flash_name, flash_code=code, first_name='Master', last_name='Slave', phone_number='0')
+        flash.save()
+        pprint('Master Flash Created')
+        return HttpResponse(request, 'flash_code.html', {'flash_code': code })
+
+
 deliver_payload = Deliver()
 deliver_payloads = {
-    #  'CANCELLED': deliver_payload.cancel_action,
+    'CANCELLED': deliver_payload.cancel_action,
+    'FLASH_LOCATION': deliver_payload.save_location,
+    'REQUEST_PHONE': deliver_payload.request_phone,
+
+    'PENDING_ORDERS': deliver_payload.pending_orders,
+    'ACCEPT_PENDING_JOLLOF': deliver_payload.accept_pending_jollof,
+    'ACCEPT_PENDING_DELICACY': deliver_payload.accept_pending_delicacy,
+    
+    'TO_PICKUP': deliver_payload.to_pickup,
+    'PICKED_UP_JOLLOF': deliver_payload.picked_up_jollof,
+    'PICKED_UP_DELICACY': deliver_payload.picked_up_delicacy,
+
+    'TO_DROPOFF': deliver_payload.to_dropoff,
+    'DROPPED_OFF_JOLLOF': deliver_payload.dropped_off_jollof,
+    'DROPPED_OFF_DELICACY': deliver_payload.dropped_off_delicacy,
+
 
 }
 
@@ -507,7 +541,135 @@ def deliver_webhook(request):
             return HttpResponse(request.GET['hub.challenge'])
         else:
             return HttpResponse('Error, invalid token')
-
+    elif request.method == 'POST':
+        deliver = Deliver()
+        # Converts the text payload into a python dictionary
+        incoming_message = json.loads(request.body.decode('utf-8'))
+        # Facebook recommends going through every entry since they might send
+        # multiple messages in a single call during high load
+        for entry in incoming_message['entry']:
+            for message in entry['messaging']:
+                # Check to make sure the received call is a message call
+                # This might be delivery, optin, postback for other events
+                pprint(message)
+                fbid = message['sender']['id']
+                flash = None
+                connected = False
+                try:
+                    flash = Flash.objects.get(fbid=fbid)
+                    connected = True
+                except Flash.DoesNotExist:
+                    # why are we depending on this alone? The first message is a postback which creates the user.
+                    pass
+                if 'message' in message:
+                    if 'quick_reply' in message['message']:
+                        pprint('QR Received.')
+                    elif 'text' in message['message']:
+                        print('Text Message Recieved')
+                        if connected is False:
+                            pprint('received flashcode')
+                            deliver.process_code(fbid, message['message']['text'])
+                            return HttpResponse()
+                        random_greeting = ['hello', 'hi', 'hey', 'what\'s up?', 'what\'s up', 'wasap']
+                        received_text = message['message']['text'].lower()
+                        current_state = flash.current_state
+                        if current_state == 'DEFAULT':
+                            print('Flash in default state')
+                            if received_text in random_greeting:
+                                pprint('Random greeting State: ' + current_state)
+                                msg = 'Hi {{user_first_name}}! You are doing a great job!'
+                                deliver.text_message(fbid, msg)
+                            elif received_text.lower() == 'busy':
+                                flash.available = False
+                                flash.save()
+                                msg = 'I have set your status as busy. While you are busy, you will not be able to receive new order notifications. Remember to send available when you are ... available again.'
+                                deliver.text_message(fbid, msg)   
+                            elif received_text.lower() == 'available':
+                                flash.available = True
+                                flash.save()
+                                msg = 'I have set your status as available. You can now receive new order notifications. Remember to send location to update your... location.'
+                                deliver.text_message(fbid, msg)     
+                            else:
+                                if received_text.lower() == 'location':
+                                    flash.current_state = 'FLASH_LOCATION'
+                                    flash.save()
+                                    deliver.request_location(fbid)
+                                else:
+                                    print('Not a random greeting. State: ' + current_state)
+                                    deliver.text_message(fbid, 'You deliver the greatest jollof in the world!')
+                                    flash.current_state = 'DEFAULT'
+                                    flash.save()
+                        elif current_state == 'REQUEST_PHONE':
+                            print('Not default  State: ' + current_state)
+                            deliver.request_phone(fbid, received_text)
+                        else:
+                            deliver.text_message(fbid, 'You deliver the greatest jollof in the world!')
+                            flash.current_state = 'DEFAULT'
+                            flash.save()
+                        return HttpResponse()
+                    elif 'attachments' in message['message']:
+                        print('Attachment Recieved')
+                        for attachment in message['message']['attachments']:
+                            if attachment['type'] == 'location':
+                                print('Location Received')
+                                flash = Flash.objects.get(fbid=fbid)
+                                current_state = flash.current_state
+                                print('loc, current_state: ' + current_state)
+                                location_title = attachment['title']
+                                location_url = attachment['url']
+                                location_lat = attachment['payload']['coordinates']['lat'] # This is a float, not a str
+                                location_long = attachment['payload']['coordinates']['long'] # This is a float, not a str
+                                try:
+                                    deliver_payloads[current_state](fbid, current_state, location_title, location_url, location_lat, location_long)
+                                except Exception as e:
+                                    print('Exception\n' + str(e))
+                                    deliver.alert_me(fbid, 'Failed to get location.')
+                                    flash.current_state = 'DEFAULT'
+                                    flash.save()
+                        return HttpResponse()
+                elif 'postback' in message:
+                    payload = message['postback']['payload']
+                    if payload == 'GET_STARTED':
+                        if connected:
+                            msg = 'Welcome back! I hope you have been delivering on time.'
+                            deliver.text_message(fbid, msg)
+                        else:
+                            msg =  'Hi {{user_first_name}}, please enter the flash code shared with you.'
+                            deliver.text_message(fbid, msg)
+                        return HttpResponse()
+                    else:
+                        current_state = flash.current_state                
+                        temp_payload = payload
+                        generic_payloads = ['PENDING_ORDERS', 'ACCEPT_PENDING_JOLLOF', 'ACCEPT_PENDING_DELICACY', 'TO_PICKUP', 'PICKED_UP_JOLLOF', 'PICKED_UP_DELICACY', 'TO_DROPOFF', 'DROPPED_OFF_JOLLOF', 'DROPPED_OFF_DELICACY']
+                        for generic in generic_payloads:
+                            if generic in payload:
+                                payload = generic
+                                next_state_status = is_deliver_next_state(current_state, payload)
+                                if next_state_status:
+                                    try:
+                                        deliver_payloads[payload](fbid, temp_payload)
+                                        return HttpResponse()
+                                    except Exception as e:
+                                        flash.current_state = 'DEFAULT'
+                                        buyer.save()
+                                        pprint('Exception\n' + str(e))
+                                        deliver.alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
+                                    return HttpResponse()
+                                else:
+                                    msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
+                                    deliver.text_message(fbid, msg)
+                                    flash.current_state = 'DEFAULT'
+                                    flash.save()
+                                    deliver.alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
+                                    return HttpResponse()
+                        try:
+                            deliver_payloads[payload](fbid, payload)
+                        except Exception as e:
+                            print(str(e))
+                            deliver.alert_me(fbid, 'Postback recieved from ' + current_state + ' state but no next state.')
+                            flash.current_state = 'DEFAULT'
+                            flash.save()
+                        return HttpResponse()
 
 sell = Sell()
 def show_signup(request):

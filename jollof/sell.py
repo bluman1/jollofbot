@@ -12,7 +12,7 @@ class Sell(object):
     def __init__(self):
         self.SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
         self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
-        self.NEAREST_KM = 1
+        self.NEAREST_KM = os.environ.get('NEAREST_KM')
 
     
     def get_started_button(self):

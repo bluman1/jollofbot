@@ -15,7 +15,7 @@ class Buy(object):
     def __init__(self):
         self.BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
         self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
-        self.NEAREST_KM = 1
+        self.NEAREST_KM = os.environ.get('NEAREST_KM')
 
     
     def get_distance(self, coords1, coords2):
@@ -226,7 +226,7 @@ class Buy(object):
         buyer = Buyer.objects.get(fbid=fbid)
         phone = self.parse_phone(text.strip())
         if not phone:
-            msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number.'
+            msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number. e.g. 080301234567'
             self.text_message(fbid, msg)
             return
         buyer.phone_number = text.strip()
@@ -356,7 +356,7 @@ class Buy(object):
                     generic_elements = generic_elements[:-1]
                     if len(generic_elements) > 0:
                         data = generic_sellers + generic_elements + generic_ending
-                        print('Generic message: ' + data)
+                        pprint('Generic message: ' + data)
                         data = json.dumps(json.loads(data)).encode('utf-8')
                         headers = {
                             'Content-Type': 'application/json; charset=utf-8',

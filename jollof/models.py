@@ -118,6 +118,36 @@ class Seller(AbstractBaseUser, PermissionsMixin):
         pass
 
 
+class Flash(models.Model):
+    fbid = models.CharField(max_length=128, unique=True)
+    flash_code = models.CharField(max_length=9, default='')
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    gender = models.IntegerField(default=1) # 1 male 2 female
+    phone_number = models.CharField(max_length=128, default='0')
+    longitude = models.FloatField(default=0.0)
+    latitude = models.FloatField(default=0.0)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    current_state = models.CharField(max_length=128, default='DEFAULT')
+    location_history = models.TextField(default='')
+    available = models.BooleanField(default=True)
+
+    def get_gender(self):
+        if self.gender == 2:
+            return "Female"
+        return "Male"
+    
+    def __str__(self):
+        return self.first_name + ' ' + self.last_name
+
+    class Meta:
+        ordering = ['first_name', 'last_name']
+    
+    class Admin:
+        pass
+
+
 class Jollof(models.Model):
     seller = models.ForeignKey(Seller)
     price = models.FloatField(default=0.0)
@@ -145,14 +175,19 @@ class JollofOrder(models.Model):
     code = models.CharField(max_length=128)
     jollof_buyer = models.ForeignKey(Buyer)
     jollof_seller = models.ForeignKey(Seller)
+    jollof_flash = models.ForeignKey(Flash, default=1, null=True, blank=True)
     jollof = models.ForeignKey(Jollof, default=1)
-    status = models.IntegerField(default=0) #0=pending, 1=accepted, 2=rejected, 3=cancelled, 4=completed
+    status = models.IntegerField(default=0)  # 0=pending, 1=accepted, 2=rejected, 3=cancelled, 4=completed/packaged
+    flash_status = models.IntegerField(default=0)  # 0=pending, 1=accepted, 2=rejected, 3=picked_up, 4=dropped_off
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
 
     def __str__(self):
         return self.code + ' ' + 'Reservation' if self.order_type == 1 else 'Delivery'
+
+    def is_complete(self):
+        return True if self.status == 4 and self.flash_status == 4 else False
 
     class Meta:
         ordering = ['code']
@@ -173,7 +208,7 @@ class Delicacy(models.Model):
     def get_pk(self):
         return self.seller.pk
 
-    image = models.ImageField(upload_to='delicacies', default = '/default_delicacy.jpg')
+    image = models.ImageField(upload_to='delicacies', default='/default_delicacy.jpg')
 
     class Meta:
         ordering = ['name']
@@ -186,14 +221,19 @@ class DelicacyOrder(models.Model):
     code = models.CharField(max_length=128)
     delicacy_buyer = models.ForeignKey(Buyer)
     delicacy_seller = models.ForeignKey(Seller)
+    delicacy_flash = models.ForeignKey(Flash, default=1, null=True, blank=True)
     delicacy = models.ForeignKey(Delicacy)
     status = models.IntegerField(default=0)
+    flash_status = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    order_type = models.IntegerField(default=1) # 1 = Reservation 2 = Delivery
+    order_type = models.IntegerField(default=1)  # 1 = Reservation 2 = Delivery
 
     def __str__(self):
         return self.code + ' ' + 'Reservation' if self.order_type == 1 else 'Delivery'
+
+    def is_complete(self):
+        return True if self.status == 4 and self.flash_status == 4 else False
 
     class Meta:
         ordering = ['code']
@@ -204,7 +244,7 @@ class DelicacyOrder(models.Model):
 
 class SampleFile(models.Model):
     title = models.CharField(max_length=50)
-    file = models.ImageField(upload_to='samples', default = '/no-img.jpg')
+    file = models.ImageField(upload_to='samples', default='/no-img.jpg')
 
 
 class FutureLocation(models.Model):
