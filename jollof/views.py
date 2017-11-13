@@ -514,7 +514,7 @@ def create_fake_flash(request, flash_name):
         flash = Flash(fbid=flash_name, flash_code=code, first_name='Master', last_name='Slave', phone_number='0')
         flash.save()
         pprint('Master Flash Created')
-        return HttpResponse(request, 'flash_code.html', {'flash_code': code })
+        return render(request, 'flash_code.html', {'flash_code': code })
 
 
 deliver_payload = Deliver()
