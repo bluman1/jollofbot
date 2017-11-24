@@ -226,7 +226,7 @@ class Buy(object):
         buyer = Buyer.objects.get(fbid=fbid)
         phone = self.parse_phone(text.strip())
         if not phone:
-            msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number. e.g. 080301234567'
+            msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number. e.g. 08030123456'
             self.text_message(fbid, msg)
             return
         buyer.phone_number = text.strip()
