@@ -15,7 +15,7 @@ class Buy(object):
     def __init__(self):
         self.BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
         self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
-        self.NEAREST_KM = os.environ.get('NEAREST_KM')
+        self.NEAREST_KM = float(os.environ.get('NEAREST_KM'))
 
     
     def get_distance(self, coords1, coords2):
