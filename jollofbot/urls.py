@@ -21,6 +21,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^c0mpl1cat3d/', admin.site.urls),
     url(r'^csu/$', csu),
+    url(r'^bot/$', landbot),
     url(r'^f4k3/fl4sh/(?P<flash_name>\w+)/$', create_fake_flash),
 
 

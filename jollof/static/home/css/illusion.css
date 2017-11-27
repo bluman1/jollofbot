@@ -1,0 +1,159 @@
+/******************
+https://illusion.ai 
+hi@illusion.ai
+copyright 2017 Illusion.ai 
+******************/
+
+@import url('https://fonts.googleapis.com/css?family=Lato');
+@keyframes font-fade {
+    50% {
+        color: transparent;
+    }
+    100% {
+        color: "inherit";
+    }
+}
+
+.cui {
+    background: transparent;
+    position: relative;
+    overflow: hidden;
+    width: 100vw;
+    margin: 0 auto;
+    max-width: 768px
+}
+
+.cui,
+.cui * {
+    box-sizing: border-box;
+    outline: none;
+}
+
+.cui__bubble {
+    font-family: "Lato";
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.2);
+    transform: translate3d(-96px, 0, 0);
+    transition: transform 0.75s cubic-bezier(0.68, 0.01, 0.245, 1.13) 0.3s, color 0.3s ease-in-out 0.25s, min-width 0.35s ease-in-out, min-height 0.35s ease-in-out;
+    display: inline-block;
+    line-height: 1.45em;
+    border-radius: 20px;
+    margin: 0 0 1em 0;
+    text-align: left;
+    position: relative;
+    padding: 6px 12px;
+    background: #fff;
+    color: #434343;
+    font-size: 19px;
+    border: none;
+    max-width: 90%;
+    min-width: 44px;
+    min-height: 12px;
+}
+
+.cui__bubble a {
+    color: #F47B00;
+}
+
+.cui__bubble--response {
+    font-family: "Lato";
+    transform: translate3d(0, 0, 0);
+    transition: transform 0.5s cubic-bezier(0.68, 0.01, 0.245, 1.13) 0s;
+    background: #F47B00;
+    float: right;
+    color: #fff;
+}
+
+.cui__bubble--response a {
+    color: #F47B00;
+}
+
+.cui__bubble--fade {
+    animation: font-fade .6s ease-in-out;
+}
+
+.cui__bubble--slideIn {
+    transform: translate3d(0, 0, 0);
+}
+
+.cui__bubble--typing {
+    color: transparent;
+    max-height: calc(1em + 16px);
+    max-width: 44px;
+    white-space: none;
+}
+
+.cui__bubble--typing:before {
+    content: '...';
+    color: #000;
+}
+
+.cui__bubble--embed {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 25px;
+    height: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+.cui__bubble--embed iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cui__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 148px 0;
+}
+
+.cui__list__item {
+    padding: 0 1em;
+    margin: 0;
+    overflow: hidden;
+}
+
+.cui__responses {
+    position: absolute;
+    text-align: center;
+    padding: 6px;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    margin: 0;
+}
+
+.cui__responses .cui__bubble {
+    margin: 12px 6px;
+    cursor: pointer;
+    float: none;
+}
+
+.cui__answers__placeholder:before {
+    content: 'Type and hit RETURN...';
+    display: inline-block;
+    opacity: 0.5;
+}
+
+.cardousel {
+    max-height: 220px;
+    overflow: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+    margin: 4px -12px 0px -2px;
+}
+
+.cardousel .card {
+    text-overflow: ellipsis;
+    border: 1px solid #eee;
+    display: inline-block;
+    white-space: nowrap;
+    border-radius: 3px;
+    margin-right: 8px;
+    overflow: hidden;
+    padding: 6px;
+    width: 248px;
+}

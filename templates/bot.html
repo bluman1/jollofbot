@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>JollofBot | Just say Jollof!</title>
+    <meta name="description" content="A.I. Messenger Bot for Ordering Food.">
+    <meta name="author" content="JollofBot">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900' rel='stylesheet' type='text/css'>
+    <link rel="icon" type="image/ico" href="/static/home/favicon.png">
+    <link rel="apple-touch-icon" href="/static/home/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/home/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/home/apple-touch-icon-114x114.png">
+    <link rel="image_src" href="/static/home/thumbnail.png">
+    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/home/css/style-theme.css" rel="stylesheet">
+    <link href="/static/home/css/orange-style.css" rel="stylesheet">
+    <link href="/static/home/css/illusion.css" rel="stylesheet">
+    <!--link rel="stylesheet" href="https://cdn.illusion.ai/illusion.min.css"-->
+    <script type="text/javascript" src="https://cdn.illusion.ai/illusion.min.js"></script>
+
+    <!-- Hotjar Tracking Code for http://www.jollofbot.com -->
+    <script>
+        (function (h, o, t, j, a, r) {
+            h.hj = h.hj || function () {
+                (h.hj.q = h.hj.q || []).push(arguments)
+            };
+            h._hjSettings = {
+                hjid: 626770,
+                hjsv: 5
+            };
+            a = o.getElementsByTagName('head')[0];
+            r = o.createElement('script');
+            r.async = 1;
+            r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv;
+            a.appendChild(r);
+        })(window, document, '//static.hotjar.com/c/hotjar-', '.js?sv=');
+    </script>
+</head>
+
+<body>
+
+    <!-- BEGIN Navigation -->
+    <div class="navigation">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 clearfix">
+                    <div class="logo floatleft">
+                        <a href="/">
+                            <!--img class="img-responsive" src="/static/home/images/jb1.png" alt="" title="" /-->
+                            <span style="font-size: 25px">JollofBot.</span>
+                        </a>
+                    </div>
+                    <div class="menu floatright" role="navigation">
+                        <ul class="clearfix">
+                            <li>
+                                <a href="#follow">Follow</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="toggle-nav-wrapper floatright">
+                        <button class="toggle-nav">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END Navigation -->
+
+    <div class="scrollbar" id="style-6">
+        <div class="force-overflow">
+            <!-- BEGIN Intro -->
+            <div class="intro" id="intro">
+                <div class="main-slider">
+                    <div class="slider-item hero-transparent">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 ">
+                                    <style>
+                                        .my_chat {
+                                            background-color: #FE9700;
+                                            padding-top: 90px;
+                                        }
+                                    </style>
+                                    <div class="my_chat"></div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Intro -->
+            <!-- BEGIN Follow -->
+            <div class="follow anchor" id="follow">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2 class="section-title aligncenter">Follow Us</h2>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="social-links-wrapper aligncenter">
+                                <a target="_blank" href="http://facebook.com/jollofff/" class="fb">
+                                    <i class="fa fa-facebook"></i>
+                                </a>
+                                <a target="_blank" href="http://instagram.com/jollofbot/" class="im">
+                                    <i class="fa fa-instagram"></i>
+                                </a>
+                                <a target="_blank" href="http://twitter.com/jollofbot/" class="tr">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Follow -->
+
+            <!-- BEGIN Between -->
+            <div class="between-section">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 aligncenter">
+                            <a href="#0">
+                                <img src="/static/home/images/jb1.png" alt="" title="" />
+                                <!--span style="font-size: 25px">JollofBot.</span-->
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- END Between -->
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        var chat = new Chat({
+
+            greeting: [
+                'Hey there! I am JollofBot! 🤖🍲',
+                'I am a Facebook Messenger bot that can help you find the nearest place where you can buy food and get it delivered to you as fast as ⚡',
+                'What else would you like to know about me?',
+
+
+                {
+                    type: 'choose',
+                    answers: [{
+                            'text': 'What\'s your mission?',
+                            'path': 'mission'
+                        },
+                        {
+                            'text': 'Tell me a story!',
+                            'path': 'story'
+                        }
+                    ]
+                }
+            ],
+
+            'mission': [
+                'I was built to give you a comfortable, fast and easy experience in ordering food.',
+                'With me, you are sure to always get the best places for your Nigerian Jollof and other delicasies.',
+                'And have your food delivered to you still hot by our very own Flash...',
+                'Yup, you got that right. The Flash delivers for us 😉',
+
+
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': 'Woah! Super cool!.',
+                        'path': 'cool'
+                    }]
+                }
+            ],
+            'cool': [
+                '😎',
+                {
+                    type: 'choose',
+                    answers: [{
+                            'text': 'Tell me more about Flash!',
+                            'path': 'flash_story'
+                        },
+                        {
+                            'text': 'Great! How do I start?',
+                            'path': 'start'
+                        }
+
+                    ]
+                }
+            ],
+
+            'flash_story': [
+                'Our Flash are actually cyclists and skaters that are around you!',
+                'Using my brother, the Flash bot, these guys can update their locations instantly and have orders around them routed to them!',
+                'They get to do what they love 🚲 and also make extra 💵 along the way!',
+                {
+                    type: 'choose',
+                    answers: [{
+                            'text': 'That is so cool! How do I start?',
+                            'path': 'start'
+                        }
+
+                    ]
+                }
+            ],
+
+
+
+            'finalmessage': [
+                'You\'re welcome!',
+                'Thanks\'s for taking the time to learn more about us!',
+                'This conversation was powered by <a href="https://illusion.ai">illusion.ai</a>',
+                '<iframe src="//giphy.com/embed/GB0lKzzxIv1te?hideSocial=true" width="480" height="262.08" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/bye-goodbye-the-little-rascals-GB0lKzzxIv1te">via GIPHY</a></p>',
+            ],
+
+            'start': [
+                'All you need to have is the Messenger app on your phone and you are good to go! Just visit <a href="https://m.me/jollofff" target="_blank">m.me/jollofff</a> to begin!',
+
+                {
+                    type: 'choose',
+                    answers: [{
+
+                        'text': 'Awesome! Thanks!',
+                        'path': 'finalmessage'
+                    }]
+                }
+            ],
+
+            'story': [
+                'We\'d love to hear from you!',
+                'You can email us at <a href="mailto:hello@makeschool.com">hello@makeschool.com</a>',
+
+
+                {
+                    type: 'choose',
+                    answers: [{
+
+                        'text': 'Thanks!',
+                        'path': 'finalmessage'
+
+                    }]
+                }
+            ],
+
+        }, {
+            targetNode: '.my_chat'
+        });
+    </script>
+
+    <script type="text/javascript" src="/static/home/js/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="/static/home/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/home/js/SmoothScroll.js"></script>
+    <script type="text/javascript" src="/static/home/js/jquery.localscroll.min.js"></script>
+    <script type="text/javascript" src="/static/home/js/jquery.scrollto.min.js"></script>
+    <script type="text/javascript" src="/static/home/js/jquery.easing.js"></script>
+    <script type="text/javascript" src="/static/home/js/jquery.countTo.js"></script>
+    <script type="text/javascript" src="/static/home/js/jquery.appear.js"></script>
+    <script type="text/javascript" src="/static/home/js/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="/static/home/js/jquery.fs.boxer.min.js"></script>
+    <script type="text/javascript" src="/static/home/js/custom.js"></script>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-106857512-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+
+</html>

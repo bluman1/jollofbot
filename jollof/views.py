@@ -1216,6 +1216,10 @@ def csu(request):
     return HttpResponse()
 
 
+def landbot(request):
+    return render(request, 'bot.html')
+
+
 def show_test_upload(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
