@@ -40,7 +40,7 @@ DELIVER_CHALLENGE = os.environ.get('DELIVER_CHALLENGE')
 
 def show_landing(request):
     if request.method == 'GET':
-        return render(request, 'home.html')
+        return render(request, 'bot.html')
 
 
 @csrf_exempt
