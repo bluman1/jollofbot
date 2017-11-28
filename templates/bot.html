@@ -9,7 +9,7 @@
     <meta name="description" content="A.I. Messenger Bot for Ordering Food.">
     <meta name="author" content="JollofBot">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900' rel='stylesheet' type='text/css'>
-    <link rel="icon" type="image/ico" href="/static/home/favicon.png">
+    <link rel="icon" type="image/ico" href="/static/home/images/jb1.png">
     <link rel="apple-touch-icon" href="/static/home/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/static/home/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="/static/home/apple-touch-icon-114x114.png">
@@ -80,10 +80,24 @@
                         <div class="container">
                             <div class="row">
                                 <div class="col-md-12 ">
+                                    <!--div class="center">
+                                        <img class="img-responsive" src="/static/home/images/jb1.png" alt="" title="" />
+                                    </div-->
                                     <style>
                                         .my_chat {
                                             background-color: #FE9700;
                                             padding-top: 90px;
+                                        }
+
+                                        .center {
+                                            width: 300px;
+                                            height: 300px;
+                                            position: absolute;
+                                            left: 50%;
+                                            top: 50%;
+                                            margin-left: -150px;
+                                            margin-top: -150px;
+                                            padding-top: 125px;
                                         }
                                     </style>
                                     <div class="my_chat"></div>
@@ -156,7 +170,7 @@
                             'path': 'mission'
                         },
                         {
-                            'text': 'Tell me a story!',
+                            'text': 'Why do Nigerians love Jollof?',
                             'path': 'story'
                         }
                     ]
@@ -232,21 +246,99 @@
             ],
 
             'story': [
-                'We\'d love to hear from you!',
-                'You can email us at <a href="mailto:hello@makeschool.com">hello@jollofbot.com</a>',
-
-
+                'Nigerian Jollof is the only Jollof Rice that really counts. Like really.',
+                'Do you love fried rice? Yes? Please tell me more about how you don’t know what true happiness feels like.',
+                'Rare picture of happiness being created <img src="https://pbs.twimg.com/media/CKQyyiOWgAAnVCw.jpg" class="img-responsive">',
                 {
                     type: 'choose',
                     answers: [{
-
-                        'text': 'Thanks!',
-                        'path': 'finalmessage'
-
+                        'text': 'True happiness!',
+                        'path': 'happiness'
                     }]
                 }
             ],
+            'happiness': [
+                'You got that right!',
+                'Missing out on Jollof can be devastating yaknow',
+                'When you and your guys get to the party and they tell you jollof rice has finished but Eba is still available <img src="https://pbs.twimg.com/media/CLAt55JUkAAmqKY.jpg" class="img-responsive">',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': '😭😭😭',
+                        'path': 'crying'
+                    }]
+                }
+            ],
+            'crying': [
+                'I feel your pain mehn.',
+                'You gotta agree with me that when you finally get some Jollof, it literally gives you butterflies in your stomach 🤗',
+                'After eating delicious Nigeria Jollof rice... <img src="https://pbs.twimg.com/media/CK3dMKDWgAAglZi.jpg" class="img-responsive">',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': '😂 Hell yea!',
+                        'path': 'hell'
+                    }]
+                }
+            ],
+            'hell': [
+                'We can prove that it can unite warring tribes. Honest!',
+                '"These oyinbo people talk too much. We\'ll just wait here till they share the Jollof rice?" <img src="https://pbs.twimg.com/media/CKY_Pp_UEAAEs-N.jpg">',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': '👏🏾👏🏾👏🏾',
+                        'path': 'clap'
+                    }]
+                }
+            ],
+            'clap': [
+                '😁😁😁 Don\'t even get us started about the some other countries...',
+                'It’s better than Ghanaian Jollof Rice. Stop the arguments.',
+                'I am sure you know which is the real deal here... <img src="https://pbs.twimg.com/media/CKSswI2WoAEXPq-.jpg" class="img-responsive">',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': 'True talk, JB, true talk.',
+                        'path': 'talk'
+                    }]
+                }
 
+            ],
+            'talk': [
+                'And comparing a person to Nigerian Jollof is a high ranking compliment.',
+                'That is why you, yes <b>you</b>, are like a nice plate of Nigerian jollof rice with plenty meat 😁',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': '😊😊😊',
+                        'path': 'cute'
+                    }]
+                }
+            ],
+            'cute': [
+                'Jollof is so powerful that it can raise the dead. I swear I’m not making it up.',
+                '"When you\'re dead but you smell that Jollof rice and plantain." <img src="https://pbs.twimg.com/media/CKIl8G8VEAABdiI.jpg" class="img-responsive">',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': '🙆🏾 yepa!',
+                        'path': 'yepa'
+                    }]
+                }
+
+            ],
+            'yepa': [
+                'Yes o!',
+                'So, what other traits of Jollof rice are real to you? You can tell me at <a href="https://m.me/jollofff/">m.me/jollofff</a>',
+                {
+                    type: 'choose',
+                    answers: [{
+                        'text': 'Awesome 🙌🏾🙌🏾🙌🏾',
+                        'path': 'finalmessage'
+                    }]
+                }
+            ]
         }, {
             targetNode: '.my_chat'
         });
