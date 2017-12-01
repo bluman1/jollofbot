@@ -152,10 +152,11 @@ class Deliver(object):
             pprint(response.json())
         return
 
-    def text_message(self, fbid, msg):
-        flash = Flash.objects.get(fbid=fbid)
-        if '{{user_first_name}}' in msg:
-            msg = msg.replace('{{user_first_name}}', flash.first_name)
+    def text_message(self, fbid, msg, new_flash=False):
+        if newFlash:
+            flash = Flash.objects.get(fbid=fbid)
+            if '{{user_first_name}}' in msg:
+                msg = msg.replace('{{user_first_name}}', flash.first_name)
         pprint(msg)
         headers = {
             'Content-Type': 'application/json; charset=utf-8',         

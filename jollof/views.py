@@ -640,7 +640,7 @@ def deliver_webhook(request):
                             deliver.text_message(fbid, msg)
                         else:
                             msg =  'Hi {{user_first_name}}, please enter the flash code shared with you.'
-                            deliver.text_message(fbid, msg)
+                            deliver.text_message(fbid, msg, new_flash=True)
                         return HttpResponse()
                     else:
                         current_state = flash.current_state                
