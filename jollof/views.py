@@ -122,7 +122,7 @@ def buyer_webhook(request):
                         return HttpResponse()
                     elif 'text' in message['message']:
                         print('Text Message Recieved')
-                        random_greeting = ['hello', 'hi', 'hey', 'what\'s up?', 'what\'s up', 'wasap']
+                        random_greeting = ['hello', 'hi', 'hey', 'what\'s up?','what\'s up', 'wasap']
                         buyer = Buyer.objects.get(fbid=fbid)
                         current_state = buyer.current_state
                         received_text = message['message']['text'].lower()

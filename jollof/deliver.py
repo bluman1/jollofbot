@@ -20,6 +20,7 @@ class Deliver(object):
         self.NEAREST_KM = os.environ.get('NEAREST_KM')
 
     def get_started_button(self):
+        pprint('Get Started Button')
         headers = {
             'Content-Type': 'application/json',
         }
@@ -32,6 +33,7 @@ class Deliver(object):
         pprint(response.json())
 
     def persistent_menu(self):
+        pprint('Persistent Menu')
         headers = {
             'Content-Type': 'application/json',
         }
@@ -281,7 +283,7 @@ class Deliver(object):
         for pending_jollof_order in all_pending_jollof_orders:
             # filter orders by nearest buyer location
             distance = self.get_distance((flash.latitude, flash.longitude), (pending_jollof_order.jollof_buyer.latitude, pending_jollof_order.jollof_buyer.longitude))
-            if distance >= self.NEAREST_KM:
+            if distance >= float(self.NEAREST_KM):
                 # buyer not in range.
                 continue
             pending_jollof_orders.append(pending_jollof_order)
@@ -290,7 +292,7 @@ class Deliver(object):
         for pending_delicacy_order in all_pending_delicacy_orders:
             # filter orders by nearest buyer location
             distance = self.get_distance((flash.latitude, flash.longitude), (pending_delicacy_order.delicacy_buyer.latitude, pending_delicacy_order.delicacy_buyer.longitude))
-            if distance >= self.NEAREST_KM:
+            if distance >= float(self.NEAREST_KM):
                 # buyer not in range.
                 continue
             pending_delicacy_orders.append(pending_delicacy_order)
