@@ -639,8 +639,8 @@ def deliver_webhook(request):
                             msg = 'Welcome back! I hope you have been delivering on time.'
                             deliver.text_message(fbid, msg)
                         else:
-                            msg =  'Hi {{user_first_name}}, please enter the flash code shared with you.'
-                            deliver.text_message(fbid, msg, new_flash=True)
+                            msg =  'Hi, please enter the flash code shared with you.'
+                            deliver.text_message(fbid, msg)
                         return HttpResponse()
                     else:
                         current_state = flash.current_state                

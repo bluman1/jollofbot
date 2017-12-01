@@ -152,11 +152,13 @@ class Deliver(object):
             pprint(response.json())
         return
 
-    def text_message(self, fbid, msg, new_flash=False):
-        if new_flash:
+    def text_message(self, fbid, msg):
+        try:
             flash = Flash.objects.get(fbid=fbid)
             if '{{user_first_name}}' in msg:
                 msg = msg.replace('{{user_first_name}}', flash.first_name)
+        except:
+            pass
         pprint(msg)
         headers = {
             'Content-Type': 'application/json; charset=utf-8',         
@@ -164,7 +166,7 @@ class Deliver(object):
         params = (
             ('access_token', self.DELIVER_ACCESS_TOKEN),
         )
-        data = {"recipient": {"id": str(fbid)},"message": {"text": str(msg)}}
+        data = {"recipient": {"id": str(fbid)}, "message": {"text": str(msg)}}
         data = json.dumps(data).encode("utf-8")
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
