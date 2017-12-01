@@ -656,7 +656,7 @@ def deliver_webhook(request):
                                         return HttpResponse()
                                     except Exception as e:
                                         flash.current_state = 'DEFAULT'
-                                        buyer.save()
+                                        flash.save()
                                         pprint('Exception\n' + str(e))
                                         deliver.alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
                                     return HttpResponse()
