@@ -153,7 +153,7 @@ class Deliver(object):
         return
 
     def text_message(self, fbid, msg, new_flash=False):
-        if newFlash:
+        if new_flash:
             flash = Flash.objects.get(fbid=fbid)
             if '{{user_first_name}}' in msg:
                 msg = msg.replace('{{user_first_name}}', flash.first_name)
