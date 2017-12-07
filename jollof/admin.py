@@ -38,3 +38,9 @@ class FutureLocationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(FutureLocation, FutureLocationAdmin)
+
+class MeRefferalAdmin(admin.ModelAdmin):
+    list_display = ['buyer', 'referral', 'source', 'type']
+
+
+admin.site.register(MeRefferal, MeRefferalAdmin)
