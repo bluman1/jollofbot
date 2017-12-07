@@ -95,16 +95,24 @@ def buyer_webhook(request):
                 fbid = message['sender']['id']
                 buyer = None
                 try:
-                    buyer = Buyer.objects.get(fbid=fbid)
-                except:
+                    buyer = Profile.objects.get(fbid=fbid)
+                except Profile.DoesNotExist:
                     user_details = buy.get_user_details(fbid)
-                    buyer = Buyer(fbid=fbid, first_name=user_details['first_name'], last_name=user_details['last_name'])
+                    password = User.objects.make_random_password()
+                    pprint(password)
+                    buyer = User.objects.create_user(username=fbid, email=fbid+'@jollofbot.com', password=password)
+                    buyer.first_name = user_details['first_name']
+                    buyer.last_name = user_details['last_name']
+                    buyer.profile.user_type = 'b'
+                    buyer.profile.fbid = fbid
                     buyer.save()
+                    pprint('New User')
+                    buy.alert_me(fbid, 1)
                 if 'message' in message:
                     if 'quick_reply' in message['message']:
                         print('QR Received.')
                         qr_payload = message['message']['quick_reply']['payload']
-                        buyer = Buyer.objects.get(fbid=fbid)
+                        buyer = Profile.objects.get(fbid=fbid)
                         current_state = buyer.current_state
                         next_state_status = is_buyer_next_state(current_state, qr_payload)
                         if next_state_status:
@@ -123,7 +131,7 @@ def buyer_webhook(request):
                     elif 'text' in message['message']:
                         print('Text Message Recieved')
                         random_greeting = ['hello', 'hi', 'hey', 'what\'s up?','what\'s up', 'wasap']
-                        buyer = Buyer.objects.get(fbid=fbid)
+                        buyer = Profile.objects.get(fbid=fbid)
                         current_state = buyer.current_state
                         received_text = message['message']['text'].lower()
                         
@@ -183,7 +191,7 @@ def buyer_webhook(request):
                         for attachment in message['message']['attachments']:
                             if attachment['type'] == 'location':
                                 print('Location Received')
-                                buyer = Buyer.objects.get(fbid=fbid)
+                                buyer = Profile.objects.get(fbid=fbid)
                                 current_state = buyer.current_state
                                 print('loc, current_state: ' + current_state)
                                 location_title = attachment['title']
@@ -201,10 +209,23 @@ def buyer_webhook(request):
                 elif 'postback' in message:
                     payload = message['postback']['payload']
                     if payload == 'GET_STARTED':
-                        buyer.current_state = 'REQUEST_PHONE'
-                        buyer.save()
-                        msg = 'Hey {{user_first_name}}, we finally meet 😁 But first, please share your phone number with me to get this party started 🙏'
-                        buy.text_message(fbid, msg)
+                        try:
+                            referral = message['postback']['referral']['ref']
+                            source = message['postback']['referral']['source']
+                            me_referral = MeReferral(buyer=buyer, referral=referral, source=source, type='n')
+                            me_referral.save()
+                        except:
+                            pass
+                        buyer_phone_number = buyer.phone_number
+                        if buy.parse_phone(buyer_phone_number):
+                            buyer.current_state = 'DEFAULT'
+                            buyer.save()
+                            buy.greet_buyer(fbid)
+                        else:
+                            buyer.current_state = 'REQUEST_PHONE'
+                            buyer.save()
+                            msg = 'Hey {{user_first_name}}, we finally meet 😁 But first, please share your phone number with me to get this party started 🙏'
+                            buy.text_message(fbid, msg)
                         return HttpResponse()
                     else:
                         current_state = buyer.current_state
@@ -291,6 +312,11 @@ def buyer_webhook(request):
                                     buy.alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
                                     return HttpResponse()
                             return HttpResponse()
+                elif 'referral' in message:
+                    referral = message['referral']['ref']
+                    source = 'm.me/jollofff'
+                    me_referral = MeReferral(buyer=buyer, referral=referral, source=source, type='o')
+                    me_referral.save() # 1458668856253 1346114717972
 
 
 
@@ -351,9 +377,9 @@ def seller_webhook(request):
                 seller = None
                 connected = False
                 try:
-                    seller = Seller.objects.get(fbid=fbid)
+                    seller = Profile.objects.get(fbid=fbid)
                     connected = True
-                except Seller.DoesNotExist:
+                except Profile.DoesNotExist:
                     pass
                 if 'message' in message:
                     if 'quick_reply' in message['message']:
@@ -366,7 +392,7 @@ def seller_webhook(request):
                             return HttpResponse()
                         random_greeting = ['hello', 'hi', 'hey', 'what\'s up?', 'what\'s up', 'wasap']
                         received_text = message['message']['text'].lower()
-                        seller = Seller.objects.get(fbid=fbid)
+                        seller = Profile.objects.get(fbid=fbid)
                         current_state = seller.current_state
                         if current_state == 'DEFAULT':
                             print('Seller in default state')
@@ -394,7 +420,7 @@ def seller_webhook(request):
                         for attachment in message['message']['attachments']:
                             if attachment['type'] == 'location':
                                 print('Location Received')
-                                seller = Seller.objects.get(fbid=fbid)
+                                seller = Profile.objects.get(fbid=fbid)
                                 current_state = seller.current_state
                                 print('loc, current_state: ' + current_state)
                                 location_title = attachment['title']
@@ -499,21 +525,29 @@ def create_fake_flash(request, flash_name):
         valid = True
         code = None
         try:
-            flash = Flash.objects.get(fbid=flash_name)
+            flash = Profile.objects.get(fbid=flash_name)
             return HttpResponse(request, 'flash_code.html', {'flash_code': 'Flash group Already Exists.' }) 
-        except Flash.DoesNotExist:
+        except Profile.DoesNotExist:
             pass
         while valid:
             code = 'FLASH-' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
             try:
-                flash = Flash.objects.get(flash_code=code)
+                flash = Profile.objects.get(flash_code=code)
                 pprint(code + ' already exists.')
-            except Flash.DoesNotExist:
+            except Profile.DoesNotExist:
                 valid = False
         pprint('FLASHCDOE: ' + code)
-        flash = Flash(fbid=flash_name, flash_code=code, first_name='Master', last_name='Slave', phone_number='0')
-        flash.save()
-        pprint('Master Flash Created')
+        password = User.objects.make_random_password()
+        pprint(password)
+        user = User.objects.create_user(username=flash_name, email=flash_name+'@jollofbot.com', password=password)
+        user.profile.user_type = 'f'
+        user.profile.fbid = flash_name
+        user.first_name = 'Master'
+        user.last_name = 'Slave'
+        user.profile.phone_number = '0'
+        user.profile.flash_code = code
+        user.save()
+        pprint(flash_name + ' Master Flash Created with flash_code ' + code)
         return render(request, 'flash_code.html', {'flash_code': code })
 
 
@@ -561,9 +595,9 @@ def deliver_webhook(request):
                 flash = None
                 connected = False
                 try:
-                    flash = Flash.objects.get(fbid=fbid)
+                    flash = Profile.objects.get(fbid=fbid)
                     connected = True
-                except Flash.DoesNotExist:
+                except Profile.DoesNotExist:
                     # why are we depending on this alone? The first message is a postback which creates the user.
                     pass
                 if 'message' in message:
@@ -617,7 +651,7 @@ def deliver_webhook(request):
                         for attachment in message['message']['attachments']:
                             if attachment['type'] == 'location':
                                 print('Location Received')
-                                flash = Flash.objects.get(fbid=fbid)
+                                flash = Profile.objects.get(fbid=fbid)
                                 current_state = flash.current_state
                                 print('loc, current_state: ' + current_state)
                                 location_title = attachment['title']
@@ -658,7 +692,7 @@ def deliver_webhook(request):
                                         flash.current_state = 'DEFAULT'
                                         flash.save()
                                         pprint('Exception\n' + str(e))
-                                        deliver.alert_me(fbid, 'Failed Button payload.  current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
+                                        deliver.alert_me(fbid, 'Failed Button payload. current_state: ' + current_state + '. temp_payload: ' + temp_payload + '. payload: ' + payload)
                                     return HttpResponse()
                                 else:
                                     msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
@@ -696,41 +730,39 @@ def show_signup(request):
         if password != password2:
             return render(request, 'signup.html', {'merror': 'Enter matching passwords.'})
         try:
-            Seller.objects.get(email=email)
+            User.objects.get(email=email)
             return render(request, 'signup.html', {'merror': 'User already exists.'})
-        except Seller.DoesNotExist:
+        except User.DoesNotExist:
             pass
         try:
-            Seller.objects.get(username=username)
+            User.objects.get(username=username)
             return render(request, 'signup.html', {'merror': 'User already exists.'})
-        except Seller.DoesNotExist:
+        except User.DoesNotExist:
             pass
         try:
             validate_password(password)
-        except ValidationError  as ve:
+        except Exception  as ve:
             return render(request, 'signup.html', {'merror': ve })
         print('DEBUG: Signup ' + email + '\t' + password)
         user = None
         try:
-            user = Seller.objects.create_user(username, email, password)
-            user.restaurant = rest_name
-            user.save()
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.profile.restaurant = rest_name
+            user.profile.user_type = 's'
         except Exception as e:
             print(str(e))
             return render(request, 'signup.html', {'merror': 'User already exists.'})
         try:
-            user = Seller.objects.get(username=username)
             buy_obj = Buy()
             code = buy_obj.generate_jollof_code()
             print('Gen Code: ' + code)
-            user.code = code
+            user.profile.code = code
             user.save()
             print('CODE: ' + code)
-        except:
+        except Exception as e:
             # The below should never run.
-            print('Duplicate Jollof code. Regenerate.')
+            print('Duplicate Jollof code. Regenerate. ' + str(e))
         auth_user = authenticate(username=username, password=password)
-        seller = Seller.objects.get(username=username)
         if auth_user is not None:
             login(request, auth_user)
             return HttpResponseRedirect('/vendor/profile/')
@@ -766,9 +798,9 @@ def show_logout(request):
 def show_dash(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            seller = Seller.objects.get(pk=request.user.pk)
-            jollof_code = seller.code
-            restaurant_name = seller.restaurant
+            seller = User.objects.get(pk=request.user.pk)
+            jollof_code = seller.profile.code
+            restaurant_name = seller.profile.restaurant
             c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name}
             pprint(c)
             return render(request, 'dash.html', c)
@@ -784,7 +816,8 @@ def show_vendor(request):
 @login_required 
 def show_overview(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         jollof_code = seller.code
         pending_delicacies = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
         pending_jollof = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
@@ -810,13 +843,14 @@ def show_overview(request):
 def show_profile(request):
     if request.method == 'GET':
         c = {}
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         jollof_code = seller.code
         restaurant_name = seller.restaurant
-        email = seller.email
-        username = seller.username
-        first_name = seller.first_name
-        last_name = seller.last_name
+        email = seller_user.email
+        username = seller_user.username
+        first_name = seller_user.first_name
+        last_name = seller_user.last_name
         phone_number = seller.phone_number
         available_business = seller.available
         opening_hour = seller.opening_hour
@@ -832,26 +866,28 @@ def show_profile(request):
         except:
             pass
 
-        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price, 'start_day': start_day, 'end_day': end_day, 'logo_url': logo_url }
+        c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller_user.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price, 'start_day': start_day, 'end_day': end_day, 'logo_url': logo_url }
         pprint(c)
         return render(request, 'profile.html', c)
     elif request.method == 'POST':
         pprint(request.POST)
         if request.POST.get('basic'):
             #handle basic profile submission
-            seller = Seller.objects.get(pk=request.user.pk)
+            seller_user = User.objects.get(pk=request.user.pk)
+            seller = Profile.objects.get(user=seller_user)
             seller.restaurant = request.POST.get('restaurant_name', '')
-            seller.first_name = request.POST.get('first_name', '')
-            seller.last_name = request.POST.get('last_name', '')
+            seller_user.first_name = request.POST.get('first_name', '')
+            seller_user.last_name = request.POST.get('last_name', '')
             seller.phone_number = request.POST.get('phone_number', '')
             seller.save()
+            seller_user.save()
             #retrieve new values
             jollof_code = seller.code
             restaurant_name = seller.restaurant
-            email = seller.email
-            username = seller.username
-            first_name = seller.first_name
-            last_name = seller.last_name
+            email = seller_user.email
+            username = seller_user.username
+            first_name = seller_user.first_name
+            last_name = seller_user.last_name
             phone_number = seller.phone_number
             available_business = seller.available
             opening_hour = seller.opening_hour
@@ -864,12 +900,13 @@ def show_profile(request):
                 logo_url = logo_url[:int(logo_url.index('?'))]
             except:
                 pass     
-            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'basic_result': 'Changes saved successfully.', 'logo_url': logo_url}
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller_user.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'basic_result': 'Changes saved successfully.', 'logo_url': logo_url}
             pprint(c)
             return render(request, 'profile.html', c)
         elif request.POST.get('business'):
             #handle business profile submission
-            seller = Seller.objects.get(pk=request.user.pk)
+            seller_user = User.objects.get(pk=request.user.pk)
+            seller = Profile.objects.get(user=seller_user)
             seller.opening_hour = request.POST.get('opening_hour', '')
             seller.closing_hour = request.POST.get('closing_hour', '')
             seller.start_day = request.POST.get('start_day', '')
@@ -877,17 +914,17 @@ def show_profile(request):
             seller.average_delivery_time = request.POST.get('delivery_time', '')
             seller.delivery_price = request.POST.get('delivery_price', '')
             if request.POST.get('available_delivery'):
-                seller.delivers = True
+                seller.available = True
             if request.POST.get('available_business'):
                 seller.delivers = True
             seller.save()
             #retrieve new values
             jollof_code = seller.code
             restaurant_name = seller.restaurant
-            email = seller.email
-            username = seller.username
-            first_name = seller.first_name
-            last_name = seller.last_name
+            email = seller_user.email
+            username = seller_user.username
+            first_name = seller_user.first_name
+            last_name = selseller_userler.last_name
             phone_number = seller.phone_number
             available_business = seller.available
             opening_hour = seller.opening_hour
@@ -900,12 +937,13 @@ def show_profile(request):
                 logo_url = logo_url[:int(logo_url.index('?'))]
             except:
                 pass
-            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'business_result': 'Changes saved successfully.', 'logo_url': logo_url}
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller_user.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'business_result': 'Changes saved successfully.', 'logo_url': logo_url}
             pprint(c)
             return render(request, 'profile.html', c)
         elif request.POST.get('logo'):
             #handle restaurant logo submission
-            seller = Seller.objects.get(pk=request.user.pk)
+            seller_user = User.objects.get(pk=request.user.pk)
+            seller = Profile.objects.get(user=seller_user)
             form = SellerLogo(request.POST, request.FILES)
             logo_result = None
             logo_url = None
@@ -924,10 +962,10 @@ def show_profile(request):
             #retrieve new values
             jollof_code = seller.code
             restaurant_name = seller.restaurant
-            email = seller.email
-            username = seller.username
-            first_name = seller.first_name
-            last_name = seller.last_name
+            email = seller_user.email
+            username = seller_user.username
+            first_name = seller_user.first_name
+            last_name = seller_user.last_name
             phone_number = seller.phone_number
             available_business = seller.available
             opening_hour = seller.opening_hour
@@ -940,15 +978,14 @@ def show_profile(request):
                 logo_url = logo_url[:int(logo_url.index('?'))]
             except:
                 pass
-            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'logo_result': logo_result, 'logo_url': logo_url}
-
-
+            c = {'user': request.user, 'jollof_code': jollof_code, 'username': seller_user.username, 'restaurant_name': restaurant_name, 'email': email, 'first_name': first_name, 'last_name': last_name, 'phone_number': phone_number, 'available_business': available_business, 'opening_hour': opening_hour, 'closing_hour': closing_hour, 'available_delivery': available_delivery, 'delivery_time': delivery_time, 'delivery_price': delivery_price,'logo_result': logo_result, 'logo_url': logo_url}
 
 
 @login_required 
 def show_jollof(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         jollof = None
         try:
             jollof = Jollof.objects.get(seller=seller)
@@ -971,12 +1008,13 @@ def show_jollof(request):
     elif request.method == 'POST':
         pprint(request.POST)
         pprint('post made')
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         jollof = None
         if request.POST.get('price'):
             try:
                 jollof = Jollof.objects.get(seller=seller)
-                jollof.price = request.POST.get('price', '')
+                jollof.price = float(request.POST.get('price'))
                 jollof.description = request.POST.get('description', '')
                 if request.POST.get('available'):
                     jollof.available = True
@@ -987,7 +1025,7 @@ def show_jollof(request):
                 available = False
                 if request.POST.get('available'):
                     available = True
-                jollof = Jollof(seller=seller, price=request.POST.get('price', ''), description=request.POST.get('description', ''), available=available)
+                jollof = Jollof(seller=seller, price=float(request.POST.get('price')), description=request.POST.get('description', ''), available=available)
                 jollof.save()
             #retrieve uptodate info
             price = jollof.price
@@ -1050,7 +1088,8 @@ def show_jollof(request):
 @login_required
 def show_delicacies(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         delicacies = Delicacy.objects.filter(seller=seller)
         delivery_price = seller.delivery_price
         c = {'user': request.user, 'delicacies': delicacies, 'delivery_price': delivery_price}
@@ -1058,7 +1097,8 @@ def show_delicacies(request):
         return render(request, 'delicacies.html', c)
     elif request.method == 'POST':
         pprint(request.POST)
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         delivery_price = seller.delivery_price
         delicacy_result = None
         delicacy = None
@@ -1066,7 +1106,7 @@ def show_delicacies(request):
             delicacy = Delicacy.objects.get(pk=int(request.POST.get('pk')))
             delicacy.name = request.POST.get('name', '')
             delicacy.description = request.POST.get('description', '')
-            delicacy.price = request.POST.get('price', '')
+            delicacy.price = float(request.POST.get('price'))
             if request.POST.get('available'):
                 delicacy.available = True
             else:
@@ -1079,11 +1119,11 @@ def show_delicacies(request):
                 available = False
                 if request.POST.get('available'):
                     available = True
-                delicacy = Delicacy(seller=seller, name=request.POST.get('name', ''), price=request.POST.get('price', ''), description=request.POST.get('description', ''), available=available)
+                delicacy = Delicacy(seller=seller, name=request.POST.get('name', ''), price=float(request.POST.get('price')), description=request.POST.get('description', ''), available=available)
                 delicacy.save()
                 delicacy_result = 'Delicacy created.'
             else:
-                delicacy_result = 'Sorry, you can\'t have more than 10 delicacies for now.'
+                delicacy_result = 'Sorry, you can\'t have more than 10 delicacies for now...'
         delicacies = Delicacy.objects.filter(seller=seller)
         c = {'user': request.user, 'delicacies': delicacies, 'delivery_price': delivery_price, 'delicacy_result': delicacy_result }
         pprint(c)
@@ -1093,7 +1133,8 @@ def show_delicacies(request):
 @login_required 
 def show_jollof_reservations(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=0)
         accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=1).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -1122,7 +1163,8 @@ def show_jollof_reservations(request):
 @login_required 
 def show_jollof_deliveries(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         pendings = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=0)
         accepteds = JollofOrder.objects.filter(jollof_seller=seller).filter(order_type=2).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -1130,7 +1172,8 @@ def show_jollof_deliveries(request):
         return render(request, 'jollof_deliveries.html', c)
     elif request.method == 'POST':
         pprint(request.POST)
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         jollof_order = JollofOrder.objects.get(pk=int(request.POST.get('pk')))
         a = str(jollof_order.pk)
         if request.POST.get('accept'):
@@ -1151,7 +1194,8 @@ def show_jollof_deliveries(request):
 @login_required 
 def show_delicacy_reservations(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=0)
         accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=1).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -1159,7 +1203,8 @@ def show_delicacy_reservations(request):
         return render(request, 'delicacy_reservations.html', c)
     elif request.method == 'POST':
         pprint(request.POST)
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         delicacy_order = DelicacyOrder.objects.get(pk=int(request.POST.get('pk')))
         a = str(delicacy_order.pk)
         if request.POST.get('accept'):
@@ -1180,7 +1225,8 @@ def show_delicacy_reservations(request):
 @login_required 
 def show_delicacy_deliveries(request):
     if request.method == 'GET':
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         pendings = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=0)
         accepteds = DelicacyOrder.objects.filter(delicacy_seller=seller).filter(order_type=2).filter(status=1)
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
@@ -1188,7 +1234,8 @@ def show_delicacy_deliveries(request):
         return render(request, 'delicacy_deliveries.html', c)
     elif request.method == 'POST':
         pprint(request.POST)
-        seller = Seller.objects.get(pk=request.user.pk)
+        seller_user = User.objects.get(pk=request.user.pk)
+        seller = Profile.objects.get(user=seller_user)
         delicacy_order = DelicacyOrder.objects.get(pk=int(request.POST.get('pk')))
         a = str(delicacy_order.pk)
         if request.POST.get('accept'):
@@ -1204,16 +1251,6 @@ def show_delicacy_deliveries(request):
         c = {'user': request.user, 'pendings': pendings, 'accepteds': accepteds}
         pprint(c)
         return render(request, 'delicacy_deliveries.html', c)
-        
-
-def csu(request):
-    s = Seller.objects.create_superuser('boom', 'boom@gmail.com', 'c0mpl1cat3d')
-    s = Seller.objects.get('boom')
-    s.first_name = 'Boom'
-    s.last_name = 'Shakalaka'
-    s.restaurant = 'Boom Restaurant'
-    s.save()
-    return HttpResponse()
 
 
 def landbot(request):
@@ -1240,3 +1277,87 @@ def show_test_upload(request):
     else:
         form = UploadFileForm()
     return render(request, 'upload.html', {'form': form})
+
+
+def restore_buyers(request):
+    if request.method == 'GET':
+        buyers = '''
+1447143078674364 08136673932  
+1610279619036452 08132400359 6.5243793,3.3792057
+1206208349485929 08031991212  
+1467210700021338 08175410053  
+1497135920401362 07033843810  
+1671702096173791 08131976306 6.5243793,3.3792057
+1476092842511861 08164097019  
+1534557909971656 08030907949 6.599333,3.363878
+1773136582699569    
+1531576446860738    
+2101739983185575 08086419406 6.5243793,3.3792057\t6.4000468913954,5.6097006797791\t6.4000468913954,5.6097006797791
+1670947126312254 08035302956 6.51332,3.377522\t6.5714,3.36759
+1456552727725740 08012341234 6.5243793,3.3792057\t6.5243793,3.3792057
+1498556673576789 08081087499  
+1870948619587123 +2348081234567  
+1208942465877374    
+1554343837991544    
+1543389759062354 08184209188 7.3928989,3.9067364
+1568794893179120    
+1567788883281676    
+1366902413426979 08086903599 9.8791269,8.8744664\t9.9155047816624,8.8811588287354
+1373677229408326 07033000108  
+1613123562073529 07064409081 7.445944,3.894649\t8.17416,4.26234\t8.17416,4.26234\t7.441212,3.895604\t7.442835,3.902926\t7.443554,3.897832\t7.443217,3.897832\t6.5243793,3.3792057\t7.39689,3.920649\t7.443554,3.897832\t7.443554,3.897832\t7.401347,3.893143\t7.442369,3.897242\t6.50845,3.379297\t6.510162,3.376514
+1856831137666217 07062359125 9.1024695,7.4975376
+1428937823886580 08180871672 6.5251603716521,3.379282951355
+1843792732297626 08000008888  
+1637666849594117   6.457047,3.418388
+1403958956391116    
+1427680673953029 07034366179 6.5243793,3.3792057
+1788619227833196 07068482288  
+1741355649210370    
+1591504750906387 07066223284 7.45073,3.90203\t7.45107,3.901125\t7.4416666666667,3.9\t7.4442371379431,3.9006643809518\t7.44315,3.900194
+1409182282491864 08167621399 7.4008225,3.893848\t7.4008225,3.893848
+1613628565378461    
+1649046095127310 08060168868  
+1266381593466145 08090738270  
+1476590882423096    
+1403542886400265   6.8333333333333,4.75
+1595282240542629 08063412312 
+1285852974859882 08033342173 7.439029,3.910502'''
+        splitting = buyers.split('\n')
+        pprint(splitting)
+        for splitted in splitting:
+            splits = splitted.split(' ')
+            pprint(splits)
+            pprint('Length of splits ' + str(len(splits)))
+            if len(splits) <=1:
+                continue
+            fbid, phone_number, location_history = '', '', ''
+            if len(splits) == 3:
+                fbid = splits[0]
+                phone_number = splits[1]
+                location_history = splits[2]
+            elif len(splits) == 4:
+                fbid = splits[0]
+                phone_number = splits[1]
+                location_history = splits[2]
+            elif len(splits) == 5:
+                fbid = splits[0]
+                phone_number = ''
+                location_history = ''
+            try:
+                password = User.objects.make_random_password()
+                pprint(password)
+                user = User.objects.create_user(username=fbid, email=fbid+'@jollofbot.com', password=password)
+                buy_obj = Buy()
+                details = buy_obj.get_user_details(fbid)
+                user.first_name = details['first_name']
+                user.last_name = details['last_name']
+                user.profile.user_type = 'b'
+                user.profile.fbid = fbid
+                user.profile.phone_number = phone_number
+                user.profile.location_history = location_history
+                user.save()
+                pprint(fbid + ' created.')
+            except Exception as e:
+                pprint(e)
+                pprint(fbid)
+        return HttpResponse()

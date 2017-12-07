@@ -33,8 +33,10 @@
     Preloader
     =============================================== -->
 
-    <div class="preloader">
-        <h2>JollofBot<span>.</span></h2>
+    <!--div class="preloader">
+        <h2>JollofBot
+            <span>.</span>
+        </h2>
         <div class="preloader-wrapper big active">
             <div class="spinner-layer spinner-blue">
                 <div class="circle-clipper left">
@@ -84,7 +86,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div-->
 
     <!-- ==============================================
     Navigation
@@ -94,11 +96,17 @@
         <nav>
             <div class="container">
                 <div class="nav-wrapper">
-                    <a href="/" class="brand-logo page-scroll">JollofBot<span>.</span></a>
-                    <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                    <a href="/" class="brand-logo page-scroll">JollofBot
+                        <span>.</span>
+                    </a>
+                    <a href="#" data-activates="mobile-demo" class="button-collapse">
+                        <i class="material-icons">menu</i>
+                    </a>
                     <!-- Side Nav Links -->
                     <ul class="side-nav" id="mobile-demo">
-                        <li><a href="/vendor/signup">Sign Up</a></li>
+                        <li>
+                            <a href="/vendor/signup">Sign Up</a>
+                        </li>
 
                     </ul>
                 </div>
@@ -115,7 +123,9 @@
             <div class="row">
                 <div class="col l6 s12">
                     <div class="contact-content">
-                        <h2>Log In<span>.</span></h2>
+                        <h2>Log In
+                            <span>.</span>
+                        </h2>
                         <form id="login-form" method="post" action=".">
                             {% csrf_token %}
                             <div class="input-field">
@@ -151,14 +161,22 @@
         <div class="container">
             <div class="row">
                 <div class="col l6 s12">
-                    <h2 class="white-text">JollofBot<span>.</span></h2>
+                    <h2 class="white-text">JollofBot
+                        <span>.</span>
+                    </h2>
                 </div>
                 <div class="col l4 offset-l2 s12">
                     <h5 class="white-text">Connect</h5>
                     <ul>
-                        <li><a class="grey-text text-lighten-3 page-scroll" href="/about">About</a></li>
-                        <li><a class="grey-text text-lighten-3 page-scroll" href="/pricing">Pricing</a></li>
-                        <li><a class="grey-text text-lighten-3 page-scroll" href="/contact">Contact</a></li>
+                        <li>
+                            <a class="grey-text text-lighten-3 page-scroll" href="/about">About</a>
+                        </li>
+                        <li>
+                            <a class="grey-text text-lighten-3 page-scroll" href="/pricing">Pricing</a>
+                        </li>
+                        <li>
+                            <a class="grey-text text-lighten-3 page-scroll" href="/contact">Contact</a>
+                        </li>
                     </ul>
                 </div>
             </div>

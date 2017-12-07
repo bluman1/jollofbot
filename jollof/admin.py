@@ -2,17 +2,12 @@ from django.contrib import admin
 from jollof.models import *
 # Register your models here.
 
-class BuyerAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name']
+
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ['fbid']
 
 
-admin.site.register(Buyer, BuyerAdmin)
-
-class SellerAdmin(admin.ModelAdmin):
-    list_display = ['restaurant', 'first_name', 'last_name']
-
-
-admin.site.register(Seller, SellerAdmin)
+admin.site.register(Profile, ProfileAdmin)
 
 class JollofAdmin(admin.ModelAdmin):
     list_display = ['description']

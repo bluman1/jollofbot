@@ -108,7 +108,7 @@ class Deliver(object):
             'Content-Type': 'application/json',
         }
         params = (
-            ('access_token', self.BUYER_ACCESS_TOKEN),
+            ('access_token', self.DELIVER_ACCESS_TOKEN),
         )
         data = '{"get_started":{"payload":"GET_STARTED"}}'
         response = requests.post('https://graph.facebook.com/v2.6/me/messenger_profile',
@@ -125,9 +125,9 @@ class Deliver(object):
     def alert_me(self, fbid, alert_type):
         my_fbid = self.BLUMAN_ID
         if alert_type == 1:
-            flash = Flash.objects.get(fbid=fbid)
+            flash = Profile.objects.get(fbid=fbid)
 
-            msg = 'New Flash - ' + flash.first_name + ' ' + flash.last_name + ' just became a Jollof Flash. FBID = ' + str(fbid) + '.'
+            msg = 'New Flash - ' + flash.user.first_name + ' ' + flash.user.last_name + ' just became a Jollof Flash. FBID = ' + str(fbid) + '.'
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',
             }
@@ -154,9 +154,9 @@ class Deliver(object):
 
     def text_message(self, fbid, msg):
         try:
-            flash = Flash.objects.get(fbid=fbid)
+            flash = Profile.objects.get(fbid=fbid)
             if '{{user_first_name}}' in msg:
-                msg = msg.replace('{{user_first_name}}', flash.first_name)
+                msg = msg.replace('{{user_first_name}}', flash.user.first_name)
         except:
             pass
         pprint(msg)
@@ -201,7 +201,7 @@ class Deliver(object):
         return
     
     def cancel_action(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         flash.current_state = 'DEFAULT'
         flash.save()
         msg = 'I\'ve cancelled that action.'
@@ -209,7 +209,7 @@ class Deliver(object):
         return
 
     def request_phone(self, fbid, text):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         phone = self.parse_phone(text.strip())
         if not phone:
             msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number. e.g 08031234567'
@@ -239,7 +239,7 @@ class Deliver(object):
             self.cancel_action(fbid, payload)
         elif location_lat:
             # save location_lat and location_long
-            flash = Flash.objects.get(fbid=fbid)
+            flash = Profile.objects.get(fbid=fbid)
             flash.longitude = float(location_long)
             flash.latitude = float(location_lat)
             print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
@@ -256,7 +256,7 @@ class Deliver(object):
         return
 
     def process_code(self, fbid, flash_code):
-        master_flash = Flash.objects.filter(flash_code=flash_code)
+        master_flash = Profile.objects.filter(flash_code=flash_code)
         if master_flash.count() < 1:
             pprint('Wrong code entered.')
             msg = 'Sorry, the FlashCode you entered is incorrect. Please double check and enter again.'
@@ -264,15 +264,24 @@ class Deliver(object):
             return
         msg = ''
         try:
-            flash = Flash.objects.get(fbid=fbid)
+            flash = Profile.objects.get(fbid=fbid)
             flash.flash_code = flash_code
             flash.save()
             msg = 'Welcome back!'
-        except Flash.DoesNotExist:
+        except Profile.DoesNotExist:
             user_details = self.get_user_details(fbid)
             pprint(user_details)
-            flash = Flash(fbid=fbid, flash_code=flash_code, first_name=user_details['first_name'], last_name=user_details['last_name'], current_state='FLASH_LOCATION')
-            flash.save()
+            password = User.objects.make_random_password()
+            pprint(password)
+            user = User.objects.create_user(username=fbid, email=fbid+'@jollofbot.com', password=password)
+            user.first_name = user_details['first_name']
+            user.last_name = user_details['last_name']
+            user.profile.user_type = 'f'
+            user.profile.fbid = fbid
+            user.profile.phone_number = '0'
+            user.profile.flash_code = flash_code
+            user.profile.current_state = 'FLASH_LOCATION'
+            user.save()
             msg = 'Great to have you here. On to the next step, your location.'
         self.text_message(fbid, msg)
         self.request_location(fbid)
@@ -280,7 +289,7 @@ class Deliver(object):
 
     def pending_orders(self, fbid, payload):
         self.text_message(fbid, 'Searching for pending orders.')
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         all_pending_jollof_orders = JollofOrder.objects.filter(status=1).filter(order_type=2)
         pending_jollof_orders = []
         for pending_jollof_order in all_pending_jollof_orders:
@@ -370,7 +379,7 @@ class Deliver(object):
         return
 
     def accept_pending_jollof(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         jollof_order_id = int(payload[22:])
         jollof_order = JollofOrder.objects.get(pk=jollof_order_id)
         if jollof_order.flash_status != 0:
@@ -441,7 +450,7 @@ class Deliver(object):
         pprint(response.json())
         msg = 'Hey there! A Flash has accepted to deliver ' + jollof_order.jollof_buyer.first_name + '\'s order of ' + jollof_order.jollof.description + ' with order code ' + jollof_order.code +'.'
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
-        msg = "Our Flash's name is " + flash.first_name + " " + flash.last_name + ". Remember to confirm the order code with him before handing over the package."
+        msg = "Our Flash's name is " + flash.user.first_name + " " + flash.user.last_name + ". Remember to confirm the order code with him before handing over the package."
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
         pprint('Notified Restaurant')
         msg = 'Woot woot! Our very own Flash has gone to pick up your order! He will be there sooooon...'
@@ -450,7 +459,7 @@ class Deliver(object):
         return
 
     def accept_pending_delicacy(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         delicacy_order_id = int(payload[24:])
         delicacy_order = DelicacyOrder.objects.get(pk=jollof_order_id)
         if delicacy_order.flash_status != 0:
@@ -523,7 +532,7 @@ class Deliver(object):
         pprint(response.json())
         msg = 'Hey there! A Flash has accepted to deliver ' + delicacy_order.delicacy_buyer.first_name + '\'s order of ' + delicacy_order.delicacy.description + ' with order code ' + delicacy_order.code +'.'
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
-        msg = "Our Flash's name is " + flash.first_name + " " + flash.last_name + ". Remember to confirm the order code with him before handing over the package."
+        msg = "Our Flash's name is " + flash.user.first_name + " " + flash.user.last_name + ". Remember to confirm the order code with him before handing over the package."
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
         pprint('Notified Restaurant')
         msg = 'Woot woot! Our very own Flash has gone to pick up your order! He will be there sooooon...'
@@ -533,7 +542,7 @@ class Deliver(object):
 
     def to_pickup(self, fbid, payload):
         self.text_message(fbid, 'Searching for orders to pick up.')
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         all_pickup_jollof_orders = JollofOrder.objects.filter(flash_status=1).filter(order_type=2)
         pickup_jollof_orders = []
         for pickup_jollof_order in all_pickup_jollof_orders:
@@ -614,7 +623,7 @@ class Deliver(object):
         return
 
     def picked_up_jollof(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         jollof_order_id = int(payload[17:])
         jollof_order = JollofOrder.objects.get(pk=jollof_order_id)
         if jollof_order.flash_status == 3:
@@ -682,7 +691,7 @@ class Deliver(object):
         return
 
     def picked_up_delicacy(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         delicacy_order_id = int(payload[19:])
         delicacy_order = DelicacyOrder.objects.get(pk=delicacy_order_id)
         if delicacy_order.flash_status == 3:
@@ -751,7 +760,7 @@ class Deliver(object):
 
     def to_dropoff(self, fbid, payload):
         self.text_message(fbid, 'Searching for orders to drop off.')
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         all_dropoff_jollof_orders = JollofOrder.objects.filter(flash_status=3).filter(order_type=2)
         dropoff_jollof_orders = []
         for dropoff_jollof_order in all_dropoff_jollof_orders:
@@ -832,7 +841,7 @@ class Deliver(object):
         return
 
     def dropped_off_jollof(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         jollof_order_id = int(payload[19:])
         jollof_order = JollofOrder.objects.get(pk=jollof_order_id)
         if jollof_order.flash_status == 4:
@@ -849,7 +858,7 @@ class Deliver(object):
         return
 
     def dropped_off_delicacy(self, fbid, payload):
-        flash = Flash.objects.get(fbid=fbid)
+        flash = Profile.objects.get(fbid=fbid)
         delicacy_order_id = int(payload[21:])
         delicacy_order = DelicacyOrder.objects.get(pk=delicacy_order_id)
         if delicacy_order.flash_status == 4:

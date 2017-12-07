@@ -56,9 +56,9 @@ class Buy(object):
         while valid:
             code = 'JLF' + ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(3))
             try:
-                seller = Seller.objects.get(code=code)
+                seller = Profile.objects.get(code=code)
                 print(code + ' already exists.')
-            except Seller.DoesNotExist:
+            except Profile.DoesNotExist:
                 valid = False
         print('JOLLOFCODE: ' + code)
         return code
@@ -107,9 +107,9 @@ class Buy(object):
     def alert_me(self, fbid, alert_type):
         my_fbid = self.BLUMAN_ID
         if alert_type == 1:
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
 
-            msg = 'New User - ' + buyer.first_name + ' ' + buyer.last_name + ' just became a Jollof Buyer. FBID = ' + str(fbid) + '.'
+            msg = 'New User - ' + buyer.user.first_name + ' ' + buyer.user.last_name + ' just became a Jollof Buyer. FBID = ' + str(fbid) + '.'
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',
             }
@@ -135,9 +135,9 @@ class Buy(object):
 
 
     def text_message(self, fbid, msg):
-        buyer = Buyer.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=fbid)
         if '{{user_first_name}}' in msg:
-            msg = msg.replace('{{user_first_name}}', buyer.first_name)
+            msg = msg.replace('{{user_first_name}}', buyer.user.first_name)
         print(msg)
         headers = {
             'Content-Type': 'application/json; charset=utf-8',         
@@ -205,8 +205,8 @@ class Buy(object):
         }
         }'''
 
-        buyer = Buyer.objects.get(fbid=fbid)
-        data = data.replace('FIRST_NAME', buyer.first_name)
+        buyer = Profile.objects.get(fbid=fbid)
+        data = data.replace('FIRST_NAME', buyer.user.first_name)
         data = data.replace('USER_ID', fbid)
         data = json.dumps(json.loads(data)).encode('utf-8')
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
@@ -215,7 +215,7 @@ class Buy(object):
 
 
     def cancel_action(self, fbid, payload):
-        buyer = Buyer.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=fbid)
         buyer.current_state = 'DEFAULT'
         buyer.save()
         msg = 'I\'ve cancelled that action.'
@@ -223,7 +223,7 @@ class Buy(object):
 
 
     def request_phone(self, fbid, text):
-        buyer = Buyer.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=fbid)
         phone = self.parse_phone(text.strip())
         if not phone:
             msg = 'Ugh mehn, that phone number doesn\'t look right 🤦. Please enter a valid Nigerian Phone Number. e.g. 08030123456'
@@ -258,7 +258,7 @@ class Buy(object):
                 self.text_message(fbid, msg)
                 return
             buyer_pk = int(splitit[0])
-            buyer = Buyer.objects.get(pk=buyer_pk)
+            buyer = Profile.objects.get(pk=buyer_pk)
             buyer_fbid = buyer.fbid
             to_send = str(splitit[1])
             if splitit[1].lower() == 'done':
@@ -269,12 +269,12 @@ class Buy(object):
         else:
             original = received
             if received.lower() == 'done':
-                buyer = Buyer.objects.get(fbid=fbid)
+                buyer = Profile.objects.get(fbid=fbid)
                 buyer.current_state = 'DEFAULT'
                 buyer.save()
                 self.text_message(fbid, 'Jollof Chat ended.')
-            buyer = Buyer.objects.get(fbid=fbid)
-            msg = 'ID: ' + str(buyer.pk) + '. ' + buyer.first_name + ' ' + buyer.last_name + '. MSG: ' + original 
+            buyer = Profile.objects.get(fbid=fbid)
+            msg = 'ID: ' + str(buyer.pk) + '. ' + buyer.user.first_name + ' ' + buyer.user.last_name + '. MSG: ' + original 
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',         
             }
@@ -290,8 +290,8 @@ class Buy(object):
     def talk_to_jollof(self, fbid, text):
         if text == 'TALK_TO_JOLLOF':
             if fbid == self.BLUMAN_ID:
-                return self.text_message(fbid, 'Sorry fam, you can not be chatting with yurself.')
-            buyer = Buyer.objects.get(fbid=fbid)
+                return self.text_message(fbid, 'Sorry fam, you can not be chatting with yourself.')
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'TALK_TO_JOLLOF'
             buyer.save()
             self.text_message(fbid, 'Send Done to end the conversation.')
@@ -307,7 +307,7 @@ class Buy(object):
             return
         elif location_lat:
             # save location_lat and location_long
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.longitude = float(location_long)
             buyer.latitude = float(location_lat)
             buyer.current_state = 'DEFAULT'
@@ -315,11 +315,11 @@ class Buy(object):
             if prev_locations == '':
                 buyer.location_history = str(location_lat) + ',' + str(location_long) #try to add the datetime too
             else:
-                buyer.location_history = prev_locations + '\n' + str(location_lat) + ',' + str(location_long) #try to add the datetime here too.
+                buyer.location_history = prev_locations + '\t' + str(location_lat) + ',' + str(location_long) #try to add the datetime here too.
             buyer.save()       
             self.text_message(fbid, 'Searching for nearby Jollof!🔎')
             # Pass lat and long to function that will retrieve nearest sellers
-            sellers = Seller.objects.all()
+            sellers = Profile.objects.filter(user_type='s')
             if sellers.count() < 1:
                 self.text_message(fbid, 'I am working very hard to find the best places for you to find Jollof around you. I will let you know when you can find them, thank you.')
             else:
@@ -340,7 +340,7 @@ class Buy(object):
                             if seller_jollof.available is False:
                                 continue
                             places_found = True
-                            #img_link = 'http://via.placeholder.com/350x350'
+                            #  img_link = 'http://via.placeholder.com/350x350'
                             img_link = str(seller_jollof.image.url)
                             try:
                                 img_link = img_link[:int(img_link.index('?'))]
@@ -372,7 +372,7 @@ class Buy(object):
                     future_location.save()
             return
         self.request_location(fbid)
-        buyer = Buyer.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=fbid)
         buyer.current_state = 'GET_LOCATION_JOLLOF'
         buyer.save()
 
@@ -382,8 +382,8 @@ class Buy(object):
             # reconfirm the distance between the buyer and the seller here first.
             jollof_id = int(payload[19:])
             jollof = Jollof.objects.get(pk=jollof_id)
-            seller = Seller.objects.get(pk=int(jollof.seller.pk))
-            buyer = Buyer.objects.get(fbid=fbid)
+            seller = Profile.objects.get(pk=(int(jollof.seller.pk)))
+            buyer = Profile.objects.get(fbid=fbid)
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
@@ -429,7 +429,7 @@ class Buy(object):
                 }
             }
             }'''
-            data = data.replace('FULL_NAME', buyer.first_name + ' ' + buyer.last_name)
+            data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', jollof_order.code)
             data = data.replace('ACCEPT_RESERVATION', 'JOLLOF_PENDING_RESERVATIONS_' + str(jollof_order.pk) + '_1')
@@ -482,7 +482,7 @@ class Buy(object):
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             #Alert me of the reservation made here.
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
@@ -493,8 +493,8 @@ class Buy(object):
             # reconfirm the distance between the buyer and the seller here first.
             jollof_id = int(payload[13:])
             jollof = Jollof.objects.get(pk=jollof_id)
-            seller = Seller.objects.get(pk=int(jollof.seller.pk))
-            buyer = Buyer.objects.get(fbid=fbid)
+            seller = Profile.objects.get(pk=int(jollof.seller.pk))
+            buyer = Profile.objects.get(fbid=fbid)
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
@@ -540,7 +540,7 @@ class Buy(object):
                 }
             }
             }'''
-            data = data.replace('FULL_NAME', buyer.first_name + ' ' + buyer.last_name)
+            data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', jollof_order.code)
             data = data.replace('ACCEPT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1')
@@ -556,7 +556,7 @@ class Buy(object):
             msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             #Alert me of the order made here.
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
@@ -568,7 +568,7 @@ class Buy(object):
             return
         elif location_lat:
             # save location_lat and location_long
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.longitude = float(location_long)
             buyer.latitude = float(location_lat)
             print('Lat: ' + str(float(location_lat)) + ' Long: ' + str(float(location_long)))
@@ -577,11 +577,11 @@ class Buy(object):
             if prev_locations == '':
                 buyer.location_history = str(location_lat) + ',' + str(location_long) #try to add the datetime too
             else:
-                buyer.location_history = prev_locations + '\n' + str(location_lat) + ',' + str(location_long) #try to add the datetime here too.
+                buyer.location_history = prev_locations + '\t' + str(location_lat) + ',' + str(location_long) #try to add the datetime here too.
             buyer.save()       
             self.text_message(fbid, 'Searching for nearby delicacies!🔎')
             # Pass lat and long to function that will retrieve nearest sellers
-            sellers = Seller.objects.all()
+            sellers = Profile.objects.filter(user_type='s')
             if sellers.count() < 1:
                 self.text_message(fbid, 'I am working very hard to find the best places for you to find awesome delicacies. I will let you know when you can find them, thank you.')
             else:
@@ -624,10 +624,10 @@ class Buy(object):
                         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                         pprint(response.json())
                 else:
-                    self.text_message(fbid, 'I cannot smell jollof near you ☹ I am working hard to find the best places close to you.') # Ask to increase search radius
+                    self.text_message(fbid, 'I cannot smell delicacies near you ☹ I am working hard to find the best places close to you.') # Ask to increase search radius
             return
         self.request_location(fbid)
-        buyer = Buyer.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=fbid)
         buyer.current_state = 'GET_LOCATION_DELICACY'
         buyer.save()
     
@@ -636,8 +636,8 @@ class Buy(object):
         if 'VIEW_DELICACY_SELLERS' in payload:
             # reconfirm proximity to seller first
             seller_id = int(payload[22:])
-            seller = Seller.objects.get(pk=seller_id)
-            buyer = Buyer.objects.get(fbid=fbid)
+            seller = Profile.objects.get(pk=seller_id)
+            buyer = Profile.objects.get(fbid=fbid)
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
@@ -684,8 +684,8 @@ class Buy(object):
             # reconfirm the distance between the buyer and the seller here first.
             delicacy_id = int(payload[21:])
             delicacy = Delicacy.objects.get(pk=delicacy_id)
-            seller = Seller.objects.get(pk=int(delicacy.seller.pk))
-            buyer = Buyer.objects.get(fbid=fbid)
+            seller = Profile.objects.get(pk=int(delicacy.seller.pk))
+            buyer = Profile.objects.get(fbid=fbid)
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
@@ -731,7 +731,7 @@ class Buy(object):
                 }
             }
             }'''
-            data = data.replace('FULL_NAME', buyer.first_name + ' ' + buyer.last_name)
+            data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', delicacy_order.code)
             data = data.replace('ACCEPT_RESERVATION', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1')
@@ -783,7 +783,7 @@ class Buy(object):
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint(response.json())
             #Alert me of the reservation made here.
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
@@ -794,8 +794,8 @@ class Buy(object):
             # reconfirm the distance between the buyer and the seller here first.
             delicacy_id = int(payload[15:])
             delicacy = Delicacy.objects.get(pk=delicacy_id)
-            seller = Seller.objects.get(pk=int(delicacy.seller.pk))
-            buyer = Buyer.objects.get(fbid=fbid)
+            seller = Profile.objects.get(pk=int(delicacy.seller.pk))
+            buyer = Profile.objects.get(fbid=fbid)
             distance = self.get_distance((buyer.latitude,buyer.longitude), (seller.latitude, seller.longitude))
             if distance > self.NEAREST_KM:
                 # buyer no longer in proximity
@@ -841,7 +841,7 @@ class Buy(object):
                 }
             }
             }'''
-            data = data.replace('FULL_NAME', buyer.first_name + ' ' + buyer.last_name)
+            data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', delicacy_order.code)
             data = data.replace('ACCEPT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1')
@@ -857,16 +857,16 @@ class Buy(object):
             msg ='If the restaurant have not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             # Alert me of the order made here.
-            buyer = Buyer.objects.get(fbid=fbid)
+            buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
             
 
     def order_status(self, fbid):
-        buyer = Buyer.objects.get(fbid=fbid)
-        #if there are more than one orders that are not cancelled or delivered, we should show them all and let them choose the order to show status for.
-        #a cancelled order is a complete order.
+        buyer = Profile.objects.get(fbid=fbid)
+        # if there are more than one orders that are not cancelled or delivered, we should show them all and let them choose the order to show status for.
+        # a cancelled order is a complete order.
         if buyer.has_order:
             jollof_orders = JollofOrder.objects.filter(jollof_buyer=buyer)
             if jollof_orders.count() == 1:
