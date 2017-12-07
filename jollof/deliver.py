@@ -546,12 +546,12 @@ class Deliver(object):
         all_pickup_jollof_orders = JollofOrder.objects.filter(flash_status=1).filter(order_type=2)
         pickup_jollof_orders = []
         for pickup_jollof_order in all_pickup_jollof_orders:
-            pending_jollof_orders.append(pending_jollof_order)
+            pickup_jollof_orders.append(pickup_jollof_order)
         all_pickup_delicacy_orders = DelicacyOrder.objects.filter(flash_status=1).filter(order_type=2)
         pickup_delicacy_orders = []
         for pickup_delicacy_order in all_pickup_delicacy_orders:
-            pending_delicacy_orders.append(pending_delicacy_order)
-        if len(pending_delicacy_orders) + len(pending_jollof_orders) < 1:
+            pickup_delicacy_orders.append(pickup_delicacy_order)
+        if len(pickup_delicacy_orders) + len(pickup_delicacy_orders) < 1:
             #  Flash has no order to pickup
             msg = 'There are no orders to pick up right now. Accept some orders and then you can go pick them up :)'
             self.text_message(fbid, msg)
