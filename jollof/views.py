@@ -317,6 +317,7 @@ def buyer_webhook(request):
                     source = 'm.me/jollofff'
                     me_referral = MeReferral(buyer=buyer, referral=referral, source=source, type='o')
                     me_referral.save() # 1458668856253 1346114717972
+                    return HttpResponse()
 
 
 
