@@ -549,7 +549,7 @@ class Buy(object):
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-            pprint('Jollof Order Sent: ' + response.json())
+            pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
             # Buyer can cancel anytime before the order is accepted.
             msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. Your order code is ' + jollof_order.code
             self.text_message(fbid, msg)
