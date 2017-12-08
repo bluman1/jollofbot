@@ -604,6 +604,9 @@ def deliver_webhook(request):
                 if 'message' in message:
                     if 'quick_reply' in message['message']:
                         pprint('QR Received.')
+                        flash.current_state = 'DEFAULT'
+                        flash.save()
+                        return HttpResponse()
                     elif 'text' in message['message']:
                         print('Text Message Recieved')
                         if connected is False:
