@@ -329,7 +329,7 @@ class Deliver(object):
                 except:
                     pass
                 generic_title = 'Jollof delivery from ' + pending_jollof.jollof_seller.restaurant + ' to ' + pending_jollof.jollof_buyer.user.first_name + '.'
-                generic_subtitle = pending_jollof.jollof.description + '\nOrder Code: ' + pending_jollof.code + '.'
+                generic_subtitle = pending_jollof.jollof.description + '\\nOrder Code: ' + pending_jollof.code + '.'
                 accept_jollof = 'ACCEPT_PENDING_JOLLOF_' + str(pending_jollof.pk)
                 jollof_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept To Deliver","payload":"'+str(accept_jollof)+'"}]},'
             if jollof_elements:
@@ -360,7 +360,7 @@ class Deliver(object):
                 except:
                     pass
                 generic_title = 'Delicacy delivery from ' + pending_delicacy.delicacy_seller.restaurant + ' to ' + pending_delicacy.delicacy_buyer.user.first_name + '.'
-                generic_subtitle = pending_delicacy.delicacy.description + '\nOrder Code: ' + pending_delicacy.code + '.'
+                generic_subtitle = pending_delicacy.delicacy.description + '\\nOrder Code: ' + pending_delicacy.code + '.'
                 accept_delicacy = 'ACCEPT_PENDING_DELICACY_' + str(pending_delicacy.pk)
                 delicacy_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept To Deliver","payload":"'+str(accept_delicacy)+'"}]},'
             if delicacy_elements:
@@ -445,6 +445,7 @@ class Deliver(object):
         data = data.replace('RESTAURANT', jollof_order.jollof_seller.restaurant)
         data = data.replace('PICKED_UP', 'PICKED_UP_JOLLOF_' + str(jollof_order.pk))
         pprint(str(data))
+        data = json.dumps(json.loads(data)).encode('utf-8')
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())

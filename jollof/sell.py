@@ -294,6 +294,7 @@ class Sell(object):
                     data = data.replace('ORDER_CODE', jollof_order.code)
                     data = data.replace('PAYLOAD', 'ACCEPT_PENDING_JOLLOF_' + str(jollof_order.pk))
                     pprint(str(data))
+                    data = json.dumps(json.loads(data)).encode('utf-8')
                     response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                     pprint(response.json())
             elif jollof_action == 2:
@@ -640,6 +641,7 @@ class Sell(object):
                 data = data.replace('PHONE_NUMBER', buyer.phone_number)
                 data = data.replace('DELICACY_INFO', delicacy.name + '; ' + delicacy.description)
                 pprint(str(data))
+                data = json.dumps(json.loads(data)).encode('utf-8')
                 response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
                 pprint(response.json())
             elif delicacy_action == 2:
