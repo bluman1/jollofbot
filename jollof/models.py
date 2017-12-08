@@ -98,7 +98,7 @@ class JollofOrder(models.Model):
     code = models.CharField(max_length=128)
     jollof_buyer = models.ForeignKey(Profile, related_name='Jollof_Buyer')
     jollof_seller = models.ForeignKey(Profile, related_name='Jollof_Seller')
-    jollof_flash = models.ForeignKey(Profile, related_name='Jollof_Flash')
+    jollof_flash = models.ForeignKey(Profile, related_name='Jollof_Flash', null=True, blank=True)
     jollof = models.ForeignKey(Jollof, related_name='Order_Jollof')
     quantity = models.IntegerField(default=1)
     status = models.IntegerField(default=0)  # 0=pending, 1=accepted, 2=rejected, 3=cancelled, 4=completed/packaged
@@ -142,7 +142,7 @@ class DelicacyOrder(models.Model):
     code = models.CharField(max_length=128)
     delicacy_buyer = models.ForeignKey(Profile, related_name='DelicacyBuyer')
     delicacy_seller = models.ForeignKey(Profile, related_name='DelicacySeller')
-    delicacy_flash = models.ForeignKey(Profile, related_name='DelicacyFlash')
+    delicacy_flash = models.ForeignKey(Profile, related_name='DelicacyFlash', null=True, blank=True)
     delicacy = models.ForeignKey(Delicacy, related_name='Order_Delicacy')
     quantity = models.IntegerField(default=1)
     status = models.IntegerField(default=0)
