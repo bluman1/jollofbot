@@ -200,3 +200,122 @@ class MeReferral(models.Model):
     
     class Admin:
         pass
+
+
+class BuyerConversation(models.Model):
+    mid = models.CharField(max_length=128, null=True)
+    buyer = models.ForeignKey(Profile)
+    message = models.TextField(default='')
+    jollof_sender = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+    read_timestamp = models.CharField(max_length=128)
+    delivered = models.BooleanField(default=False)
+    delivered_timestamp = models.CharField(max_length=128)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass
+
+
+class SellerConversation(models.Model):
+    mid = models.CharField(max_length=128, null=True)
+    seller = models.ForeignKey(Profile)
+    message = models.TextField(default='')
+    jollof_sender = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+    read_timestamp = models.CharField(max_length=128)
+    delivered = models.BooleanField(default=False)
+    delivered_timestamp = models.CharField(max_length=128)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass
+
+
+class JollofSellerConversation(models.Model):
+    order = models.ForeignKey(JollofOrder)
+    conversation = models.ForeignKey(SellerConversation)
+    stage = models.IntegerField(default=1)  # 1-accept/reject, 2-complete/cancel
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass
+
+
+class DelicacySellerConversation(models.Model):
+    order = models.ForeignKey(DelicacyOrder)
+    conversation = models.ForeignKey(SellerConversation)
+    stage = models.IntegerField(default=1)  # 1-accept/reject, 2-complete/cancel
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass
+
+
+class FlashConversation(models.Model):
+    mid = models.CharField(max_length=128, null=True)
+    flash = models.ForeignKey(Profile)
+    message = models.TextField(default='')
+    jollof_sender = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+    read_timestamp = models.CharField(max_length=128)
+    delivered = models.BooleanField(default=False)
+    delivered_timestamp = models.CharField(max_length=128)
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass
+
+class JollofFlashConversation(models.Model):
+    order = models.ForeignKey(JollofOrder)
+    conversation = models.ForeignKey(FlashConversation)
+    stage = models.IntegerField(default=1)  # 1-to_pickup, 2-to_drop_off
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass
+
+
+class DelicacyFlashConversation(models.Model):
+    order = models.ForeignKey(DelicacyOrder)
+    conversation = models.ForeignKey(FlashConversation)
+    stage = models.IntegerField(default=1)  # 1-to_pickup, 2-to_drop_off
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['created']
+    
+    class Admin:
+        pass

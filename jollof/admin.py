@@ -44,3 +44,24 @@ class MeReferralAdmin(admin.ModelAdmin):
 
 
 admin.site.register(MeReferral, MeReferralAdmin)
+
+
+class BuyerConversationAdmin(admin.ModelAdmin):
+    list_display = ['buyer', 'message', 'jollof_sender', 'read', 'delivered', 'read_timestamp', 'delivered_timestamp']
+
+
+admin.site.register(BuyerConversation, BuyerConversationAdmin)
+
+
+class SellerConversationAdmin(admin.ModelAdmin):
+    list_display = ['seller', 'message', 'jollof_sender', 'read', 'delivered', 'read_timestamp', 'delivered_timestamp']
+
+
+admin.site.register(SellerConversation, SellerConversationAdmin)
+
+
+class FlashConversationAdmin(admin.ModelAdmin):
+    list_display = ['flash', 'message', 'jollof_sender', 'read', 'delivered', 'read_timestamp', 'delivered_timestamp']
+
+
+admin.site.register(FlashConversation, FlashConversationAdmin)
