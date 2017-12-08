@@ -234,12 +234,21 @@ class Sell(object):
                 for flash in avalaible_flash:
                     #  check if flash doesn't have any order to fufill
                     flash_jollof_order = JollofOrder.objects.filter(jollof_flash=flash)
-                    if flash_jollof_order.flash_status > 0 and flash_jollof_order.flash_status < 4:
-                        #  flash is currently busy
+                    flash_busy = False
+                    for flash_jollof in flash_jollof_order:
+                        if flash_jollof.flash_status > 0 and flash_jollof.flash_status < 4:
+                            #  flash is currently busy
+                            flash_busy = True
+                            break
+                    if flash_busy:
                         continue
                     flash_delicacy_order = DelicacyOrder.objects.filter(delicacy_flash=flash)
-                    if flash_delicacy_order.flash_status > 0 and flash_delicacy_order.flash_status < 4:
-                        # flash is currently busy
+                    for flash_delicacy in flash_delicacy_order:       
+                        if flash_delicacy.flash_status > 0 and flash_delicacy.flash_status < 4:
+                            # flash is currently busy
+                            flash_busy = True
+                            break
+                    if flash_busy:
                         continue
                     # flash not busy, check if flash in proximity of restaurant.
                     distance = self.get_distance((flash.latitude, flash.longitude), (jollof_order.jollof_seller.latitude, jollof_order.jollof_seller.longitude))
