@@ -328,7 +328,7 @@ class Deliver(object):
                     img_link = img_link[:int(img_link.index('?'))]
                 except:
                     pass
-                generic_title = 'Jollof delivery from ' + pending_jollof.jollof_seller.restaurant + ' to ' + pending_jollof.jollof_buyer.first_name + '.'
+                generic_title = 'Jollof delivery from ' + pending_jollof.jollof_seller.restaurant + ' to ' + pending_jollof.jollof_buyer.user.first_name + '.'
                 generic_subtitle = pending_jollof.jollof.description + '\nOrder Code: ' + pending_jollof.code + '.'
                 accept_jollof = 'ACCEPT_PENDING_JOLLOF_' + str(pending_jollof.pk)
                 jollof_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept To Deliver","payload":"'+str(accept_jollof)+'"}]},'
@@ -359,7 +359,7 @@ class Deliver(object):
                     img_link = img_link[:int(img_link.index('?'))]
                 except:
                     pass
-                generic_title = 'Delicacy delivery from ' + pending_delicacy.delicacy_seller.restaurant + ' to ' + pending_delicacy.delicacy_buyer.first_name + '.'
+                generic_title = 'Delicacy delivery from ' + pending_delicacy.delicacy_seller.restaurant + ' to ' + pending_delicacy.delicacy_buyer.user.first_name + '.'
                 generic_subtitle = pending_delicacy.delicacy.description + '\nOrder Code: ' + pending_delicacy.code + '.'
                 accept_delicacy = 'ACCEPT_PENDING_DELICACY_' + str(pending_delicacy.pk)
                 delicacy_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Accept To Deliver","payload":"'+str(accept_delicacy)+'"}]},'
@@ -448,7 +448,7 @@ class Deliver(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey there! A Flash has accepted to deliver ' + jollof_order.jollof_buyer.first_name + '\'s order of ' + jollof_order.jollof.description + ' with order code ' + jollof_order.code +'.'
+        msg = 'Hey there! A Flash has accepted to deliver ' + jollof_order.jollof_buyer.user.first_name + '\'s order of ' + jollof_order.jollof.description + ' with order code ' + jollof_order.code +'.'
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
         msg = "Our Flash's name is " + flash.user.first_name + " " + flash.user.last_name + ". Remember to confirm the order code with him before handing over the package."
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
@@ -526,11 +526,11 @@ class Deliver(object):
         data = data.replace('PICKED_UP', 'PICKED_UP_DELICACY_' + str(delicacy_order.pk))
         pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-        msg = 'Please remember to save your new location when you get to the restaurant so that I will be able to direct you to ' + delicacy_order.delicacy_buyer.first_name + 's location. Just send "location"'
+        msg = 'Please remember to save your new location when you get to the restaurant so that I will be able to direct you to ' + delicacy_order.delicacy_buyer.user.first_name + 's location. Just send "location"'
         self.text_message(fbid, msg)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey there! A Flash has accepted to deliver ' + delicacy_order.delicacy_buyer.first_name + '\'s order of ' + delicacy_order.delicacy.description + ' with order code ' + delicacy_order.code +'.'
+        msg = 'Hey there! A Flash has accepted to deliver ' + delicacy_order.delicacy_buyer.user.first_name + '\'s order of ' + delicacy_order.delicacy.description + ' with order code ' + delicacy_order.code +'.'
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
         msg = "Our Flash's name is " + flash.user.first_name + " " + flash.user.last_name + ". Remember to confirm the order code with him before handing over the package."
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
@@ -571,7 +571,7 @@ class Deliver(object):
                     img_link = img_link[:int(img_link.index('?'))]
                 except:
                     pass
-                generic_title = 'Jollof delivery from ' + pickup_jollof.jollof_seller.restaurant + ' to ' + pickup_jollof.jollof_buyer.first_name + '.'
+                generic_title = 'Jollof delivery from ' + pickup_jollof.jollof_seller.restaurant + ' to ' + pickup_jollof.jollof_buyer.user.first_name + '.'
                 generic_subtitle = pickup_jollof.jollof.description + '\
                 nOrder Code: ' + pickup_jollof.code + '.'
                 accept_jollof = 'PICKED_UP_JOLLOF_' + str(pickup_jollof.pk)
@@ -603,7 +603,7 @@ class Deliver(object):
                     img_link = img_link[:int(img_link.index('?'))]
                 except:
                     pass
-                generic_title = 'Delicacy delivery from ' + pickup_delicacy.delicacy_seller.restaurant + ' to ' + pickup_delicacy.delicacy_buyer.first_name + '.'
+                generic_title = 'Delicacy delivery from ' + pickup_delicacy.delicacy_seller.restaurant + ' to ' + pickup_delicacy.delicacy_buyer.user.first_name + '.'
                 generic_subtitle = pickup_delicacy.delicacy.description + '\nOrder Code: ' + pickup_delicacy.code + '.'
                 accept_delicacy = 'PICKED_UP_DELICACY_' + str(pickup_delicacy.pk)
                 delicacy_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Mark As Picked Up","payload":"'+str(accept_delicacy)+'"}]},'
@@ -676,7 +676,7 @@ class Deliver(object):
         data = data.replace('USER_ID', fbid)
         data = data.replace('ORDER_CODE', jollof_order.code)
         data = data.replace('DIRECTIONS', directions_to_buyer)
-        data = data.replace('BUYER', jollof_order.jollof_buyer.first_name + ' ' + jollof_order.jollof_buyer.last_name)
+        data = data.replace('BUYER', jollof_order.jollof_buyer.user.first_name + ' ' + jollof_order.jollof_buyer.user.last_name)
         data = data.replace('DROPPED_OFF_JOLLOF', 'DROPPED_OFF_JOLLOF_' + str(jollof_order.pk))
         pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
@@ -744,7 +744,7 @@ class Deliver(object):
         data = data.replace('USER_ID', fbid)
         data = data.replace('ORDER_CODE', delicacy_order.code)
         data = data.replace('DIRECTIONS', directions_to_buyer)
-        data = data.replace('BUYER', delicacy_order.delicacy_buyer.first_name + ' ' + delicacy_order.delicacy_buyer.last_name)
+        data = data.replace('BUYER', delicacy_order.delicacy_buyer.user.first_name + ' ' + delicacy_order.delicacy_buyer.user.last_name)
         data = data.replace('DROPPED_OFF_DELICACY', 'DROPPED_OFF_DELICACY_' + str(delicacy_order.pk))
         pprint(str(data))
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
@@ -789,7 +789,7 @@ class Deliver(object):
                     img_link = img_link[:int(img_link.index('?'))]
                 except:
                     pass
-                generic_title = 'Jollof delivery from ' + dropoff_jollof.jollof_seller.restaurant + ' to ' + dropoff_jollof.jollof_buyer.first_name + '.'
+                generic_title = 'Jollof delivery from ' + dropoff_jollof.jollof_seller.restaurant + ' to ' + dropoff_jollof.jollof_buyer.user.first_name + '.'
                 generic_subtitle = dropoff_jollof.jollof.description + '\
                 nOrder Code: ' + dropoff_jollof.code + '.'
                 accept_jollof = 'DROPPED_OFF_JOLLOF_' + str(dropoff_jollof.pk)
@@ -821,7 +821,7 @@ class Deliver(object):
                     img_link = img_link[:int(img_link.index('?'))]
                 except:
                     pass
-                generic_title = 'Delicacy delivery from ' + dropoff_delicacy.delicacy_seller.restaurant + ' to ' + dropoff_delicacy.delicacy_buyer.first_name + '.'
+                generic_title = 'Delicacy delivery from ' + dropoff_delicacy.delicacy_seller.restaurant + ' to ' + dropoff_delicacy.delicacy_buyer.user.first_name + '.'
                 generic_subtitle = dropoff_delicacy.delicacy.description + '\nOrder Code: ' + dropoff_delicacy.code + '.'
                 accept_delicacy = 'DROPPED_OFF_DELICACY_' + str(dropoff_delicacy.pk)
                 delicacy_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Mark As Picked Up","payload":"'+str(accept_delicacy)+'"}]},'
