@@ -602,48 +602,75 @@ class Sell(object):
                 seller.save()
                 msg = 'You have accepted to deliver ' + buyer.user.first_name + '\'s ' + delicacy.name + ' delicacy and they have been notified.'
                 self.text_message(fbid, msg)
-                headers = {
-                    'Content-Type': 'application/json',
-                }
-                params = (
-                    ('access_token', self.SELLER_ACCESS_TOKEN),
-                )
-                data = '''{
-                "recipient":{
-                    "id":"USER_ID"
-                },
-                "message":{
-                    "attachment":{
-                    "type":"template",
-                    "payload":{
-                        "template_type":"button",
-                        "text":"Name: FULL_NAME. Order Code: ORDER_CODE. DELICACY_INFO",
-                        "buttons":[
-                        {
-                            "type":"web_url",
-                            "title":"Get Directions",
-                            "url":"DIRECTIONS"
-                        },
-                        {
-                            "type":"phone_number",
-                            "title":"Call Phone",
-                            "payload":"PHONE_NUMBER"
+                #  broadcast to flash for acceptance
+                avalaible_flash = Profile.objects.filter(user_type='f').filter(available=True)
+                for flash in avalaible_flash:
+                    #  check if flash doesn't have any order to fufill
+                    flash_jollof_order = JollofOrder.objects.filter(jollof_flash=flash)
+                    flash_busy = False
+                    for flash_jollof in flash_jollof_order:
+                        if flash_jollof.flash_status > 0 and flash_jollof.flash_status < 4:
+                            #  flash is currently busy
+                            flash_busy = True
+                            break
+                    if flash_busy:
+                        continue
+                    flash_delicacy_order = DelicacyOrder.objects.filter(delicacy_flash=flash)
+                    for flash_delicacy in flash_delicacy_order:       
+                        if flash_delicacy.flash_status > 0 and flash_delicacy.flash_status < 4:
+                            # flash is currently busy
+                            flash_busy = True
+                            break
+                    if flash_busy:
+                        continue
+                    # flash not busy, check if flash in proximity of restaurant.
+                    distance = self.get_distance((flash.latitude, flash.longitude), (delicacy_order.delicacy_seller.latitude, delicacy_order.delicacy_seller.longitude))
+                    if distance >= float(self.NEAREST_KM):
+                        # flash not in range.
+                        continue
+                    # flash not busy, check if flash in proximity of buyer.
+                    distance = self.get_distance((flash.latitude, flash.longitude), (delicacy_order.delicacy_buyer.latitude, delicacy_order.delicacy_buyer.longitude))
+                    if distance >= float(self.NEAREST_KM):
+                        # flash not in range.
+                        continue
+                    #  flash is free and in range
+                    headers = {
+                        'Content-Type': 'application/json',
+                    }
+                    params = (
+                        ('access_token', self.SELLER_ACCESS_TOKEN),
+                    )
+                    data = '''{
+                    "recipient":{
+                        "id":"USER_ID"
+                    },
+                    "message":{
+                        "attachment":{
+                        "type":"template",
+                        "payload":{
+                            "template_type":"button",
+                            "text":"You have a Delicacy delivery from REST to FULL_NAME with order code ORDER_CODE. DELICACY_INFO",
+                            "buttons":[
+                            {
+                                "type":"postback",
+                                "title":"Accept To Deliver",
+                                "payload":"PAYLOAD"
+                            }
+                            ]
                         }
-                        ]
+                        }
                     }
-                    }
-                }
-                }'''
-                data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
-                data = data.replace('USER_ID', fbid)
-                data = data.replace('ORDER_CODE', delicacy_order.code)
-                data = data.replace('DIRECTIONS', self.get_directions(seller.latitude, seller.longitude, buyer.latitude, buyer.longitude))
-                data = data.replace('PHONE_NUMBER', buyer.phone_number)
-                data = data.replace('DELICACY_INFO', delicacy.name + '; ' + delicacy.description)
-                pprint(str(data))
-                data = json.dumps(json.loads(data)).encode('utf-8')
-                response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-                pprint(response.json())
+                    }'''
+                    data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
+                    data = data.replace('USER_ID', flash.fbid)
+                    data = data.replace('REST', delicacy_order.delicacy_seller.restaurant)
+                    data = data.replace('ORDER_CODE', delicacy_order.code)
+                    data = data.replace('PAYLOAD', 'ACCEPT_PENDING_JOLLOF_' + str(delicacy_order.pk))
+                    data = data.replace('DELICACY_INFO', delicacy.name + '; ' + delicacy.description)
+                    pprint(str(data))
+                    data = json.dumps(json.loads(data)).encode('utf-8')
+                    response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+                    pprint(response.json())
             elif delicacy_action == 2:
                 # seller rejected order.
                 if delicacy_order.status != 0:

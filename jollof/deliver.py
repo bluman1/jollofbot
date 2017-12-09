@@ -390,8 +390,8 @@ class Deliver(object):
             msg = 'You have already accepted this order. Go forth and pick it up!'
             self.text_message(fbid, msg)
             return
-        check_accepted = JollofOrder.objects.filter(flash=flash).filter(flash_status=1)
-        check_picked_up = JollofOrder.objects.filter(flash=flash).filter(flash_status=3)
+        check_accepted = JollofOrder.objects.filter(jollof_flash=flash).filter(flash_status=1)
+        check_picked_up = JollofOrder.objects.filter(jollof_flash=flash).filter(flash_status=3)
         if check_accepted.count() > 0:
             msg = 'Sorry, you need to deliver the order you accepted before accepting a new one.'
             self.text_message(fbid, msg)
@@ -401,7 +401,7 @@ class Deliver(object):
             self.text_message(fbid, msg)
             return
         directions_to_restaurant = self.get_directions(flash.latitude, flash.longitude, jollof_order.jollof_seller.latitude, jollof_order.jollof_seller.longitude)
-        jollof_order.flash = flash
+        jollof_order.jollof_flash = flash
         jollof_order.flash_status = 1
         jollof_order.save()
         msg = 'Great, you have accepted to deliver this order. Be swift, Be Flash!'
@@ -471,8 +471,8 @@ class Deliver(object):
             msg = 'You have already accepted this order. Go forth and pick it up!'
             self.text_message(fbid, msg)
             return
-        check_accepted = DelicacyOrder.objects.filter(flash=flash).filter(flash_status=1)
-        check_picked_up = DelicacyOrder.objects.filter(flash=flash).filter(flash_status=3)
+        check_accepted = DelicacyOrder.objects.filter(delicacy_flash=flash).filter(flash_status=1)
+        check_picked_up = DelicacyOrder.objects.filter(delicacy_flash=flash).filter(flash_status=3)
         if check_accepted.count() > 0:
             msg = 'Sorry, you need to deliver the order you accepted before accepting a new one.'
             self.text_message(fbid, msg)
@@ -482,7 +482,7 @@ class Deliver(object):
             self.text_message(fbid, msg)
             return
         directions_to_restaurant = self.get_directions(flash.latitude, flash.longitude, delicacy_order.delicacy_seller.latitude, delicacy_order.delicacy_seller.longitude)
-        delicacy_order.flash = flash
+        delicacy_order.delicacy_flash = flash
         delicacy_order.flash_status = 1
         delicacy_order.save()
         msg = 'Great, you have accepted to deliver this order. Here is the direction to the restaurant. Be swift, Be Flash!'
@@ -631,7 +631,7 @@ class Deliver(object):
             msg = 'You have already picked up this order. Go forth and deliver it!'
             self.text_message(fbid, msg)
             return
-        check_picked_up = JollofOrder.objects.filter(flash=flash).filter(flash_status=3)
+        check_picked_up = JollofOrder.objects.filter(jollof_flash=flash).filter(flash_status=3)
         if check_picked_up.count() > 0:
             msg = 'Sorry, you need to deliver the order you just picked up before picking up another.'
             self.text_message(fbid, msg)
@@ -699,7 +699,7 @@ class Deliver(object):
             msg = 'You have already picked up this order. Go forth and deliver it!'
             self.text_message(fbid, msg)
             return
-        check_picked_up = DelicacyOrder.objects.filter(flash=flash).filter(flash_status=3)
+        check_picked_up = DelicacyOrder.objects.filter(delicacy_flash=flash).filter(flash_status=3)
         if check_picked_up.count() > 0:
             msg = 'Sorry, you need to deliver the order you just picked up before picking up another.'
             self.text_message(fbid, msg)
