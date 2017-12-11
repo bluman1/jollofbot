@@ -11,6 +11,8 @@ class Sell(object):
 
     def __init__(self):
         self.SELLER_ACCESS_TOKEN = os.environ.get('SELLER_ACCESS_TOKEN')
+        self.DELIVER_ACCESS_TOKEN = os.environ.get('DELIVER_ACCESS_TOKEN')
+        self.BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
         self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
         self.NEAREST_KM = os.environ.get('NEAREST_KM')
 
