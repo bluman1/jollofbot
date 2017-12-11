@@ -259,7 +259,7 @@ def buyer_webhook(request):
                                         return HttpResponse()
                                     else:
                                         msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
-                                        text_message(fbid, msg)
+                                        buy.text_message(fbid, msg)
                                         buyer.current_state = 'DEFAULT'
                                         buyer.save()
                                         buy.alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
@@ -283,7 +283,7 @@ def buyer_webhook(request):
                                     buyer.save()
                             else:
                                 temp_payload = payload
-                                generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS']
+                                generic_payloads = ['ORDER_JOLLOF', 'VIEW_DELICACY_SELLERS', 'JOLLOF_QUANTITY']
                                 for generic in generic_payloads:
                                     if generic in payload:
                                         payload = generic
@@ -301,7 +301,7 @@ def buyer_webhook(request):
                                             return HttpResponse()
                                         else:
                                             msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
-                                            text_message(fbid, msg)
+                                            buy.text_message(fbid, msg)
                                             buyer.current_state = 'DEFAULT'
                                             buyer.save()
                                             buy.alert_me(fbid, 'Mixed up. Can not find the next state out of the generic states for current_state: ' + current_state + '. payload: ' + payload)
@@ -317,7 +317,7 @@ def buyer_webhook(request):
                                     return HttpResponse()
                                 else:
                                     msg = 'Sorry, {{user_first_name}}. Please try saying jollof!'
-                                    text_message(fbid, msg)
+                                    buy.text_message(fbid, msg)
                                     buyer.current_state = 'DEFAULT'
                                     buyer.save()
                                     buy.alert_me(fbid, 'Mixed up. Can not find the next state for current_state: ' + current_state + '. payload: ' + payload)
