@@ -443,9 +443,15 @@ class Sell(object):
                     seller.current_state = 'DEFAULT'
                     seller.save()
                     return
+                if jollof_order.flash_status != 3:
+                    msg = 'The Flash must mark this order as Picked Up first before you can complete it.'
+                    self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
+                    return
                 jollof_order.status = 4
                 jollof_order.save()
-                msg = seller.restaurant + ' just marked your delivery as completed! I hope you are enjoying your Jollof :D'
+                msg = seller.restaurant + ' just marked your delivery as completed! Sit tight. The Flash will be there soon :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
@@ -821,9 +827,15 @@ class Sell(object):
                     seller.current_state = 'DEFAULT'
                     seller.save()
                     return
+                if delicacy_order.flash_status != 3:
+                    msg = 'The Flash must mark this order as Picked Up first before you can complete it.'
+                    self.text_message(fbid, msg)
+                    seller.current_state = 'DEFAULT'
+                    seller.save()
+                    return
                 delicacy_order.status = 4
                 delicacy_order.save()
-                msg = seller.restaurant + ' just marked your delivery as completed! I hope you are enjoying your ' + delicacy.name + ' :D'
+                msg = seller.restaurant + ' just marked your delivery as completed!  Sit tight. The Flash will be there soon :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
