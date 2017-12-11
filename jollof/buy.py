@@ -558,7 +558,7 @@ class Buy(object):
             }
             }
             '''
-            data = data.replace('USER_ID', seller.fbid)
+            data = data.replace('USER_ID', buyer.fbid)
             data = data.replace('JID', str(jollof_id))
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
