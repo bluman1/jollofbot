@@ -496,7 +496,7 @@ class Buy(object):
             # reconfirm the distance between the buyer and the seller here first.
             pprint(payload)
             jollof_id = int(payload[16:])
-            jollof_data = jollof_id.split('_')
+            jollof_data = payload[16:].split('_')
             if len(jollof_data) == 2:
                 pprint('Qty sent. Ordering Jollof Now')
                 self.order_jollof(fbid, payload)
