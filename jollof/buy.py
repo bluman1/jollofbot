@@ -522,7 +522,7 @@ class Buy(object):
                 "id":"USER_ID"
             },
             "message":{
-                "text": "So how much of it should I get for you?",
+                "text": "So, how much of it should I get for you?",
                 "quick_replies":[
                 {
                     "content_type":"text",
@@ -574,7 +574,7 @@ class Buy(object):
             self.cancel_action(fbid, payload)
             return
         elif 'JOLLOF_QUANTITY' in payload:
-            jollof_id_qty = int(payload[16:])
+            jollof_id_qty = payload[16:]
             jollof_data = jollof_id_qty.split('_')
             jollof_id = int(jollof_data[0])
             jollof_quantity = int(jollof_data[1])

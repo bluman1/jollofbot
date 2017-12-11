@@ -223,7 +223,7 @@ class Sell(object):
                     return
                 jollof_order.status = 1
                 jollof_order.save()
-                msg = 'Great news! ' + seller.restaurant + ' has accepted your order and they are on their way to deliver it to you! You will get a phone call from them once they arrive. Remember your order code is ' + jollof_order.code + ' :D'
+                msg = 'Great news! ' + seller.restaurant + ' has accepted your order and it has been broadcasted to The Flash. I will let you know once they have picked it up. Remember your order code is ' + jollof_order.code + ' :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
