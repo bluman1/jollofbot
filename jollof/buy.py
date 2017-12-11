@@ -511,6 +511,12 @@ class Buy(object):
                 self.text_message(fbid, msg)
                 return
             # Ask for quantity here
+            headers = {
+                'Content-Type': 'application/json; charset=utf-8',
+            }
+            params = (
+                ('access_token', os.environ.get('BUYER_ACCESS_TOKEN')),
+            )
             data = '''{
             "recipient":{
                 "id":"USER_ID"
