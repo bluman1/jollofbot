@@ -124,7 +124,7 @@ def buyer_webhook(request):
                                 next_state_status = is_buyer_next_state(qr_payload, qr_payload)
                                 if next_state_status:
                                     try:
-                                        buyer_payloads[payload](fbid, temp_payload)
+                                        buyer_payloads[qr_payload](fbid, temp_payload)
                                         return HttpResponse()
                                     except Exception as e:
                                         buyer.current_state = 'DEFAULT'
