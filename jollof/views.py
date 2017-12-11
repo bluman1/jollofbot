@@ -106,6 +106,7 @@ def buyer_webhook(request):
                     buyer.profile.user_type = 'b'
                     buyer.profile.fbid = fbid
                     buyer.save()
+                    buyer = Profile.objects.get(fbid=fbid)
                     pprint('New User')
                     buy.alert_me(fbid, 1)
                 if 'message' in message:
@@ -172,7 +173,7 @@ def buyer_webhook(request):
                                 buy.text_message(fbid, msg)
                                 buyer.current_state = 'DEFAULT'
                                 buyer.save()                    
-                                buy.alert_me(fbid, '\nID: ' + str(buyer.pk) + '. Name: ' + buyer.first_name + ' ' + buyer.last_name + ' Chat Not Initiated. Text: ' + str(received_text) + '.')
+                                buy.alert_me(fbid, '\nID: ' + str(buyer.pk) + '. Name: ' + buyer.user.first_name + ' ' + buyer.user.last_name + ' Chat Not Initiated. Text: ' + str(received_text) + '.')
                                 return HttpResponse()
                         elif current_state == 'TALK_TO_JOLLOF':
                             print('Not default  State: ' + current_state)
@@ -181,7 +182,7 @@ def buyer_webhook(request):
                             print('Not default  State: ' + current_state)
                             buy.request_phone(fbid, received_text)
                         else:
-                            buy.alert_me(fbid, '\nID: ' + str(buyer.pk) + '. Name: ' + buyer.first_name + ' ' + buyer.last_name + ' Empty State Msg. Text: ' + str(received_text) + '.')
+                            buy.alert_me(fbid, '\nID: ' + str(buyer.pk) + '. Name: ' + buyer.user.first_name + ' ' + buyer.user.last_name + ' Empty State Msg. Text: ' + str(received_text) + '.')
                             buy.text_message(fbid, 'I am but the greatest jollof in the world.')
                             buyer.current_state = 'DEFAULT'
                             buyer.save()

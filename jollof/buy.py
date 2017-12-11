@@ -553,7 +553,7 @@ class Buy(object):
             # Buyer can cancel anytime before the order is accepted.
             msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. Your order code is ' + jollof_order.code
             self.text_message(fbid, msg)
-            msg ='If the restaurant have not accepted your order yet, you can send cancel to... well, cancel the order.'
+            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             #Alert me of the order made here.
             buyer = Profile.objects.get(fbid=fbid)
@@ -854,7 +854,7 @@ class Buy(object):
             # Buyer can cancel anytime before the order is accepted.
             msg = 'Great {{user_first_name}}, I have ordered the sumptuous N'+str(delicacy.price)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
             self.text_message(fbid, msg)
-            msg ='If the restaurant have not accepted your order yet, you can send cancel to... well, cancel the order.'
+            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
             # Alert me of the order made here.
             buyer = Profile.objects.get(fbid=fbid)

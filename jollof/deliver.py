@@ -382,12 +382,12 @@ class Deliver(object):
         flash = Profile.objects.get(fbid=fbid)
         jollof_order_id = int(payload[22:])
         jollof_order = JollofOrder.objects.get(pk=jollof_order_id)
-        if jollof_order.flash_status != 0:
-            msg = 'Sorry, another Flash got to this order before you did. You gotta be faster next time!'
-            self.text_message(fbid, msg)
-            return
         if jollof_order.flash_status == 1:
             msg = 'You have already accepted this order. Go forth and pick it up!'
+            self.text_message(fbid, msg)
+            return
+        if jollof_order.flash_status != 0:
+            msg = 'Sorry, another Flash got to this order before you did. You gotta be faster next time!'
             self.text_message(fbid, msg)
             return
         check_accepted = JollofOrder.objects.filter(jollof_flash=flash).filter(flash_status=1)
@@ -449,7 +449,7 @@ class Deliver(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey there! A Flash has accepted to deliver ' + jollof_order.jollof_buyer.user.first_name + '\'s order of ' + jollof_order.jollof.description + ' with order code ' + jollof_order.code +'.'
+        msg = 'Hey there! The Flash has accepted to deliver ' + jollof_order.jollof_buyer.user.first_name + '\'s order of ' + jollof_order.jollof.description + ' with order code ' + jollof_order.code +'.'
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
         msg = "Our Flash's name is " + flash.user.first_name + " " + flash.user.last_name + ". Remember to confirm the order code with him before handing over the package."
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
@@ -463,12 +463,12 @@ class Deliver(object):
         flash = Profile.objects.get(fbid=fbid)
         delicacy_order_id = int(payload[24:])
         delicacy_order = DelicacyOrder.objects.get(pk=jollof_order_id)
-        if delicacy_order.flash_status != 0:
-            msg = 'Sorry, another Flash got to this order before you did. You gotta be faster next time!'
-            self.text_message(fbid, msg)
-            return
         if delicacy_order.flash_status == 1:
             msg = 'You have already accepted this order. Go forth and pick it up!'
+            self.text_message(fbid, msg)
+            return
+        if delicacy_order.flash_status != 0:
+            msg = 'Sorry, another Flash got to this order before you did. You gotta be faster next time!'
             self.text_message(fbid, msg)
             return
         check_accepted = DelicacyOrder.objects.filter(delicacy_flash=flash).filter(flash_status=1)
@@ -636,7 +636,7 @@ class Deliver(object):
             msg = 'Sorry, you need to deliver the order you just picked up before picking up another.'
             self.text_message(fbid, msg)
             return
-        directions_to_buyer = self.get_directions(flash.latitude, flash.longitude, jollof_order.jollof_buyer.latitude, jollof_order.jollof_buyer.longitude)
+        directions_to_buyer = self.get_directions(jollof_order.jollof_seller.latitude, jollof_order.jollof_seller.longitude, jollof_order.jollof_buyer.latitude, jollof_order.jollof_buyer.longitude)
         jollof_order.flash_status = 3
         jollof_order.save()
         msg = 'Great, now to deliver this order. Be swift, Be Flash!'
@@ -683,10 +683,10 @@ class Deliver(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey hey! Thank you for the prompt service. Flash has gone to deliver the beauty you prepared.'
+        msg = 'Hey hey! Thank you for the prompt service. The Flash has gone to deliver the beauty you prepared.'
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
         pprint('Notified Restaurant')
-        msg = 'Hey hey! Flash has picked up your order and he is on his way to you right now! Be prepared...'
+        msg = 'Hey hey! The Flash has picked up your order and he is on his way to you right now! Be prepared...'
         self.text_buyer_message(jollof_order.jollof_buyer.fbid, msg)
         pprint('Notified Buyer')
         return
@@ -704,7 +704,7 @@ class Deliver(object):
             msg = 'Sorry, you need to deliver the order you just picked up before picking up another.'
             self.text_message(fbid, msg)
             return
-        directions_to_buyer = self.get_directions(flash.latitude, flash.longitude, delicacy_order.delicacy_buyer.latitude, delicacy_order.delicacy_buyer.longitude)
+        directions_to_buyer = self.get_directions(delicacy_order.delicacy_seller.latitude, delicacy_order.delicacy_seller.longitude, delicacy_order.delicacy_buyer.latitude, delicacy_order.delicacy_buyer.longitude)
         delicacy_order.flash_status = 3
         delicacy_order.save()
         msg = 'Great, now to deliver this order. Be swift, Be Flash!'
@@ -751,10 +751,10 @@ class Deliver(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey hey! Thank you for the prompt service. Flash has gone to deliver the beauty you prepared.'
+        msg = 'Hey hey! Thank you for the prompt service. The Flash has gone to deliver the beauty you prepared.'
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
         pprint('Notified Restaurant')
-        msg = 'Hey hey! Flash has picked up your order and he is on his way to you right now! Be prepared...'
+        msg = 'Hey hey! The Flash has picked up your order and he is on his way to you right now! Be prepared...'
         self.text_buyer_message(delicacy_order.delicacy_buyer.fbid, msg)
         pprint('Notified Buyer')
         return
@@ -851,9 +851,9 @@ class Deliver(object):
             return
         jollof_order.flash_status = 4
         jollof_order.save()
-        msg = 'You were swift, you are Flash ⚡'
+        msg = 'You were swift, you are The Flash ⚡'
         self.text_message(fbid, msg)
-        msg = 'Touch down! I hope you enjoy the delectable meal you ordered. What do you think of ther service?'
+        msg = 'Touch down! I hope you enjoy the delectable meal you ordered. What do you think of the service?'
         self.text_buyer_message(jollof_order.jollof_buyer.fbid, msg)
         pprint('Notified Buyer')
         return
@@ -868,9 +868,9 @@ class Deliver(object):
             return
         delicacy_order.flash_status = 4
         delicacy_order.save()
-        msg = 'You were swift, you are Flash ⚡'
+        msg = 'You were swift, you are The Flash ⚡'
         self.text_message(fbid, msg)
-        msg = 'Touch down! I hope you enjoy the delectable meal you ordered. What do you think of ther service?'
+        msg = 'Touch down! I hope you enjoy the delectable meal you ordered. What do you think of the service?'
         self.text_buyer_message(jollof_order.jollof_buyer.fbid, msg)
         pprint('Notified Buyer')
         return
