@@ -348,7 +348,7 @@ class Buy(object):
                                 pass
                             generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price)
                             generic_subtitle = seller_jollof.description
-                            order_payload = 'ORDER_JOLLOF_' + str(seller_jollof.pk)
+                            order_payload = 'JOLLOF_QUANTITY_' + str(seller_jollof.pk)
                             reservation_payload = 'JOLLOF_RESERVATION_' + str(seller_jollof.pk)
                             generic_elements += '{"title":"'+str(generic_title)+'","image_url":"'+str(img_link)+'","subtitle":"'+str(generic_subtitle)+'.","buttons":[{"type":"postback","title":"Order for Delivery 🚚","payload":"'+str(order_payload)+'"},{"type":"postback","payload":"'+str(reservation_payload)+'","title":"Make Reservation🍽"}]},'      
                 if places_found:
@@ -488,10 +488,19 @@ class Buy(object):
             buyer.save()
 
     
-    def order_jollof(self, fbid, payload):
-        if 'ORDER_JOLLOF' in payload:
+    def get_jollof_quantity(self, fbid, payload):
+        if payload == 'CANCELLED':
+            self.cancel_action(fbid, payload)
+            return
+        elif 'JOLLOF_QUANTITY' in payload:
             # reconfirm the distance between the buyer and the seller here first.
-            jollof_id = int(payload[13:])
+            pprint(payload)
+            jollof_id = int(payload[16:])
+            jollof_data = jollof_id.split('_')
+            if len(jollof_data) == 2:
+                pprint('Qty sent. Ordering Jollof Now')
+                self.order_jollof(fbid, payload)
+                return
             jollof = Jollof.objects.get(pk=jollof_id)
             seller = Profile.objects.get(pk=int(jollof.seller.pk))
             buyer = Profile.objects.get(fbid=fbid)
@@ -501,9 +510,74 @@ class Buy(object):
                 msg = 'Sorry {{user_first_name}}, you are no longer near ' + seller.restaurant + '. Say jollof! to find new places near you. 👍'
                 self.text_message(fbid, msg)
                 return
+            # Ask for quantity here
+            data = '''{
+            "recipient":{
+                "id":"USER_ID"
+            },
+            "message":{
+                "text": "So how much of it should I get for you?",
+                "quick_replies":[
+                {
+                    "content_type":"text",
+                    "title":"1",
+                    "payload":"JOLLOF_QUANTITY_JID_1"
+                },
+                {
+                    "content_type":"text",
+                    "title":"2",
+                    "payload":"JOLLOF_QUANTITY_JID_2"
+                },
+                {
+                    "content_type":"text",
+                    "title":"3",
+                    "payload":"JOLLOF_QUANTITY_JID_3"
+                },
+                {
+                    "content_type":"text",
+                    "title":"4",
+                    "payload":"JOLLOF_QUANTITY_JID_4"
+                },
+                {
+                    "content_type":"text",
+                    "title":"5",
+                    "payload":"JOLLOF_QUANTITY_JID_5"
+                },
+                {
+                    "content_type":"text",
+                    "title":"Cancel",
+                    "payload":"CANCELLED"
+                }
+                ]
+            }
+            }
+            '''
+            data = data.replace('USER_ID', seller.fbid)
+            data = data.replace('JID', str(jollof_id))
+            pprint(str(data))
+            data = json.dumps(json.loads(data)).encode('utf-8')
+            response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+            buyer = Profile.objects.get(fbid=fbid)
+            buyer.current_state = 'JOLLOF_QUANTITY'
+            buyer.save()
+            return
+
+
+    def order_jollof(self, fbid, payload):
+        if payload == 'CANCELLED':
+            self.cancel_action(fbid, payload)
+            return
+        elif 'JOLLOF_QUANTITY' in payload:
+            jollof_id_qty = int(payload[16:])
+            jollof_data = jollof_id_qty.split('_')
+            jollof_id = int(jollof_data[0])
+            jollof_quantity = int(jollof_data[1])
+            jollof = Jollof.objects.get(pk=jollof_id)
+            seller = Profile.objects.get(pk=int(jollof.seller.pk))
+            buyer = Profile.objects.get(fbid=fbid)
             # Place order for jollof here
             order_code = self.generate_order_code()
-            jollof_order = JollofOrder(code=order_code, jollof_buyer=buyer, jollof_seller=seller, jollof=jollof, order_type=2)
+            jollof_order = JollofOrder(code=order_code, jollof_buyer=buyer, jollof_seller=seller, quantity=jollof_quantity, jollof=jollof, order_type=2)
             jollof_order.save()
             # and notify the seller.
             msg = 'You have a new jollof delivery order!🎉🎉🎉'
@@ -523,7 +597,7 @@ class Buy(object):
                 "type":"template",
                 "payload":{
                     "template_type":"button",
-                    "text":"Name: FULL_NAME. Order Code: ORDER_CODE. JOLLOF_INFO",
+                    "text":"Name: FULL_NAME. Order Code: ORDER_CODE. Qty: QUANTITY. JOLLOF_INFO",
                     "buttons":[
                     {
                         "type":"postback",
@@ -543,15 +617,16 @@ class Buy(object):
             data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', jollof_order.code)
+            data = data.replace('QUANTITY', str(jollof_quantity))
             data = data.replace('ACCEPT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1')
             data = data.replace('REJECT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2')
-            data = data.replace('JOLLOF_INFO', jollof.description)
+            data = data.replace('JOLLOF_INFO', str(jollof_quantity) + ' plate of ' + jollof.description)
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
             pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
             # Buyer can cancel anytime before the order is accepted.
-            msg = 'Great {{user_first_name}}, I have ordered the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. Your order code is ' + jollof_order.code
+            msg = 'Great {{user_first_name}}, I have ordered ' + str(jollof_quantity) + ' plate of the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. Your order code is ' + jollof_order.code
             self.text_message(fbid, msg)
             msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
             self.text_message(fbid, msg)
@@ -560,6 +635,7 @@ class Buy(object):
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
+            return
 
 
     def get_delicacy_location(self, fbid, payload, location_title=None, location_url=None, location_lat=None, location_long=None):

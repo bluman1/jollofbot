@@ -65,6 +65,7 @@ buyer_payloads = {
     'GET_LOCATION_JOLLOF': buy_payload.get_jollof_location,
     'GET_LOCATION_DELICACY': buy_payload.get_delicacy_location,
     'TALK_TO_JOLLOF': buy_payload.talk_to_jollof,
+    'JOLLOF_QUANTITY': buy_payload.get_jollof_quantity,
     'ORDER_JOLLOF': buy_payload.order_jollof,
     'JOLLOF_RESERVATION': buy_payload.make_jollof_reservation,
     'DELICACY_RESERVATION': buy_payload.make_delicacy_reservation,
@@ -115,20 +116,29 @@ def buyer_webhook(request):
                         qr_payload = message['message']['quick_reply']['payload']
                         buyer = Profile.objects.get(fbid=fbid)
                         current_state = buyer.current_state
-                        next_state_status = is_buyer_next_state(current_state, qr_payload)
-                        if next_state_status:
-                            try:
-                                buyer_payloads[current_state](fbid, qr_payload)
-                            except Exception as e:
-                                print(str(e))
-                                buy.alert_me(fbid, 'Lost state for QR. Current status: ' + current_state + '. QR: ' + qr_payload)
-                        else:
-                            msg = 'I didn\'t quite get that, {{user_first_name}}. Say Jollof!'
-                            buy.text_message(fbid, msg)
-                            buyer.current_state = 'DEFAULT'
-                            buyer.save()
-                            buy.alert_me(fbid, 'Couldn\'t find the next state for the current_state. QR received.')
-                        return HttpResponse()
+                        temp_payload = qr_payload
+                        generic_payloads = ['CANCELLED', 'JOLLOF_QUANTITY']
+                        for generic in generic_payloads:
+                            if generic in qr_payload:
+                                qr_payload = generic
+                                next_state_status = is_buyer_next_state(qr_payload, qr_payload)
+                                if next_state_status:
+                                    try:
+                                        buyer_payloads[payload](fbid, temp_payload)
+                                        return HttpResponse()
+                                    except Exception as e:
+                                        buyer.current_state = 'DEFAULT'
+                                        buyer.save()
+                                        print('Exception\n' + str(e))
+                                        buy.alert_me(fbid, 'Lost state for QR. Current status: ' + current_state + '. QR: ' + qr_payload)
+                                    return HttpResponse()
+                                else:
+                                    msg = 'Sorry, {{user_first_name}}. Please try saying jollof!.'
+                                    text_message(fbid, msg)
+                                    buyer.current_state = 'DEFAULT'
+                                    buyer.save()
+                                    buy.alert_me(fbid, 'Couldn\'t find the next state for the current_state. QR received.')
+                                    return HttpResponse()
                     elif 'text' in message['message']:
                         print('Text Message Recieved')
                         random_greeting = ['hello', 'hi', 'hey', 'what\'s up?','what\'s up', 'wasap']
@@ -232,7 +242,7 @@ def buyer_webhook(request):
                         current_state = buyer.current_state
                         if current_state == 'DEFAULT':
                             temp_payload = payload
-                            generic_payloads = ['ORDER_JOLLOF', 'ORDER_DELICACY', 'VIEW_DELICACY_SELLERS', 'JOLLOF_RESERVATION', 'DELICACY_RESERVATION']
+                            generic_payloads = ['ORDER_JOLLOF', 'ORDER_DELICACY', 'VIEW_DELICACY_SELLERS', 'JOLLOF_RESERVATION', 'DELICACY_RESERVATION', 'JOLLOF_QUANTITY']
                             for generic in generic_payloads:
                                 if generic in payload:
                                     payload = generic
