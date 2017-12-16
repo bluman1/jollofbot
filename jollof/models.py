@@ -106,6 +106,7 @@ class JollofOrder(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     order_type = models.IntegerField(default=1)  # 1 = Reservation 2 = Delivery
+    paid_status = models.BooleanField(default=False)
 
     def __str__(self):
         return self.code + ' ' + 'Reservation' if self.order_type == 1 else 'Delivery'
@@ -150,6 +151,7 @@ class DelicacyOrder(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     order_type = models.IntegerField(default=1)  # 1 = Reservation 2 = Delivery
+    paid_status = models.BooleanField(default=False)
 
     def __str__(self):
         return self.code + ' ' + 'Reservation' if self.order_type == 1 else 'Delivery'

@@ -3,6 +3,7 @@ import re
 import requests
 import json
 import random
+import hashlib
 from pprint import pprint
 import googlemaps
 from django.contrib.auth import authenticate, login, logout
@@ -41,6 +42,149 @@ DELIVER_CHALLENGE = os.environ.get('DELIVER_CHALLENGE')
 def show_landing(request):
     if request.method == 'GET':
         return render(request, 'bot.html')
+
+
+def pay_now(request):
+    if request.method == 'GET':
+        code = request.GET.get('code', '')
+        pprint('Code: ' + code)
+        if code:
+            buyer_object = Buy()
+            try:
+                jollof_order = JollofOrder.objects.get(code=code)
+                pprint(code + ' is a Jollof Order.')
+                if jollof_order.paid_status:
+                    # This order has been paid for.
+                    msg = 'This order has been paid for. Enjoy your meal :)'
+                    buyer_object.text_message(jollof_order.jollof_buyer.fbid, msg)
+                    c = {'already_paid': True}
+                    return render(request, 'pay_now.html', c)
+                get_paid = {
+                    "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
+                    "amount": int(jollof_order.jollof.price + 100),
+                    "payment_method": "both",
+                    "custom_description": "Pay for " + jollof_order.jollof.description,
+                    "custom_logo": "",
+                    "custom_title": "JollofBot",
+                    "country": "NG",
+                    "currency": "NGN",
+                    "customer_firstname": jollof_order.jollof_buyer.first_name,
+                    "customer_lastname": jollof_order.jollof_buyer.last_name,
+                    "customer_phone": jollof_order.jollof_buyer.phone_number,
+                    "txref": code
+                }
+                hash_payload = ''
+                for key in sorted(get_paid.iterkeys()):
+                    hash_payload += get_paid[key]
+                hash_payload += os.environ.get('TEST_RAVE_SECRET_KEY')
+                integrity_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
+                get_paid['integrity_hash'] = integrity_hash
+                get_paid['process'] = True
+                get_paid['code'] = code
+                pprint('get_paid: ' + str(get_paid))
+                return response(request, 'pay_now.html', get_paid)
+            except JollofOrder.DoesNotExist:
+                try:
+                    delicacy_order = DelicacyOrder.objects.get(code=code)
+                    pprint(code + ' is a Delicacy Order.')
+                    if delicacy_order.paid_status:
+                        # This order has been paid for.
+                        msg = 'This order has been paid for. Enjoy your meal :)'
+                        buyer_object.text_message(delicacy_order.delicacy_buyer.fbid, msg)
+                        c = {'already_paid': True}
+                        return render(request, 'pay_now.html', c)
+                    get_paid = {
+                        "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
+                        "amount": int(delicacy_order.delicacy.price + 100),
+                        "payment_method": "both",
+                        "custom_description": "Pay for " + delicacy_order.delicacy.description,
+                        "custom_logo": "",
+                        "custom_title": "JollofBot",
+                        "country": "NG",
+                        "currency": "NGN",
+                        "customer_firstname": delicacy_order.delicacy_buyer.first_name,
+                        "customer_lastname": delicacy_order.delicacy_buyer.last_name,
+                        "customer_phone": delicacy_order.delicacy_buyer.phone_number,
+                        "txref": code
+                    }
+                    hash_payload = ''
+                    for key in sorted(get_paid.iterkeys()):
+                        hash_payload += get_paid[key]
+                    hash_payload += os.environ.get('TEST_RAVE_SECRET_KEY')
+                    integrity_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
+                    get_paid['integrity_hash'] = integrity_hash
+                    get_paid['process'] = True
+                    get_paid['code'] = code
+                    pprint('get_paid: ' + str(get_paid))
+                    return response(request, 'pay_now.html', get_paid)
+                except DelicacyOrder.DoesNotExist:
+                    pprint(code + ' does not exist.')
+                    c = {'wrong_code': True}
+                    return render(request, 'pay_now.html', c)
+
+
+def thank_you(request):
+        if request.method == 'GET':
+            code = request.GET.get('code', '')
+            flwref = request.GET.get('flwref', '')
+            #verify flw ref first
+            if code:
+                buyer_object = Buy()
+                try:
+                    jollof_order = JollofOrder.objects.get(code=code)
+                    jollof_order.paid_status = True
+                    jollof_order.save()
+                    msg = 'Yayyy! Your payment was successful.'
+                    buyer_object.text_message(jollof_order.delicacy_buyer.fbid, msg)
+                    buyer_object.notify_jollof_seller(code)
+                    return HttpResponse()
+                except JollofOrder.DoesNotExist:
+                    try:
+                        delicacy_order = DelicacyOrder.objects.get(code=code)
+                        delicacy_order.paid_status = True
+                        delicacy_order.save()
+                        msg = 'Yayyy! Your payment was successful.'
+                        buyer_object.text_message(delicacy_order.delicacy_buyer.fbid, msg)
+                        buyer_object.notify_delicacy_seller(code)
+                        return HttpResponse()
+                    except DelicacyOrder.DoesNotExist:
+                        pprint('Thank you code does not exist, ' + code)
+                        return HttpResponse()
+            else:
+                pprint('No code passed to thank you')
+                return HttpResponse()
+        
+
+
+
+def payment_failed(request):
+    if request.method == 'GET':
+            code = request.GET.get('code', '')
+            flwref = request.GET.get('flwref', '')
+            #verify flw ref first
+            if code:
+                buyer_object = Buy()
+                try:
+                    jollof_order = JollofOrder.objects.get(code=code)
+                    msg = "I'm sorry, but your payment failed. Please try again."
+                    buyer_object.text_message(jollof_order.delicacy_buyer.fbid, msg)
+                    buyer_object.notify_jollof_seller(code)
+                    return HttpResponse()
+                except JollofOrder.DoesNotExist:
+                    try:
+                        delicacy_order = DelicacyOrder.objects.get(code=code)
+                        delicacy_order.paid_status = True
+                        delicacy_order.save()
+                        msg = "I'm sorry, but your payment failed. Please try again."
+                        buyer_object.text_message(delicacy_order.delicacy_buyer.fbid, msg)
+                        buyer_object.notify_delicacy_seller(code)
+                        return HttpResponse()
+                    except DelicacyOrder.DoesNotExist:
+                        pprint('Failed code does not exist, ' + code)
+                        return HttpResponse()
+            else:
+                pprint('No code passed to Failed')
+                return HttpResponse()
 
 
 @csrf_exempt

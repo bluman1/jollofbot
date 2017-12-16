@@ -21,8 +21,11 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^c0mpl1c4t3d/', admin.site.urls),
     url(r'^bot/$', landbot),
-    url(r'^restore/$', restore_buyers),
     url(r'^f4k3/fl4sh/(?P<flash_name>\w+)/$', create_fake_flash),
+
+    url(r'^pay/$', pay_now),
+    url(r'^thankyou/$', thank_you),
+    url(r'^failed/$', payment_failed),
 
     url(r'^messenger/buyer/?$', buyer_webhook),
     url(r'^messenger/seller/?$', seller_webhook),

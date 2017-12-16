@@ -346,7 +346,7 @@ class Buy(object):
                                 img_link = img_link[:int(img_link.index('?'))]
                             except:
                                 pass
-                            generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price)
+                            generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price + 100)
                             generic_subtitle = seller_jollof.description
                             order_payload = 'JOLLOF_QUANTITY_' + str(seller_jollof.pk)
                             reservation_payload = 'JOLLOF_RESERVATION_' + str(seller_jollof.pk)
@@ -585,9 +585,7 @@ class Buy(object):
             order_code = self.generate_order_code()
             jollof_order = JollofOrder(code=order_code, jollof_buyer=buyer, jollof_seller=seller, quantity=jollof_quantity, jollof=jollof, order_type=2)
             jollof_order.save()
-            # and notify the seller.
-            msg = 'You have a new jollof delivery order!🎉🎉🎉'
-            self.text_seller(seller.fbid, msg)
+            # Ask to pay
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',
             }
@@ -603,45 +601,95 @@ class Buy(object):
                 "type":"template",
                 "payload":{
                     "template_type":"button",
-                    "text":"Name: FULL_NAME. Order Code: ORDER_CODE. Qty: QUANTITY plate. JOLLOF_INFO",
+                    "text":"Order: JOLLOF_INFO Price: NTOPAY",
                     "buttons":[
                     {
-                        "type":"postback",
-                        "title":"Accept Deliv. Order",
-                        "payload":"ACCEPT_ORDER"
-                    },
-                    {
-                        "type":"postback",
-                        "title":"Reject Deliv. Order",
-                        "payload":"REJECT_ORDER"
-                    }
+                        "type":"web_url",
+                        "title":"Pay Now",
+                        "url":"https://jollofbot.herokuapp.com/pay?code=ORDER_CODE",
+                        "webview_height_ratio": "tall",
+                        "messenger_extensions": true, 
+                    }}
                     ]
                 }
                 }
             }
             }'''
-            data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
+            data = data.replace('TOPAY', str(int(jollof.price + 100)) + '.')
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', jollof_order.code)
-            data = data.replace('QUANTITY', str(jollof_quantity))
-            data = data.replace('ACCEPT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1')
-            data = data.replace('REJECT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2')
-            data = data.replace('JOLLOF_INFO', str(jollof_quantity) + ' plate of ' + jollof.description)
+            data = data.replace('JOLLOF_INFO', str(jollof_quantity) + ' plate of ' + jollof.description + ' and your order code is ' + jollof_order.code)
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-            pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
-            # Buyer can cancel anytime before the order is accepted.
-            msg = 'Great {{user_first_name}}, I have ordered ' + str(jollof_quantity) + ' plate of the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. You will get to pay on delivery. Your order code is ' + jollof_order.code
-            self.text_message(fbid, msg)
-            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
-            self.text_message(fbid, msg)
-            #Alert me of the order made here.
             buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
             return
+
+    
+    def notify_jollof_seller(self, code):
+        # notify the seller.
+        jollof_order = JollofOrder.objects.get(code=code)
+        seller = jollof_order.jollof_seller
+        buyer = jollof_order.jollof_buyer
+        msg = 'You have a new jollof delivery order!🎉🎉🎉'
+        self.text_seller(seller.fbid, msg)
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+        }
+        params = (
+            ('access_token', os.environ.get('SELLER_ACCESS_TOKEN')),
+        )
+        data = '''{
+        "recipient":{
+            "id":"USER_ID"
+        },
+        "message":{
+            "attachment":{
+            "type":"template",
+            "payload":{
+                "template_type":"button",
+                "text":"Name: FULL_NAME. Order Code: ORDER_CODE. Qty: QUANTITY. JOLLOF_INFO",
+                "buttons":[
+                {
+                    "type":"postback",
+                    "title":"Accept Deliv. Order",
+                    "payload":"ACCEPT_ORDER"
+                },
+                {
+                    "type":"postback",
+                    "title":"Reject Deliv. Order",
+                    "payload":"REJECT_ORDER"
+                }
+                ]
+            }
+            }
+        }
+        }'''
+        data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
+        data = data.replace('USER_ID', seller.fbid)
+        data = data.replace('ORDER_CODE', jollof_order.code)
+        data = data.replace('QUANTITY', str(jollof_order.quantity))
+        data = data.replace('ACCEPT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1')
+        data = data.replace('REJECT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2')
+        data = data.replace('JOLLOF_INFO', str(jollof_order.quantity) + ' plate of ' + jollof.description)
+        pprint(str(data))
+        data = json.dumps(json.loads(data)).encode('utf-8')
+        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+        pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
+        # Buyer can cancel anytime before the order is accepted.
+        msg = 'I have ordered ' + str(jollof_order.quantity) + ' plate of the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. Your order code is ' + jollof_order.code
+        self.text_message(fbid, msg)
+        # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
+        # self.text_message(fbid, msg)
+        #Alert me of the order made here.
+        buyer = Profile.objects.get(fbid=fbid)
+        buyer.current_state = 'DEFAULT'
+        buyer.has_order = True
+        buyer.save()
+        return
 
 
     def get_delicacy_location(self, fbid, payload, location_title=None, location_url=None, location_lat=None, location_long=None):
@@ -741,7 +789,7 @@ class Buy(object):
                         img_link = img_link[:int(img_link.index('?'))]
                     except:
                         pass
-                    generic_title = str(delicacy.price)
+                    generic_title = seller.restaurant + ' delicacy at N' + str(delicacy.price + 100)
                     generic_subtitle = delicacy.description
                     order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
                     reservation_payload = 'DELICACY_RESERVATION_' + str(delicacy.pk)
@@ -968,9 +1016,7 @@ class Buy(object):
             order_code = self.generate_order_code()
             delicacy_order = DelicacyOrder(code=order_code, delicacy_buyer=buyer, delicacy_seller=seller, quantity=delicacy_quantity, delicacy=delicacy, order_type=2)
             delicacy_order.save()
-            # and notify the seller.
-            msg = 'You have a new delicacy delivery order!🎉🎉🎉'
-            self.text_seller(seller.fbid, msg)
+            # Ask to pay
             headers = {
                 'Content-Type': 'application/json; charset=utf-8',
             }
@@ -986,45 +1032,95 @@ class Buy(object):
                 "type":"template",
                 "payload":{
                     "template_type":"button",
-                    "text":"Name: FULL_NAME. Order Code: ORDER_CODE. Qty: QUANTITY plate. DELICACY_INFO",
+                    "text":"Order: DELICACY_INFO Price: NTOPAY",
                     "buttons":[
                     {
-                        "type":"postback",
-                        "title":"Accept Deliv. Order",
-                        "payload":"ACCEPT_ORDER"
-                    },
-                    {
-                        "type":"postback",
-                        "title":"Reject Deliv. Order",
-                        "payload":"REJECT_ORDER"
-                    }
+                        "type":"web_url",
+                        "title":"Pay Now",
+                        "url":"https://jollofbot.herokuapp.com/pay?code=ORDER_CODE",
+                        "webview_height_ratio": "tall",
+                        "messenger_extensions": true, 
+                    }}
                     ]
                 }
                 }
             }
             }'''
-            data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
+            data = data.replace('TOPAY', str(int(delicacy.price + 100)) + '.')
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', delicacy_order.code)
-            data = data.replace('QUANTITY', str(jollof_quantity))
-            data = data.replace('ACCEPT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1')
-            data = data.replace('REJECT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2')
-            data = data.replace('DELICACY_INFO', delicacy.description)
+            data = data.replace('DELICACY_INFO', str(delicacy_quantity) + ' plate of ' + delicacy.description + ' and your order code is ' + delicacy_order.code)
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
-            pprint(response.json())
-            # Buyer can cancel anytime before the order is accepted.
-            msg = 'Great {{user_first_name}}, I have ordered ' + str(delicacy_quantity) + ' plate of the sumptuous N'+str(delicacy.price)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
-            self.text_message(fbid, msg)
-            msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
-            self.text_message(fbid, msg)
-            # Alert me of the order made here.
             buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
             buyer.save()
+            return
             
+    
+    def notify_delicacy_seller(self, code):
+        # and notify the seller.
+        delicacy_order = DelicacyOrder.objects.get(code=code)
+        seller = delicacy_order.delicacy_seller
+        buyer = delicacy_order.delicacy_buyer
+        msg = 'You have a new delicacy delivery order!🎉🎉🎉'
+        self.text_seller(seller.fbid, msg)
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+        }
+        params = (
+            ('access_token', os.environ.get('SELLER_ACCESS_TOKEN')),
+        )
+        data = '''{
+        "recipient":{
+            "id":"USER_ID"
+        },
+        "message":{
+            "attachment":{
+            "type":"template",
+            "payload":{
+                "template_type":"button",
+                "text":"Name: FULL_NAME. Order Code: ORDER_CODE. Qty: QUANTITY plate. DELICACY_INFO",
+                "buttons":[
+                {
+                    "type":"postback",
+                    "title":"Accept Deliv. Order",
+                    "payload":"ACCEPT_ORDER"
+                },
+                {
+                    "type":"postback",
+                    "title":"Reject Deliv. Order",
+                    "payload":"REJECT_ORDER"
+                }
+                ]
+            }
+            }
+        }
+        }'''
+        data = data.replace('FULL_NAME', buyer.user.first_name + ' ' + buyer.user.last_name)
+        data = data.replace('USER_ID', seller.fbid)
+        data = data.replace('ORDER_CODE', delicacy_order.code)
+        data = data.replace('QUANTITY', str(delicacy_order.quantity))
+        data = data.replace('ACCEPT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1')
+        data = data.replace('REJECT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2')
+        data = data.replace('DELICACY_INFO', delicacy.description)
+        pprint(str(data))
+        data = json.dumps(json.loads(data)).encode('utf-8')
+        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+        pprint(response.json())
+        # Buyer can cancel anytime before the order is accepted.
+        msg = 'I have ordered ' + str(delicacy_order.quantity) + ' plate of the sumptuous N'+str(delicacy.price)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+        self.text_message(fbid, msg)
+        # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
+        # self.text_message(fbid, msg)
+        # Alert me of the order made here.
+        buyer = Profile.objects.get(fbid=fbid)
+        buyer.current_state = 'DEFAULT'
+        buyer.has_order = True
+        buyer.save()
+
 
     def order_status(self, fbid):
         buyer = Profile.objects.get(fbid=fbid)
