@@ -609,7 +609,7 @@ class Buy(object):
                         "url":"https://jollofbot.herokuapp.com/pay?code=ORDER_CODE",
                         "webview_height_ratio": "tall",
                         "messenger_extensions": true, 
-                    }}
+                    }
                     ]
                 }
                 }
@@ -1040,7 +1040,7 @@ class Buy(object):
                         "url":"https://jollofbot.herokuapp.com/pay?code=ORDER_CODE",
                         "webview_height_ratio": "tall",
                         "messenger_extensions": true, 
-                    }}
+                    }
                     ]
                 }
                 }
@@ -1049,7 +1049,7 @@ class Buy(object):
             data = data.replace('TOPAY', str(int((delicacy.price * delicacy_quantity) + 100)) + '.')
             data = data.replace('USER_ID', seller.fbid)
             data = data.replace('ORDER_CODE', delicacy_order.code)
-            data = data.replace('DELICACY_INFO', str(delicacy_quantity) + ' plate of ' + delicacy.description + ' and your order code is ' + delicacy_order.code)
+            data = data.replace('DELICACY_INFO', str(delicacy_quantity) + ' plate of ' + delicacy.description + ' And your order code is ' + delicacy_order.code)
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
