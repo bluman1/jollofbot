@@ -61,7 +61,7 @@ def pay_now(request):
                     return render(request, 'pay_now.html', c)
                 get_paid = {
                     "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
-                    "amount": int(jollof_order.jollof.price + 100),
+                    "amount": int((jollof_order.jollof.price * jollof_order.quantity) + 100),
                     "payment_method": "both",
                     "custom_description": "Pay for " + jollof_order.jollof.description,
                     "custom_logo": "",
@@ -95,7 +95,7 @@ def pay_now(request):
                         return render(request, 'pay_now.html', c)
                     get_paid = {
                         "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
-                        "amount": int(delicacy_order.delicacy.price + 100),
+                        "amount": int((delicacy_order.delicacy.price * delicacy_order.quantity) + 100),
                         "payment_method": "both",
                         "custom_description": "Pay for " + delicacy_order.delicacy.description,
                         "custom_logo": "",
