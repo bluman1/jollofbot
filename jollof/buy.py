@@ -590,7 +590,7 @@ class Buy(object):
                 'Content-Type': 'application/json; charset=utf-8',
             }
             params = (
-                ('access_token', os.environ.get('SELLER_ACCESS_TOKEN')),
+                ('access_token', os.environ.get('BUYER_ACCESS_TOKEN')),
             )
             data = '''{
             "recipient":{
@@ -622,6 +622,7 @@ class Buy(object):
             pprint(str(data))
             data = json.dumps(json.loads(data)).encode('utf-8')
             response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
+            pprint(response)
             buyer = Profile.objects.get(fbid=fbid)
             buyer.current_state = 'DEFAULT'
             buyer.has_order = True
@@ -1021,7 +1022,7 @@ class Buy(object):
                 'Content-Type': 'application/json; charset=utf-8',
             }
             params = (
-                ('access_token', os.environ.get('SELLER_ACCESS_TOKEN')),
+                ('access_token', os.environ.get('BUYER_ACCESS_TOKEN')),
             )
             data = '''{
             "recipient":{
