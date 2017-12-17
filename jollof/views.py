@@ -82,7 +82,7 @@ def pay_now(request):
                 get_paid['process'] = True
                 get_paid['code'] = code
                 pprint('get_paid: ' + str(get_paid))
-                return response(request, 'pay_now.html', get_paid)
+                return render(request, 'pay_now.html', get_paid)
             except JollofOrder.DoesNotExist:
                 try:
                     delicacy_order = DelicacyOrder.objects.get(code=code)
@@ -116,7 +116,7 @@ def pay_now(request):
                     get_paid['process'] = True
                     get_paid['code'] = code
                     pprint('get_paid: ' + str(get_paid))
-                    return response(request, 'pay_now.html', get_paid)
+                    return render(request, 'pay_now.html', get_paid)
                 except DelicacyOrder.DoesNotExist:
                     pprint(code + ' does not exist.')
                     c = {'wrong_code': True}
