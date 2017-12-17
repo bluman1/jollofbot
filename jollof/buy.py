@@ -616,7 +616,7 @@ class Buy(object):
             }
             }'''
             data = data.replace('TOPAY', str(int((jollof.price * jollof_quantity) + 100)) + '.')
-            data = data.replace('USER_ID', seller.fbid)
+            data = data.replace('USER_ID', buyer.fbid)
             data = data.replace('ORDER_CODE', jollof_order.code)
             data = data.replace('JOLLOF_INFO', str(jollof_quantity) + ' plate of ' + jollof.description + ' and your order code is ' + jollof_order.code)
             pprint(str(data))
@@ -1047,7 +1047,7 @@ class Buy(object):
             }
             }'''
             data = data.replace('TOPAY', str(int((delicacy.price * delicacy_quantity) + 100)) + '.')
-            data = data.replace('USER_ID', seller.fbid)
+            data = data.replace('USER_ID', buyer.fbid)
             data = data.replace('ORDER_CODE', delicacy_order.code)
             data = data.replace('DELICACY_INFO', str(delicacy_quantity) + ' plate of ' + delicacy.description + ' And your order code is ' + delicacy_order.code)
             pprint(str(data))
