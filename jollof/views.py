@@ -74,7 +74,7 @@ def pay_now(request):
                     "txref": code
                 }
                 hash_payload = ''
-                for key in sorted(get_paid.iterkeys()):
+                for key in sorted(get_paid.keys()):
                     hash_payload += get_paid[key]
                 hash_payload += os.environ.get('TEST_RAVE_SECRET_KEY')
                 integrity_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
@@ -108,7 +108,7 @@ def pay_now(request):
                         "txref": code
                     }
                     hash_payload = ''
-                    for key in sorted(get_paid.iterkeys()):
+                    for key in sorted(get_paid.keys()):
                         hash_payload += get_paid[key]
                     hash_payload += os.environ.get('TEST_RAVE_SECRET_KEY')
                     integrity_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
