@@ -68,8 +68,8 @@ def pay_now(request):
                     "custom_title": "JollofBot",
                     "country": "NG",
                     "currency": "NGN",
-                    "customer_firstname": jollof_order.jollof_buyer.first_name,
-                    "customer_lastname": jollof_order.jollof_buyer.last_name,
+                    "customer_firstname": jollof_order.jollof_buyer.user.first_name,
+                    "customer_lastname": jollof_order.jollof_buyer.user.last_name,
                     "customer_phone": jollof_order.jollof_buyer.phone_number,
                     "txref": code
                 }
@@ -102,8 +102,8 @@ def pay_now(request):
                         "custom_title": "JollofBot",
                         "country": "NG",
                         "currency": "NGN",
-                        "customer_firstname": delicacy_order.delicacy_buyer.first_name,
-                        "customer_lastname": delicacy_order.delicacy_buyer.last_name,
+                        "customer_firstname": delicacy_order.delicacy_buyer.user.first_name,
+                        "customer_lastname": delicacy_order.delicacy_buyer.user.last_name,
                         "customer_phone": delicacy_order.delicacy_buyer.phone_number,
                         "txref": code
                     }
