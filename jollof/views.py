@@ -75,7 +75,7 @@ def pay_now(request):
                 }
                 hash_payload = ''
                 for key in sorted(get_paid.keys()):
-                    hash_payload += get_paid[key]
+                    hash_payload += str(get_paid[key])
                 hash_payload += os.environ.get('TEST_RAVE_SECRET_KEY')
                 integrity_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
                 get_paid['integrity_hash'] = integrity_hash
@@ -109,7 +109,7 @@ def pay_now(request):
                     }
                     hash_payload = ''
                     for key in sorted(get_paid.keys()):
-                        hash_payload += get_paid[key]
+                        hash_payload += str(get_paid[key])
                     hash_payload += os.environ.get('TEST_RAVE_SECRET_KEY')
                     integrity_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
                     get_paid['integrity_hash'] = integrity_hash
