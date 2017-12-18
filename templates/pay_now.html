@@ -3,13 +3,56 @@
 <head>
     <title>Pay Now - JollofBot</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-    <link href="/static/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/static/home/css/style-theme.css" rel="stylesheet">
-    <link href="/static/home/css/orange-style.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="container" id="ravepay">
+    <div class="weui-flex">
+        {% if wrong %}
+        <div class="weui-flex__item">
+            <div class="weui-msg">
+                <div class="weui-msg__icon-area">
+                    <i class="weui-icon-warn weui-icon_msg"></i>
+                </div>
+                <div class="weui-msg__text-area">
+                    <h2 class="weui-msg__title">Wrong Code</h2>
+                    <p class="weui-msg__desc">This code does not exist.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+        {% elif already_paid %}
+        <div class="weui-flex__item">
+            <div class="weui-msg">
+                <div class="weui-msg__icon-area">
+                    <i class="weui-icon-info weui-icon_msg"></i>
+                </div>
+                <div class="weui-msg__text-area">
+                    <h2 class="weui-msg__title">Already Paid</h2>
+                    <p class="weui-msg__desc">This order has been paid for. Enjoy your meal :)
+                    </p>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+        <div class="weui-flex__item">
+            <form>
+                {% csrf_token %}
+                <button id="submit" class="weui-btn weui-btn_primary">Pay Now</button>
+                <script type="text/javascript" src="http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
+            </form>
+
+        </div>
+        {% endif %}
+        <div class="weui-footer">
+            <p class="weui-footer__text">Copyright © 2017 JollofBot.com</p>
+        </div>
+
+    </div>
+    <!--div class="container" id="ravepay">
         <row>
             <div class="col-md-6 col-md-offset-4">
                 {% if wrong %}
@@ -31,9 +74,9 @@
             </div>
         </row>
 
-    </div>
-    <script type="text/javascript" src="/static/home/js/jquery-2.2.0.min.js"></script>
-    <script type="text/javascript" src="/static/home/js/bootstrap.min.js"></script> {% if process %}
+    </div-->
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script> {% if process %}
 
     <script>
         (function (doc, script, domId) {
@@ -62,6 +105,7 @@
 
                 getpaidSetup({
                     PBFPubKey: PBFKey,
+                    customer_email: "{{customer_email}}",
                     customer_firstname: "{{customer_firstname}}",
                     customer_lastname: "{{customer_lastname}}",
                     custom_description: "{{custom_description}}",
