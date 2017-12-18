@@ -141,7 +141,7 @@ def thank_you(request):
                     jollof_order.paid_status = True
                     jollof_order.save()
                     msg = 'Yayyy! Your payment was successful.'
-                    buyer_object.text_message(jollof_order.delicacy_buyer.fbid, msg)
+                    buyer_object.text_message(jollof_order.jollof_buyer.fbid, msg)
                     buyer_object.notify_jollof_seller(code)
                     return HttpResponse()
                 except JollofOrder.DoesNotExist:
@@ -173,7 +173,7 @@ def payment_failed(request):
                 try:
                     jollof_order = JollofOrder.objects.get(code=code)
                     msg = "I'm sorry, but your payment failed. Please try again."
-                    buyer_object.text_message(jollof_order.delicacy_buyer.fbid, msg)
+                    buyer_object.text_message(jollof_order.jollof_buyer.fbid, msg)
                     buyer_object.notify_jollof_seller(code)
                     return HttpResponse()
                 except JollofOrder.DoesNotExist:

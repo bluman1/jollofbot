@@ -8,8 +8,11 @@
 </head>
 
 <body>
+    <header class='demos-header'>
+        <h1 class="demos-title">Pay Now</h1>
+    </header>
     <div class="weui-flex">
-        {% if wrong %}
+        {% if wrong_code %}
         <div class="weui-flex__item">
             <div class="weui-msg">
                 <div class="weui-msg__icon-area">
@@ -39,9 +42,21 @@
         </div>
         {% else %}
         <div class="weui-flex__item">
+            <div class="weui-msg">
+                <div class="weui-msg__icon-area">
+                    <i class="weui-icon-success weui-icon_msg"></i>
+                </div>
+                <div class="weui-msg__text-area">
+                    <h2 class="weui-msg__title">Pay N{{amount}}</h2>
+                    <p class="weui-msg__desc">{{custom_description}}
+                    </p>
+                </div>
+                <div class="weui-msg__opr-area">
+                    <button id="submit" class="weui-btn weui-btn_primary">Pay Now</button>
+                    <script type="text/javascript" src="http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
+                </div>
+            </div>
 
-            <button id="submit" class="weui-btn weui-btn_primary">Pay Now</button>
-            <script type="text/javascript" src="http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
 
 
         </div>
@@ -51,29 +66,6 @@
     <div class="weui-footer">
         <p class="weui-footer__text">Copyright © 2017 JollofBot.com</p>
     </div>
-    <!--div class="container" id="ravepay">
-        <row>
-            <div class="col-md-6 col-md-offset-4">
-                {% if wrong %}
-                <h3>This code does not exist</h3>
-                {% elif already_paid %}
-                <h3>This order has been paid for. Enjoy your meal :)</h3>
-                {% else %}
-                <form>
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-8">
-                            <button type="button" style="cursor:pointer;" value="Pay Now" id="submit">Pay Now</button>
-                        </div>
-                    </div>
-                    <script type="text/javascript" src="http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
-                    <div class="clearfix"></div>
-                </form>
-                {% endif %}
-            </div>
-        </row>
-
-    </div-->
     <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script> {% if process %}
 
