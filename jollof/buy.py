@@ -675,13 +675,13 @@ class Buy(object):
         data = data.replace('QUANTITY', str(jollof_order.quantity))
         data = data.replace('ACCEPT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_1')
         data = data.replace('REJECT_ORDER', 'JOLLOF_PENDING_DELIVERIES_' + str(jollof_order.pk) + '_2')
-        data = data.replace('JOLLOF_INFO', str(jollof_order.quantity) + ' plate of ' + jollof.description)
+        data = data.replace('JOLLOF_INFO', str(jollof_order.quantity) + ' plate of ' + jollof_order.jollof.description)
         pprint(str(data))
         data = json.dumps(json.loads(data)).encode('utf-8')
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
         # Buyer can cancel anytime before the order is accepted.
-        msg = 'I have ordered ' + str(jollof_order.quantity) + ' plate of the irresistible N'+str(jollof.price)+' Jollof by '+seller.restaurant+' for you. Your order code is ' + jollof_order.code
+        msg = 'I have ordered ' + str(jollof_order.quantity) + ' plate of the irresistible N'+str(jollof_order.jollof.price + 100)+' Jollof Rice by '+seller.restaurant+' for you. Your order code is ' + jollof_order.code
         self.text_message(fbid, msg)
         # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
         # self.text_message(fbid, msg)
@@ -1106,13 +1106,13 @@ class Buy(object):
         data = data.replace('QUANTITY', str(delicacy_order.quantity))
         data = data.replace('ACCEPT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_1')
         data = data.replace('REJECT_ORDER', 'DELICACY_PENDING_DELIVERIES_' + str(delicacy_order.pk) + '_2')
-        data = data.replace('DELICACY_INFO', delicacy.description)
+        data = data.replace('DELICACY_INFO', delicacy_order.delicacy.description)
         pprint(str(data))
         data = json.dumps(json.loads(data)).encode('utf-8')
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
         # Buyer can cancel anytime before the order is accepted.
-        msg = 'I have ordered ' + str(delicacy_order.quantity) + ' plate of the sumptuous N'+str(delicacy.price)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+        msg = 'I have ordered ' + str(delicacy_order.quantity) + ' plate of the sumptuous N'+str(delicacy_order.delicacy.price + 100)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
         self.text_message(fbid, msg)
         # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
         # self.text_message(fbid, msg)
