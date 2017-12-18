@@ -39,11 +39,10 @@
         </div>
         {% else %}
         <div class="weui-flex__item">
-            <form>
-                {% csrf_token %}
-                <button id="submit" class="weui-btn weui-btn_primary">Pay Now</button>
-                <script type="text/javascript" src="http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
-            </form>
+
+            <button id="submit" class="weui-btn weui-btn_primary">Pay Now</button>
+            <script type="text/javascript" src="http://flw-pms-dev.eu-west-1.elasticbeanstalk.com/flwv3-pug/getpaidx/api/flwpbf-inline.js"></script>
+
 
         </div>
         {% endif %}

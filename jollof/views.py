@@ -123,6 +123,10 @@ def pay_now(request):
                     pprint(code + ' does not exist.')
                     c = {'wrong_code': True}
                     return render(request, 'pay_now.html', c)
+        else:
+            pprint(code + ' does not exist.')
+            c = {'wrong_code': True}
+            return render(request, 'pay_now.html', c)
 
 
 def thank_you(request):
