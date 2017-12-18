@@ -63,8 +63,8 @@ def pay_now(request):
                     "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
                     "amount": int((jollof_order.jollof.price * jollof_order.quantity) + 100),
                     "payment_method": "both",
-                    "customer_email": "user@example.com"
                     "custom_description": "Pay for " + jollof_order.jollof.description,
+                    "customer_email": "user@example.com",
                     "custom_logo": "",
                     "custom_title": "JollofBot",
                     "country": "NG",
@@ -99,6 +99,7 @@ def pay_now(request):
                         "amount": int((delicacy_order.delicacy.price * delicacy_order.quantity) + 100),
                         "payment_method": "both",
                         "custom_description": "Pay for " + delicacy_order.delicacy.description,
+                        "customer_email": "user@example.com",
                         "custom_logo": "",
                         "custom_title": "JollofBot",
                         "country": "NG",
