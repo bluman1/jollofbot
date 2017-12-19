@@ -683,7 +683,7 @@ class Deliver(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey hey! Thank you for the prompt service. The Flash has gone to deliver the beauty you prepared.'
+        msg = 'Hey hey! The Flash has gone to deliver the beauty you prepared. You can now mark the order as completed.'
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
         pprint('Notified Restaurant')
         msg = 'Hey hey! The Flash has picked up your order and he is on his way to you right now! Be prepared...'
@@ -751,7 +751,7 @@ class Deliver(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Flash')
         pprint(response.json())
-        msg = 'Hey hey! Thank you for the prompt service. The Flash has gone to deliver the beauty you prepared.'
+        msg = 'Hey hey! The Flash has gone to deliver the beauty you prepared.  You can now mark the order as completed.'
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
         pprint('Notified Restaurant')
         msg = 'Hey hey! The Flash has picked up your order and he is on his way to you right now! Be prepared...'
