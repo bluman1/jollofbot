@@ -4,7 +4,6 @@
     <title>Pay Now - JollofBot</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
-    <!--link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css"-->
 </head>
 
 <body>
@@ -63,30 +62,9 @@
     <div class="weui-footer">
         <p class="weui-footer__text">Copyright © 2017 JollofBot.com</p>
     </div>
-    <!--script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script-->{% if process %}
+    {% if process %}
 
     <script>
-        /*(function (doc, script, domId) {
-            var js, fjs = doc.getElementsByTagName(script)[0];
-            if (doc.getElementById(domId)) {
-                return;
-            }
-            js = doc.createElement(script);
-            js.id = domId;
-            js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'Messenger'));
-        window.extAsyncInit = function () {
-            // the Messenger Extensions JS SDK is done loading
-            MessengerExtensions.getUserID(function success(uids) {
-                // do your stuff here
-                console.log("We are ready");
-            }, function error(err) {
-                // do your stuff here
-                console.log("We failed to load");
-            });
-        };*/
         document.addEventListener("DOMContentLoaded", function (event) {
             document.getElementById("submit").addEventListener("click", function (e) {
                 var PBFKey = "{{PBFPubKey}}";
@@ -119,60 +97,22 @@
                             xhttp.onreadystatechange = function () {
                                 if (this.readyState == 4 && this.status == 200) {
                                     console.log('xhttp thank you 200');
-                                    /*MessengerExtensions.requestCloseBrowser(function success() {
-                                        // webview closed
-                                    }, function error(err) {
-                                        // an error occurred
-                                    });*/
-                                    document.getElementById("pay_div").innerHTML = '<div class="weui - msg">< div class="weui-msg__icon-area" ><i class="weui-icon-info weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Successful!</h2><p class="weui-msg__desc">You have paid for {{custom_description}}. You may close this tab now. Enjoy your meal :)</p></div></div > ';
+                                    document.getElementById("pay_div").innerHTML = '<div class="weui-msg">< div class="weui-msg__icon-area" ><i class="weui-icon-info weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Successful!</h2><p class="weui-msg__desc">You have paid for {{custom_description}} You may close this tab now. Enjoy your meal :)</p></div></div > ';
                                 }
                             };
                             xhttp.open("GET", "/thankyou?code={{code}}&flwref=" + flw_ref, true);
                             xhttp.send();
                             console.log('xhttp thnk you sent');
-                            /*$.ajax({
-                                url: "/thankyou",
-                                data: { "code": "{{code}}", "flwref": flw_ref },
-                                success: function (response) {
-                                    MessengerExtensions.requestCloseBrowser(function success() {
-                                        // webview closed
-                                    }, function error(err) {
-                                        // an error occurred
-                                    });
-                                },
-                                error: function (xhr) {
-                                    //Do Something to handle error
-                                }
-                            });*/
                         } else {
                             // redirect to a failure page.
                             var xhttp = new XMLHttpRequest();
                             xhttp.onreadystatechange = function () {
                                 if (this.readyState == 4 && this.status == 200) {
-                                    /*MessengerExtensions.requestCloseBrowser(function success() {
-                                        // webview closed
-                                    }, function error(err) {
-                                        // an error occurred
-                                    });*/
-                                    document.getElementById("pay_div").innerHTML = '<div class="weui - msg">< div class="weui-msg__icon-area" ><i class="weui-icon-warn weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Failed!</h2><p class="weui-msg__desc">Something went wrong with your payment. Please say Jollof to talk to a customer rep and quote your order code {{code}}</p></div></div > ';
+                                    document.getElementById("pay_div").innerHTML = '<div class="weui-msg">< div class="weui-msg__icon-area" ><i class="weui-icon-warn weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Failed!</h2><p class="weui-msg__desc">Something went wrong with your payment. Please say Jollof to talk to a customer rep and quote your order code {{code}}</p></div></div > ';
                                 }
                             };
                             xhttp.open("GET", "/failed?code={{code}}&flwref=" + flw_ref, true);
                             xhttp.send();
-                            /*$.ajax({
-                                url: "/failed",
-                                data: { "code": "{{code}}", "flwref": flw_ref },
-                                success: function (response) {
-                                    MessengerExtensions.requestCloseBrowser(function success() {
-                                        // webview closed
-                                    }, function error(err) {
-                                        // an error occurred
-                                    });
-                                },
-                                error: function (xhr) {
-                                    //Do Something to handle error
-                                }
-                            });*/
                         }
                     }
                 });
