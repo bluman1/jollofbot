@@ -38,7 +38,7 @@
             </div>
         </div>
         {% else %}
-        <div class="weui-flex__item">
+        <div id="pay_div" class="weui-flex__item">
             <div class="weui-msg">
                 <div class="weui-msg__icon-area">
                     <i class="weui-icon-success weui-icon_msg"></i>
@@ -67,7 +67,7 @@
     <script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script-->{% if process %}
 
     <script>
-        (function (doc, script, domId) {
+        /*(function (doc, script, domId) {
             var js, fjs = doc.getElementsByTagName(script)[0];
             if (doc.getElementById(domId)) {
                 return;
@@ -86,7 +86,7 @@
                 // do your stuff here
                 console.log("We failed to load");
             });
-        };
+        };*/
         document.addEventListener("DOMContentLoaded", function (event) {
             document.getElementById("submit").addEventListener("click", function (e) {
                 var PBFKey = "{{PBFPubKey}}";
@@ -119,15 +119,15 @@
                             xhttp.onreadystatechange = function () {
                                 if (this.readyState == 4 && this.status == 200) {
                                     console.log('xhttp thank you 200');
-                                    MessengerExtensions.requestCloseBrowser(function success() {
+                                    /*MessengerExtensions.requestCloseBrowser(function success() {
                                         // webview closed
                                     }, function error(err) {
                                         // an error occurred
-                                    });
-                                    console.log('xhttp thank you msgext done');
+                                    });*/
+                                    document.getElementById("pay_div").innerHTML = '<div class="weui - msg">< div class="weui-msg__icon-area" ><i class="weui-icon-info weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Successful!</h2><p class="weui-msg__desc">You have paid for {{custom_description}}. You may close this tab now. Enjoy your meal :)</p></div></div > ';
                                 }
                             };
-                            xhttp.open("GET", "/thankyou?code={{code}}&flwref=" + flwref, true);
+                            xhttp.open("GET", "/thankyou?code={{code}}&flwref=" + flw_ref, true);
                             xhttp.send();
                             console.log('xhttp thnk you sent');
                             /*$.ajax({
@@ -149,14 +149,15 @@
                             var xhttp = new XMLHttpRequest();
                             xhttp.onreadystatechange = function () {
                                 if (this.readyState == 4 && this.status == 200) {
-                                    MessengerExtensions.requestCloseBrowser(function success() {
+                                    /*MessengerExtensions.requestCloseBrowser(function success() {
                                         // webview closed
                                     }, function error(err) {
                                         // an error occurred
-                                    });
+                                    });*/
+                                    document.getElementById("pay_div").innerHTML = '<div class="weui - msg">< div class="weui-msg__icon-area" ><i class="weui-icon-warn weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Failed!</h2><p class="weui-msg__desc">Something went wrong with your payment. Please say Jollof to talk to a customer rep and quote your order code {{code}}</p></div></div > ';
                                 }
                             };
-                            xhttp.open("GET", "/failed?code={{code}}&flwref=" + flwref, true);
+                            xhttp.open("GET", "/failed?code={{code}}&flwref=" + flw_ref, true);
                             xhttp.send();
                             /*$.ajax({
                                 url: "/failed",
