@@ -682,11 +682,11 @@ class Buy(object):
         pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
         # Buyer can cancel anytime before the order is accepted.
         msg = 'I have ordered ' + str(jollof_order.quantity) + ' plate of the irresistible N'+str(jollof_order.jollof.price + 100)+' Jollof Rice by '+seller.restaurant+' for you. Your order code is ' + jollof_order.code
-        self.text_message(fbid, msg)
+        self.text_message(buyer.fbid, msg)
         # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
         # self.text_message(fbid, msg)
         #Alert me of the order made here.
-        buyer = Profile.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=buyer.fbid)
         buyer.current_state = 'DEFAULT'
         buyer.has_order = True
         buyer.save()
@@ -1113,11 +1113,11 @@ class Buy(object):
         pprint(response.json())
         # Buyer can cancel anytime before the order is accepted.
         msg = 'I have ordered ' + str(delicacy_order.quantity) + ' plate of the sumptuous N'+str(delicacy_order.delicacy.price + 100)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
-        self.text_message(fbid, msg)
+        self.text_message(buyer.fbid, msg)
         # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
         # self.text_message(fbid, msg)
         # Alert me of the order made here.
-        buyer = Profile.objects.get(fbid=fbid)
+        buyer = Profile.objects.get(fbid=buyer.fbid)
         buyer.current_state = 'DEFAULT'
         buyer.has_order = True
         buyer.save()
