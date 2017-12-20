@@ -4,7 +4,7 @@
     <title>Pay Now - JollofBot</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css">
-    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css">
+    <!--link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.0/css/jquery-weui.min.css"-->
 </head>
 
 <body>
@@ -63,8 +63,8 @@
     <div class="weui-footer">
         <p class="weui-footer__text">Copyright © 2017 JollofBot.com</p>
     </div>
-    <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script> {% if process %}
+    <!--script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-weui/1.2.0/js/jquery-weui.min.js"></script-->{% if process %}
 
     <script>
         (function (doc, script, domId) {
@@ -115,7 +115,22 @@
                             response.tx.chargeResponseCode == "0"
                         ) {
                             // redirect to a success page
-                            $.ajax({
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function () {
+                                if (this.readyState == 4 && this.status == 200) {
+                                    console.log('xhttp thank you 200');
+                                    MessengerExtensions.requestCloseBrowser(function success() {
+                                        // webview closed
+                                    }, function error(err) {
+                                        // an error occurred
+                                    });
+                                    console.log('xhttp thank you msgext done');
+                                }
+                            };
+                            xhttp.open("GET", "/thankyou?code={{code}}&flwref=" + flwref, true);
+                            xhttp.send();
+                            console.log('xhttp thnk you sent');
+                            /*$.ajax({
                                 url: "/thankyou",
                                 data: { "code": "{{code}}", "flwref": flw_ref },
                                 success: function (response) {
@@ -128,10 +143,22 @@
                                 error: function (xhr) {
                                     //Do Something to handle error
                                 }
-                            });
+                            });*/
                         } else {
                             // redirect to a failure page.
-                            $.ajax({
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.onreadystatechange = function () {
+                                if (this.readyState == 4 && this.status == 200) {
+                                    MessengerExtensions.requestCloseBrowser(function success() {
+                                        // webview closed
+                                    }, function error(err) {
+                                        // an error occurred
+                                    });
+                                }
+                            };
+                            xhttp.open("GET", "/failed?code={{code}}&flwref=" + flwref, true);
+                            xhttp.send();
+                            /*$.ajax({
                                 url: "/failed",
                                 data: { "code": "{{code}}", "flwref": flw_ref },
                                 success: function (response) {
@@ -144,7 +171,7 @@
                                 error: function (xhr) {
                                     //Do Something to handle error
                                 }
-                            });
+                            });*/
                         }
                     }
                 });
