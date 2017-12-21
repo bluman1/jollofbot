@@ -97,7 +97,7 @@
                             xhttp.onreadystatechange = function () {
                                 if (this.readyState == 4 && this.status == 200) {
                                     console.log('xhttp thank you 200');
-                                    document.getElementById("pay_div").innerHTML = '<div class="weui-msg">< div class="weui-msg__icon-area" ><i class="weui-icon-info weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Successful!</h2><p class="weui-msg__desc">You have paid for {{custom_description}} You may close this tab now. Enjoy your meal :)</p></div></div > ';
+                                    document.getElementById("pay_div").innerHTML = '<div class="weui-msg">< div class="weui-msg__icon-area"><i class="weui-icon-info weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Successful!</h2><p class="weui-msg__desc">You have paid for {{custom_description}} You may close this tab now. Enjoy your meal :)</p></div></div > ';
                                 }
                             };
                             xhttp.open("GET", "/thankyou?code={{code}}&flwref=" + flw_ref, true);
@@ -108,7 +108,7 @@
                             var xhttp = new XMLHttpRequest();
                             xhttp.onreadystatechange = function () {
                                 if (this.readyState == 4 && this.status == 200) {
-                                    document.getElementById("pay_div").innerHTML = '<div class="weui-msg">< div class="weui-msg__icon-area" ><i class="weui-icon-warn weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Failed!</h2><p class="weui-msg__desc">Something went wrong with your payment. Please say Jollof to talk to a customer rep and quote your order code {{code}}</p></div></div > ';
+                                    document.getElementById("pay_div").innerHTML = '<div class="weui-msg">< div class="weui-msg__icon-area"><i class="weui-icon-warn weui-icon_msg"></i></div ><div class="weui-msg__text-area"><h2 class="weui-msg__title">Payment Failed!</h2><p class="weui-msg__desc">Something went wrong with your payment. Please say Jollof to talk to a customer rep and quote your order code {{code}}</p></div></div > ';
                                 }
                             };
                             xhttp.open("GET", "/failed?code={{code}}&flwref=" + flw_ref, true);

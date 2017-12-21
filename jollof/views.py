@@ -129,39 +129,71 @@ def pay_now(request):
             return render(request, 'pay_now.html', c)
 
 
+def verify_payment(flwref, amount):
+    headers = {
+        'Content-Type': 'application/json; charset=utf-8',
+    }
+    data = '''
+    {
+        "SECKEY": "FLWSECK",
+        "flw_ref": "FLWMOCK",
+        "normalize": "1"
+    }
+    '''
+    data = data.replace('FLWSECK', os.environ.get('TEST_RAVE_SECRET_KEY'))
+    data = data.replace('FLWMOCK', flwref)
+    pprint(str(data))
+    data = json.dumps(json.loads(data)).encode('utf-8')
+    response = requests.post('https://rave-api-v2.herokuapp.com/flwv3-pug/getpaidx/api/verify', headers=headers, data=data)
+    charge_response = response.json()['data']['flwMeta']['chargeResponse']
+    charge_amount = response.json()['data']['amount']
+    charge_currency = response.json()['data']['transaction_currency']
+    if (charge_response == '00' or charge_response == '0') and (charge_amount == amount)  and (charge_currency == 'NGN'):
+        return True
+    else:
+        return False
+
+    
 def thank_you(request):
         if request.method == 'GET':
             code = request.GET.get('code', '')
             flwref = request.GET.get('flwref', '')
-            #verify flw ref first
-            if code:
+            if flwref and code:
                 buyer_object = Buy()
                 try:
                     jollof_order = JollofOrder.objects.get(code=code)
-                    jollof_order.paid_status = True
-                    jollof_order.save()
-                    msg = 'Yayyy! Your payment was successful.'
-                    buyer_object.text_message(jollof_order.jollof_buyer.fbid, msg)
-                    buyer_object.notify_jollof_seller(code)
+                    verified = verify_payment(flwref, jollof_order.jollof.price+100)
+                    if verified:
+                        jollof_order.paid_status = True
+                        jollof_order.save()
+                        msg = 'Yayyy! Your payment was successful.'
+                        buyer_object.text_message(jollof_order.jollof_buyer.fbid, msg)
+                        buyer_object.notify_jollof_seller(code)
+                    else:
+                        msg = 'I am so sorry but I can not verify your payment right now. Please chat with Jollof and quote your order code ' + jollof_order.code
+                        buyer_object.text_message(jollof_order.jollof_buyer.fbid, msg)
                     return HttpResponse()
                 except JollofOrder.DoesNotExist:
                     try:
                         delicacy_order = DelicacyOrder.objects.get(code=code)
-                        delicacy_order.paid_status = True
-                        delicacy_order.save()
-                        msg = 'Yayyy! Your payment was successful.'
-                        buyer_object.text_message(delicacy_order.delicacy_buyer.fbid, msg)
-                        buyer_object.notify_delicacy_seller(code)
+                        verified = verify_payment(flwref, delicacy_order.delicacy.price+100)
+                        if verified:
+                            delicacy_order.paid_status = True
+                            delicacy_order.save()
+                            msg = 'Yayyy! Your payment was successful.'
+                            buyer_object.text_message(delicacy_order.delicacy_buyer.fbid, msg)
+                            buyer_object.notify_delicacy_seller(code)
+                        else:
+                            msg = 'I am so sorry but I can not verify your payment right now. Please chat with Jollof and quote your order code ' + delicacy_order.code
+                            buyer_object.text_message(delicacy_order.delicacy_buyer.fbid, msg)
                         return HttpResponse()
                     except DelicacyOrder.DoesNotExist:
                         pprint('Thank you code does not exist, ' + code)
                         return HttpResponse()
             else:
-                pprint('No code passed to thank you')
+                pprint('No code or flwref passed to thank you')
                 return HttpResponse()
         
-
-
 
 def payment_failed(request):
     if request.method == 'GET':

@@ -607,8 +607,7 @@ class Buy(object):
                         "type":"web_url",
                         "title":"Pay Now",
                         "url":"https://jollofbot.herokuapp.com/pay?code=ORDER_CODE",
-                        "webview_height_ratio": "tall",
-                        "messenger_extensions": true
+                        "webview_height_ratio": "tall"
                     }
                     ]
                 }
@@ -1039,8 +1038,7 @@ class Buy(object):
                         "type":"web_url",
                         "title":"Pay Now",
                         "url":"https://jollofbot.herokuapp.com/pay?code=ORDER_CODE",
-                        "webview_height_ratio": "tall",
-                        "messenger_extensions": true
+                        "webview_height_ratio": "tall"
                     }
                     ]
                 }
