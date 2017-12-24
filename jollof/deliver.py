@@ -685,6 +685,40 @@ class Deliver(object):
         pprint(response.json())
         msg = 'Hey hey! The Flash has gone to deliver the beauty you prepared. You can now mark the order as completed.'
         self.text_seller_message(jollof_order.jollof_seller.fbid, msg)
+        headers = {
+            'Content-Type': 'application/json',
+        }
+        params = (
+            ('access_token', self.SELLER_ACCESS_TOKEN),
+        )
+        data = '''{
+        "recipient":{
+            "id":"USER_ID"
+        },
+        "message":{
+            "attachment":{
+            "type":"template",
+            "payload":{
+                "template_type":"button",
+                "text":"Complete BUYER's Jollof delivery. Order Code: ORDER_CODE",
+                "buttons":[
+                {
+                    "type":"postback",
+                    "title":"Complete Order",
+                    "payload":"COMPLETE_JOLLOF"
+                }
+                ]
+            }
+            }
+        }
+        }'''
+        data = data.replace('BUYER', jollof_order.jollof.description)
+        data = data.replace('USER_ID', jollof_order.jollof_seller.fbid)
+        data = data.replace('ORDER_CODE', jollof_order.code)
+        data = data.replace('COMPLETE_JOLLOF', 'JOLLOF_ACCEPTED_DELIVERIES_' + str(jollof_order.pk) + '_1')
+        data = data.replace('BUYER', jollof_order.jollof_buyer.user.first_name + ' ' + jollof_order.jollof_buyer.user.last_name)
+        pprint(str(data))
+        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Restaurant')
         msg = 'Hey hey! The Flash has picked up your order and he is on his way to you right now! Be prepared...'
         self.text_buyer_message(jollof_order.jollof_buyer.fbid, msg)
@@ -753,6 +787,40 @@ class Deliver(object):
         pprint(response.json())
         msg = 'Hey hey! The Flash has gone to deliver the beauty you prepared.  You can now mark the order as completed.'
         self.text_seller_message(delicacy_order.delicacy_seller.fbid, msg)
+        headers = {
+            'Content-Type': 'application/json',
+        }
+        params = (
+            ('access_token', self.SELLER_ACCESS_TOKEN),
+        )
+        data = '''{
+        "recipient":{
+            "id":"USER_ID"
+        },
+        "message":{
+            "attachment":{
+            "type":"template",
+            "payload":{
+                "template_type":"button",
+                "text":"Complete BUYER's delicacy delivery. Order Code: ORDER_CODE",
+                "buttons":[
+                {
+                    "type":"postback",
+                    "title":"Complete Order",
+                    "payload":"COMPLETE_DELICACY"
+                }
+                ]
+            }
+            }
+        }
+        }'''
+        data = data.replace('BUYER', delicacy_order.delicacy.description)
+        data = data.replace('USER_ID', delicacy_order.delicacy_seller.fbid)
+        data = data.replace('ORDER_CODE', delicacy_order.code)
+        data = data.replace('COMPLETE_DELICACY', 'DELICACY_ACCEPTED_DELIVERIES_' + str(delicacy_order.pk) + '_1')
+        data = data.replace('BUYER', delicacy_order.delicacy_buyer.user.first_name + ' ' + delicacy_order.delicacy_buyer.user.last_name)
+        pprint(str(data))
+        response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Notified Restaurant')
         msg = 'Hey hey! The Flash has picked up your order and he is on his way to you right now! Be prepared...'
         self.text_buyer_message(delicacy_order.delicacy_buyer.fbid, msg)
