@@ -23,7 +23,7 @@ REFERRAL_TYPE_CHOICES = (
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     fbid = models.CharField(max_length=128)
-    gender = models.IntegerField(default=1) # 1 male 2 female
+    gender = models.IntegerField(default=1)  # 1 male 2 female
     phone_number = models.CharField(max_length=128)
     longitude = models.FloatField(default=0.0)
     latitude = models.FloatField(default=0.0)
@@ -43,15 +43,21 @@ class Profile(models.Model):
     restaurant = models.CharField(max_length=128, default='')
     opening_hour = models.IntegerField(default=0)
     closing_hour = models.IntegerField(default=1)
-    start_day = models.IntegerField(default=1) # Monday
-    end_day = models.IntegerField(default=7) # Sunday
+    start_day = models.IntegerField(default=1)  # Monday
+    end_day = models.IntegerField(default=7)  # Sunday
     delivers = models.BooleanField(default=False)
     delivery_price = models.FloatField(default=0.0)
     average_delivery_time = models.IntegerField(default=0)
     logo = models.ImageField(upload_to='logos', default='/default_logo.png')
-    star = models.IntegerField(default=1) #1star,3star,5star, 0star for free trial
+    star = models.IntegerField(default=1)  # 1star,3star,5star, 0star for free trial
+    vendor_balance = models.FloatField(default=0.0)
+    can_withdraw = models.BooleanField(default=False)
+
+    month_orders = models.IntegerField(default=0)
 
     flash_code = models.CharField(max_length=9, default='')
+    flash_balance = models.FloatField(default=0.0)
+    flash_fee = models.FloatField(default=0.0)
     
 
     def get_gender(self):
