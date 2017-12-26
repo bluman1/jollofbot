@@ -453,9 +453,13 @@ class Sell(object):
                 jollof_order.save()
                 msg = seller.restaurant + ' just marked your delivery as completed! Sit tight. The Flash will be there soon :D'
                 self.text_buyer(buyer.fbid, msg)
+                seller.vendor_balance += delicacy_order.delicacy.price
+                seller.month_orders += 1
                 seller.current_state = 'DEFAULT'
                 seller.save()
                 msg = 'You have marked ' + buyer.user.first_name + '\'s Jollof delivery as completed and they have been notified. Sweet!'
+                self.text_message(fbid, msg)
+                msg = 'I have also updated your wallet balance on the dashboard. Keep making money!'
                 self.text_message(fbid, msg)
             elif jollof_action == 2:
                 # seller cancelled order.
@@ -834,12 +838,16 @@ class Sell(object):
                     seller.save()
                     return
                 delicacy_order.status = 4
+                seller.vendor_balance += delicacy_order.delicacy.price
+                seller.month_orders += 1
                 delicacy_order.save()
                 msg = seller.restaurant + ' just marked your delivery as completed!  Sit tight. The Flash will be there soon :D'
                 self.text_buyer(buyer.fbid, msg)
                 seller.current_state = 'DEFAULT'
                 seller.save()
                 msg = 'You have marked ' + buyer.user.first_name + '\'s ' + delicacy.name + ' delivery as completed and they have been notified. Sweet!'
+                self.text_message(fbid, msg)
+                msg = 'I have also updated your wallet balance on the dashboard. Keep making money!'
                 self.text_message(fbid, msg)
             elif delicacy_action == 2:
                 # seller cancelled order.
