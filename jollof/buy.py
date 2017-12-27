@@ -16,6 +16,7 @@ class Buy(object):
         self.BUYER_ACCESS_TOKEN = os.environ.get('BUYER_ACCESS_TOKEN')
         self.BLUMAN_ID = os.environ.get('BLUMAN_ID')
         self.NEAREST_KM = float(os.environ.get('NEAREST_KM'))
+        self.COMMISSION = int(os.environ.get('COMMISSION'))
 
     
     def get_distance(self, coords1, coords2):
@@ -346,7 +347,7 @@ class Buy(object):
                                 img_link = img_link[:int(img_link.index('?'))]
                             except:
                                 pass
-                            generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price + 100)
+                            generic_title = seller.restaurant + ' Jollof at N' + str(seller_jollof.price + self.COMMISSION)
                             generic_subtitle = seller_jollof.description
                             order_payload = 'JOLLOF_QUANTITY_' + str(seller_jollof.pk)
                             reservation_payload = 'JOLLOF_RESERVATION_' + str(seller_jollof.pk)
@@ -614,7 +615,7 @@ class Buy(object):
                 }
             }
             }'''
-            data = data.replace('TOPAY', str(int((jollof.price * jollof_quantity) + 100)) + '.')
+            data = data.replace('TOPAY', str(int((jollof.price * jollof_quantity) + self.COMMISSION)) + '.')
             data = data.replace('USER_ID', buyer.fbid)
             data = data.replace('ORDER_CODE', jollof_order.code)
             data = data.replace('JOLLOF_INFO', str(jollof_quantity) + ' plate of ' + jollof.description + ' and your order code is ' + jollof_order.code)
@@ -680,7 +681,7 @@ class Buy(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint('Jollof Order Sent: ' + str(response.json()['message_id']))
         # Buyer can cancel anytime before the order is accepted.
-        msg = 'I have ordered ' + str(jollof_order.quantity) + ' plate of the irresistible N'+str(jollof_order.jollof.price + 100)+' Jollof Rice by '+seller.restaurant+' for you. Your order code is ' + jollof_order.code
+        msg = 'I have ordered ' + str(jollof_order.quantity) + ' plate of the irresistible N'+str(jollof_order.jollof.price + self.COMMISSION)+' Jollof Rice by '+seller.restaurant+' for you. Your order code is ' + jollof_order.code
         self.text_message(buyer.fbid, msg)
         # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
         # self.text_message(fbid, msg)
@@ -789,7 +790,7 @@ class Buy(object):
                         img_link = img_link[:int(img_link.index('?'))]
                     except:
                         pass
-                    generic_title = seller.restaurant + ' delicacy at N' + str(delicacy.price + 100)
+                    generic_title = seller.restaurant + ' delicacy at N' + str(delicacy.price + self.COMMISSION)
                     generic_subtitle = delicacy.description
                     order_payload = 'ORDER_DELICACY_' + str(delicacy.pk)
                     reservation_payload = 'DELICACY_RESERVATION_' + str(delicacy.pk)
@@ -1045,7 +1046,7 @@ class Buy(object):
                 }
             }
             }'''
-            data = data.replace('TOPAY', str(int((delicacy.price * delicacy_quantity) + 100)) + '.')
+            data = data.replace('TOPAY', str(int((delicacy.price * delicacy_quantity) + self.COMMISSION)) + '.')
             data = data.replace('USER_ID', buyer.fbid)
             data = data.replace('ORDER_CODE', delicacy_order.code)
             data = data.replace('DELICACY_INFO', str(delicacy_quantity) + ' plate of ' + delicacy.description + ' And your order code is ' + delicacy_order.code)
@@ -1110,7 +1111,7 @@ class Buy(object):
         response = requests.post('https://graph.facebook.com/v2.6/me/messages', headers=headers, params=params, data=data)
         pprint(response.json())
         # Buyer can cancel anytime before the order is accepted.
-        msg = 'I have ordered ' + str(delicacy_order.quantity) + ' plate of the sumptuous N'+str(delicacy_order.delicacy.price + 100)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
+        msg = 'I have ordered ' + str(delicacy_order.quantity) + ' plate of the sumptuous N'+str(delicacy_order.delicacy.price + self.COMMISSION)+' '+str(delicacy.name)+' by '+seller.restaurant+' for you. You will get to pay on delivery. You will definitely love this :D'
         self.text_message(buyer.fbid, msg)
         # msg ='If the restaurant has not accepted your order yet, you can send cancel to... well, cancel the order.'
         # self.text_message(fbid, msg)

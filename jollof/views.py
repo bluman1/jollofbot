@@ -37,6 +37,8 @@ BUYER_CHALLENGE = os.environ.get('BUYER_CHALLENGE')
 SELLER_CHALLENGE = os.environ.get('SELLER_CHALLENGE')
 DELIVER_CHALLENGE = os.environ.get('DELIVER_CHALLENGE')
 
+COMMISSION = int(os.environ.get('COMMISSION'))
+
 # Create your views here.
 
 def show_landing(request):
@@ -61,7 +63,7 @@ def pay_now(request):
                     return render(request, 'pay_now.html', c)
                 get_paid = {
                     "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
-                    "amount": int((jollof_order.jollof.price * jollof_order.quantity) + 100),
+                    "amount": int((jollof_order.jollof.price * jollof_order.quantity) + COMMISSION),
                     "payment_method": "both",
                     "custom_description": "Pay for " + str(jollof_order.quantity) + ' plate of ' +  jollof_order.jollof.description,
                     "customer_email": "user@example.com",
@@ -96,7 +98,7 @@ def pay_now(request):
                         return render(request, 'pay_now.html', c)
                     get_paid = {
                         "PBFPubKey": os.environ.get('TEST_RAVE_PUBLIC_KEY'),
-                        "amount": int((delicacy_order.delicacy.price * delicacy_order.quantity) + 100),
+                        "amount": int((delicacy_order.delicacy.price * delicacy_order.quantity) + COMMISSION),
                         "payment_method": "both",
                         "custom_description": "Pay for " + str(delicacy_order.quantity) + ' plate of ' +  delicacy_order.delicacy.description,
                         "customer_email": "user@example.com",
@@ -162,7 +164,7 @@ def thank_you(request):
                 buyer_object = Buy()
                 try:
                     jollof_order = JollofOrder.objects.get(code=code)
-                    verified = verify_payment(flwref, jollof_order.jollof.price+100)
+                    verified = verify_payment(flwref, jollof_order.jollof.price+COMMISSION)
                     if verified:
                         jollof_order.paid_status = True
                         jollof_order.save()
@@ -176,7 +178,7 @@ def thank_you(request):
                 except JollofOrder.DoesNotExist:
                     try:
                         delicacy_order = DelicacyOrder.objects.get(code=code)
-                        verified = verify_payment(flwref, delicacy_order.delicacy.price+100)
+                        verified = verify_payment(flwref, delicacy_order.delicacy.price+COMMISSION)
                         if verified:
                             delicacy_order.paid_status = True
                             delicacy_order.save()
