@@ -87,7 +87,7 @@ DEBUG = None
 if ENV_TYPE == 'PROD':
     DB_DETAILS = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
     # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = True
+    DEBUG = False
 else:
     DB_DETAILS = {
         'ENGINE': 'django.db.backends.sqlite3',
