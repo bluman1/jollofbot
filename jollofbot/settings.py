@@ -27,8 +27,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOST_1'), os.environ.get('ALLOWED_HOST_2'), os.environ.get('ALLOWED_HOST_3'), '127.0.0.1']
 
@@ -85,13 +83,18 @@ WSGI_APPLICATION = 'jollofbot.wsgi.application'
 
 ENV_TYPE = os.environ.get('ENV_TYPE')
 DB_DETAILS = None
-if ENV_TYPE == 'HEROKU':
+DEBUG = None
+if ENV_TYPE == 'PROD':
     DB_DETAILS = dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True
 else:
     DB_DETAILS = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True
 
 DATABASES = {
     'default': DB_DETAILS
